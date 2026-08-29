@@ -3,11 +3,10 @@ fn main() {
     let y = x;
 
     println!("{x}");
-    print!("{y}");
+    println!("{y}");
 
     let s1 = String::from("hello");
-    let s2 = s1;
+    let s2 = s1.clone();
 
-    println!("{s1}");
-    print!("{s2}");
+    println!("s1 = {s1}, s2 = {s2}");
 }
