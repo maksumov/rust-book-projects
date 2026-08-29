@@ -1,7 +1,13 @@
 fn main() {
-    let mut s = String::from("hello");
+    let x = 5;
+    let y = x;
 
-    s.push_str(", world!"); // push_str() appends a literal to a String
+    println!("{x}");
+    print!("{y}");
 
-    println!("{s}"); // this will print `hello, world!`
+    let s1 = String::from("hello");
+    let s2 = s1;
+
+    println!("{s1}");
+    print!("{s2}");
 }
