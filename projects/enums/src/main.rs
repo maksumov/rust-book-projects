@@ -1,42 +1,22 @@
 // An enum is a type that can be exactly one of its named variants.
-// `#[derive(Debug)]` makes `{ip_kind:?}` print the variant name (V4/V6).
-#[derive(Debug)]
-enum IpAddrKind {
-    V4,
-    V6,
-}
-
-// Combining an enum and a struct works, but is a dead end: `kind` and
-// `address` belong together, yet live in separate types. The book's
-// next step puts data directly into enum variants, removing the struct.
+// Variants can hold data directly (a String here), replacing the
+// struct + kind combination from the previous step.
 #[allow(dead_code)]
 #[derive(Debug)]
-struct IpAddr {
-    kind: IpAddrKind,
-    address: String,
+enum IpAddr {
+    V4(String),
+    V6(String),
 }
 
-fn route(ip_kind: IpAddrKind) {
-    println!("Routing {ip_kind:?} address!")
+fn route(ip_addr: IpAddr) {
+    println!("Routing {ip_addr:?} IP address!")
 }
 
 fn main() {
-    let four = IpAddrKind::V4;
-    let six = IpAddrKind::V6;
+    let home = IpAddr::V4(String::from("127.0.0.1"));
 
-    route(four);
-    route(six);
+    let loopback = IpAddr::V6(String::from("::1"));
 
-    let home = IpAddr {
-        kind: IpAddrKind::V4,
-        address: String::from("127.0.0.1"),
-    };
-
-    let loopback = IpAddr {
-        kind: IpAddrKind::V6,
-        address: String::from("::1"),
-    };
-
-    dbg!(&home);
-    dbg!(&loopback);
+    route(home);
+    route(loopback);
 }
