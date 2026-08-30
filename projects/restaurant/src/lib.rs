@@ -10,7 +10,7 @@
 //      ├── hosting (add_to_waitlist, seat_at_table)
 //      └── serving (take_order, serve_order, take_payment)
 mod front_of_house {
-    mod hosting {
+    pub mod hosting {
         fn add_to_waitlist() {}
 
         fn seat_at_table() {}
