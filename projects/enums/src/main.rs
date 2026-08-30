@@ -61,4 +61,12 @@ fn option_demo() {
     let absent_number: Option<i32> = None; // type annotation required
 
     println!("{some_number:?}, {some_string:?}, {absent_number:?}");
+
+    // Intentionally non-compiling: `x + y` fails with
+    // "cannot add Option<i8> to i8" -- `Option<i8>` must be
+    // unpacked first (see match, chapter 6.2).
+    let x: i8 = 5;
+    let y: Option<i8> = Some(5);
+
+    let sum = x + y;
 }
