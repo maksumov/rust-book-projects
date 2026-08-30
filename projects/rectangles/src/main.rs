@@ -17,6 +17,17 @@ impl Rectangle {
     fn can_hold(&self, other: &Rectangle) -> bool {
         self.width > other.width && self.height > other.height
     }
+
+    // Associated functions have no `self`: they don't read or modify
+    // an instance. Called via the type itself: `Rectangle::square(25)`.
+    // Often used as constructors; `Self` is an alias for the type
+    // of the `impl` block.
+    fn square(size: u32) -> Self {
+        Self {
+            width: size,
+            height: size,
+        }
+    }
 }
 
 fn main() {
@@ -36,6 +47,10 @@ fn main() {
         height: 45,
     };
 
+    // `::` syntax -- like `String::from` (chapter 4): the function
+    // belongs to the type, not to an instance.
+    let square = Rectangle::square(25);
+
     println!(
         "The area of the rectangle is {} square pixels.",
         rect1.area()
@@ -50,7 +65,9 @@ fn main() {
     // to keep using `rect1` afterwards (nothing else uses it here,
     // but the habit matters).
     dbg!(&rect1);
+    dbg!(&square);
 
     println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
     println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
+    println!("Can rect1 hold square? {}", rect1.can_hold(&square));
 }
