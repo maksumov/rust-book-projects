@@ -16,11 +16,21 @@ enum IpAddr {
 // each would be a distinct type, while the enum is a single type
 // that a function can accept as one argument.
 #[allow(dead_code)]
+#[derive(Debug)]
 enum Message {
     Quit,
     Move { x: i32, y: i32 },
     Write(String),
     ChangeColor(i32, i32, i32),
+}
+
+impl Message {
+    fn call(&self) {
+        // Enums can have methods, just like structs (chapter 5.3).
+        // `call` borrows the instance (&self); the variant's data
+        // is accessible through `self` (used with `match` in 6.2).
+        println!("Message {self:?} is called!")
+    }
 }
 
 fn route(ip_addr: IpAddr) {
@@ -34,4 +44,7 @@ fn main() {
 
     route(home);
     route(loopback);
+
+    let m = Message::Write(String::from("hello"));
+    m.call();
 }
