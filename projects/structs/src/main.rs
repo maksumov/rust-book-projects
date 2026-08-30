@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+#[derive(Debug)]
 struct User {
     active: bool,
     username: String,
@@ -12,6 +14,13 @@ fn main() {
     );
 
     user1.email = String::from("anotheremail@example.com");
+
+    let user2 = User {
+        email: String::from("another@example.com"),
+        ..user1
+    };
+
+    println!("{:?}", user2);
 }
 
 fn build_user(email: String, username: String) -> User {
