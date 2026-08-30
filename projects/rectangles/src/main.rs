@@ -1,16 +1,24 @@
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
 fn main() {
-    // Refactored: `rect1` is now a single tuple, so width and height
-    // are grouped together and `area` takes one argument.
-    // Problem: tuples don't name their elements, so `dimensions.0` and
-    // `dimensions.1` are meaningless -- which one is width?
-    let rect1 = (30, 50);
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
 
     println!(
         "The area of the rectangle is {} square pixels.",
-        area(rect1)
+        area(&rect1)
     );
 }
 
-fn area(dimensions: (u32, u32)) -> u32 {
-    dimensions.0 * dimensions.1
+// Refactored: named fields fix the tuple problem -- `rectangle.width`
+// is self-documenting, unlike `dimensions.0`.
+// Note: `&Rectangle` borrows the value (chapter 4), so `main` keeps
+// ownership and could still use `rect1` after the call.
+fn area(rectangle: &Rectangle) -> u32 {
+    rectangle.width * rectangle.height
 }
