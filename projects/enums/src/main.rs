@@ -153,6 +153,10 @@ fn main() {
     if let Some(desc) = describe_state_quarter_early_return(Coin::Quarter(UsState::Alabama)) {
         println!("{desc}");
     }
+
+    if let Some(desc) = describe_state_quarter_let_else(Coin::Quarter(UsState::Alaska)) {
+        println!("{desc}");
+    }
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
@@ -252,6 +256,23 @@ fn describe_state_quarter_early_return(coin: Coin) -> Option<String> {
     let state = if let Coin::Quarter(state) = coin {
         state
     } else {
+        return None;
+    };
+
+    if state.existed_in(1900) {
+        Some(format!("{state:?} is pretty old, for America!"))
+    } else {
+        Some(format!("{state:?} is relatively new."))
+    }
+}
+
+// Final variant: `let...else` is dedicated syntax for exactly the
+// pattern above. On match, `state` binds in the outer scope; the
+// `else` arm MUST diverge (return/panic) -- the compiler enforces
+// it, so `state` is always initialized below. The function body
+// stays on the "happy path" with no nesting.
+fn describe_state_quarter_let_else(coin: Coin) -> Option<String> {
+    let Coin::Quarter(state) = coin else {
         return None;
     };
 
