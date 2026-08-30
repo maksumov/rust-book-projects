@@ -38,6 +38,15 @@ fn route(ip_addr: IpAddr) {
 }
 
 fn main() {
+    // Nested functions are legal in Rust; the book defines `plus_one`
+    // inside `main` for listing compactness.
+    fn plus_one(x: Option<i32>) -> Option<i32> {
+        match x {
+            None => None,
+            Some(i) => Some(i + 1),
+        }
+    }
+
     let home = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
 
     let loopback = IpAddr::V6("::1".parse().expect("invalid Ipv6Addr"));
@@ -54,12 +63,18 @@ fn main() {
         "Quarter is {} cents",
         value_in_cents(Coin::Quarter(UsState::Alaska))
     );
+
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+
+    println!("plus_one(five) = {six:?}, plus_one(None) = {none:?}");
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
 // absence of a value is explicit in the type system.
 // Note: `Some(5)` is Option<i32>, not i32 -- different types,
-// they can't be mixed without unpacking (see match, chapter 6.2).
+// they can't be mixed without unpacking (fixed with match below).
 fn option_demo() {
     let some_number = Some(5);
     let some_string = Some("a string");
