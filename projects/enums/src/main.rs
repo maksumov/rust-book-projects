@@ -49,6 +49,8 @@ fn main() {
     m.call();
 
     option_demo();
+
+    println!("Penny is {} cents", value_in_cents(Coin::Penny));
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
@@ -69,4 +71,22 @@ fn option_demo() {
     let y: Option<i8> = Some(5);
 
     let sum = x + y;
+}
+
+// `match` compares a value against patterns; the first matching
+// arm wins. Arms must cover every possible variant (exhaustiveness).
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
 }
