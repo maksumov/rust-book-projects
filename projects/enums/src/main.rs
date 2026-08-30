@@ -104,6 +104,14 @@ fn main() {
     fn remove_fancy_hat() {}
     fn move_player(_num_spaces: u8) {}
     fn reroll() {}
+
+    // Verbose pattern: only one arm matters, yet exhaustiveness
+    // forces the `_ => ()` arm. `if let` (next) shortens exactly this.
+    let config_max = Some(3u8);
+    match config_max {
+        Some(max) => println!("The maximum is configured to be {max}"),
+        _ => (),
+    }
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
