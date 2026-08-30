@@ -20,7 +20,7 @@ fn main() {
         ..user1
     };
 
-    println!("{:?}", user2);
+    println!("{user2:?}");
 }
 
 fn build_user(email: String, username: String) -> User {
