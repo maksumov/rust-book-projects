@@ -84,9 +84,19 @@ fn main() {
         other => move_player(other),
     }
 
+    // `_` is a catch-all that does NOT bind: the value is ignored,
+    // so there is no unused-variable risk and no need to name it.
+    // (`_ => ()` would do nothing at all.)
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        _ => reroll(),
+    }
+
     fn add_fancy_hat() {}
     fn remove_fancy_hat() {}
     fn move_player(_num_spaces: u8) {}
+    fn reroll() {}
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
