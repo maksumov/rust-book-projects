@@ -120,6 +120,30 @@ fn main() {
     if let Some(max) = config_max {
         println!("The maximum is configured to be {max}");
     }
+
+    let mut count = 0;
+    let coin = Coin::Nickel;
+
+    // Matching by reference (`&coin`): the Quarter arm binds `state`
+    // as &UsState and `coin` is not consumed -- a must here, since
+    // the `if let` below reuses it.
+    // Unlike the earlier `_ => ()` cases, the catch-all arm does
+    // real work here: counting everything that is not a quarter.
+    match &coin {
+        Coin::Quarter(state) => println!("State quarter from {state:?}!"),
+        _ => count += 1,
+    }
+    println!("count = {count}");
+
+    // `else` plays the role of match's `_` arm -- this is the exact
+    // equivalent of the match above, with the same trade-off:
+    // no exhaustiveness check, other patterns ignored deliberately.
+    if let Coin::Quarter(state) = &coin {
+        println!("State quarter from {state:?}!");
+    } else {
+        count += 1;
+    }
+    println!("count = {count}");
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
