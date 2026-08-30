@@ -24,3 +24,15 @@ mod front_of_house {
         fn take_payment() {}
     }
 }
+
+// Intentionally non-compiling: modules are private by default, and
+// `eat_at_restaurant` sits in the crate root -- a parent cannot see
+// private items of its descendants. Both path forms fail until
+// `pub` marks the chain ("Exposing Paths with pub" section).
+pub fn eat_at_restaurant() {
+    // Absolute path
+    crate::front_of_house::hosting::add_to_waitlist();
+
+    // Relative path
+    front_of_house::hosting::add_to_waitlist();
+}
