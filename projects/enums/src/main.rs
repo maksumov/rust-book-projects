@@ -1,11 +1,13 @@
+use std::net::{Ipv4Addr, Ipv6Addr};
+
 // An enum is a type that can be exactly one of its named variants.
-// Each variant can hold a different amount and type of data:
-// V4 carries four u8 values, V6 -- a single String.
+// Each variant can hold a different type of data. Using std's
+// Ipv4Addr/Ipv6Addr mirrors how std::net::IpAddr is defined.
 #[allow(dead_code)]
 #[derive(Debug)]
 enum IpAddr {
-    V4(u8, u8, u8, u8),
-    V6(String),
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
 }
 
 fn route(ip_addr: IpAddr) {
@@ -13,9 +15,9 @@ fn route(ip_addr: IpAddr) {
 }
 
 fn main() {
-    let home = IpAddr::V4(127, 0, 0, 1);
+    let home = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
 
-    let loopback = IpAddr::V6(String::from("::1"));
+    let loopback = IpAddr::V6("::1".parse().expect("invalid Ipv6Addr"));
 
     route(home);
     route(loopback);
