@@ -93,6 +93,13 @@ fn main() {
         _ => reroll(),
     }
 
+    // `_ => ()`: the unit value -- do nothing for all other rolls.
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        _ => (),
+    }
+
     fn add_fancy_hat() {}
     fn remove_fancy_hat() {}
     fn move_player(_num_spaces: u8) {}
