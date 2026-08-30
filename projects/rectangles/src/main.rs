@@ -4,6 +4,15 @@ struct Rectangle {
     height: u32,
 }
 
+// Methods live inside an `impl` block of the type.
+// `&self` is short for `self: &Rectangle`: the method borrows the
+// instance, so `rect1` remains usable after the call (chapter 4).
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+}
+
 fn main() {
     let scale = 2;
     let rect1 = Rectangle {
@@ -15,7 +24,7 @@ fn main() {
 
     println!(
         "The area of the rectangle is {} square pixels.",
-        area(&rect1)
+        rect1.area()
     );
 
     // `#[derive(Debug)]` generates a Debug implementation for free.
@@ -27,12 +36,4 @@ fn main() {
     // to keep using `rect1` afterwards (nothing else uses it here,
     // but the habit matters).
     dbg!(&rect1);
-}
-
-// Refactored: named fields fix the tuple problem -- `rectangle.width`
-// is self-documenting, unlike `dimensions.0`.
-// Note: `&Rectangle` borrows the value (chapter 4), so `main` keeps
-// ownership and could still use `rect1` after the call.
-fn area(rectangle: &Rectangle) -> u32 {
-    rectangle.width * rectangle.height
 }
