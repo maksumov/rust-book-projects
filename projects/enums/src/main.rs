@@ -144,6 +144,11 @@ fn main() {
         count += 1;
     }
     println!("count = {count}");
+
+    // Calls for the three describe_state_quarter variants:
+    if let Some(desc) = describe_state_quarter_nested(Coin::Quarter(UsState::Alaska)) {
+        println!("{desc}");
+    }
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
@@ -178,6 +183,18 @@ enum UsState {
     // ...
 }
 
+// Methods work on enums exactly like on structs (chapter 5.3).
+// `match self` on `&self` binds by reference -- no ownership taken.
+impl UsState {
+    fn existed_in(&self, year: u16) -> bool {
+        match self {
+            UsState::Alabama => year >= 1819,
+            UsState::Alaska => year >= 1959,
+            // ...
+        }
+    }
+}
+
 // `match` compares a value against patterns; the first matching
 // arm wins. Arms must cover every possible variant (exhaustiveness).
 #[allow(dead_code)]
@@ -201,5 +218,22 @@ fn value_in_cents(coin: Coin) -> u8 {
             println!("State quarter from {state:?}!");
             25
         }
+    }
+}
+
+// First of three equivalent implementations of the same idea.
+// The nested `if let` pushes all the work into the condition's
+// body -- with more complex logic it becomes hard to follow how
+// the top-level branches relate. The `_early_return` and
+// `_let_else` variants below address this step by step.
+fn describe_state_quarter_nested(coin: Coin) -> Option<String> {
+    if let Coin::Quarter(state) = coin {
+        if state.existed_in(1900) {
+            Some(format!("{state:?} is pretty old, for America!"))
+        } else {
+            Some(format!("{state:?} is relatively new."))
+        }
+    } else {
+        None
     }
 }
