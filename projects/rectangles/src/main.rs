@@ -11,6 +11,12 @@ impl Rectangle {
     fn area(&self) -> u32 {
         self.width * self.height
     }
+
+    // A method can take additional parameters besides `self`.
+    // `other: &Rectangle` borrows the argument, like a regular function.
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
 }
 
 fn main() {
@@ -18,8 +24,16 @@ fn main() {
     let rect1 = Rectangle {
         // `dbg!` prints file:line and the expression to *stderr*
         // and returns the value, so it can be used inline in expressions.
-        width: dbg!(30 * scale),
+        width: dbg!(15 * scale),
         height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    let rect3 = Rectangle {
+        width: 60,
+        height: 45,
     };
 
     println!(
@@ -36,4 +50,7 @@ fn main() {
     // to keep using `rect1` afterwards (nothing else uses it here,
     // but the habit matters).
     dbg!(&rect1);
+
+    println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
+    println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
 }
