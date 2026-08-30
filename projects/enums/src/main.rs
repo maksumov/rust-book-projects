@@ -47,4 +47,18 @@ fn main() {
 
     let m = Message::Write(String::from("hello"));
     m.call();
+
+    option_demo();
+}
+
+// `Option<T>` is an enum: Some(T) or None. Rust has no null --
+// absence of a value is explicit in the type system.
+// Note: `Some(5)` is Option<i32>, not i32 -- different types,
+// they can't be mixed without unpacking (see match, chapter 6.2).
+fn option_demo() {
+    let some_number = Some(5);
+    let some_string = Some("a string");
+    let absent_number: Option<i32> = None; // type annotation required
+
+    println!("{some_number:?}, {some_string:?}, {absent_number:?}");
 }
