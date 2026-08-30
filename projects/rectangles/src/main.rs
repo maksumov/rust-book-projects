@@ -13,6 +13,8 @@ fn main() {
         "The area of the rectangle is {} square pixels.",
         area(&rect1)
     );
+
+    println!("rect1 is {rect1}");
 }
 
 // Refactored: named fields fix the tuple problem -- `rectangle.width`
