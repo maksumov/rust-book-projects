@@ -17,7 +17,11 @@ impl Rectangle {
     fn can_hold(&self, other: &Rectangle) -> bool {
         self.width > other.width && self.height > other.height
     }
+}
 
+// A struct may have multiple `impl` blocks; this is equivalent
+// to a single block. Useful with generic types and traits (chapter 10).
+impl Rectangle {
     // Associated functions have no `self`: they don't read or modify
     // an instance. Called via the type itself: `Rectangle::square(25)`.
     // Often used as constructors; `Self` is an alias for the type
