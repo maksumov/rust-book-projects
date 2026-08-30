@@ -5,8 +5,11 @@ struct Rectangle {
 }
 
 fn main() {
+    let scale = 2;
     let rect1 = Rectangle {
-        width: 30,
+        // `dbg!` prints file:line and the expression to *stderr*
+        // and returns the value, so it can be used inline in expressions.
+        width: dbg!(30 * scale),
         height: 50,
     };
 
@@ -19,6 +22,11 @@ fn main() {
     // `{:?}` prints compactly on one line, `{:#?}` pretty-prints multiline.
     println!("rect1 is {rect1:?}");
     println!("rect1 is {rect1:#?}");
+
+    // `dbg!` takes ownership of its argument, so pass a reference
+    // to keep using `rect1` afterwards (nothing else uses it here,
+    // but the habit matters).
+    dbg!(&rect1);
 }
 
 // Refactored: named fields fix the tuple problem -- `rectangle.width`
