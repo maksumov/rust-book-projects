@@ -37,3 +37,19 @@ pub fn eat_at_restaurant() {
     // Relative path
     front_of_house::hosting::add_to_waitlist();
 }
+
+fn deliver_order() {}
+
+// `super` starts a relative path from the parent module -- like `..`
+// in a filesystem path. Useful when the item is closely related to
+// its parent: if the tree is reorganized and both move together,
+// the path stays valid. Note the privacy contrast: children CAN see
+// their ancestors' private items (`deliver_order` needs no `pub`).
+mod back_of_house {
+    fn fix_incorrect_order() {
+        cook_order();
+        super::deliver_order();
+    }
+
+    fn cook_order() {}
+}
