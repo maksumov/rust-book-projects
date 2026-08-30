@@ -1,3 +1,4 @@
+#[derive(Debug)]
 struct Rectangle {
     width: u32,
     height: u32,
@@ -14,7 +15,10 @@ fn main() {
         area(&rect1)
     );
 
+    // `#[derive(Debug)]` generates a Debug implementation for free.
+    // `{:?}` prints compactly on one line, `{:#?}` pretty-prints multiline.
     println!("rect1 is {rect1:?}");
+    println!("rect1 is {rect1:#?}");
 }
 
 // Refactored: named fields fix the tuple problem -- `rectangle.width`
