@@ -14,7 +14,7 @@ fn main() {
         area(&rect1)
     );
 
-    println!("rect1 is {rect1}");
+    println!("rect1 is {rect1:?}");
 }
 
 // Refactored: named fields fix the tuple problem -- `rectangle.width`
