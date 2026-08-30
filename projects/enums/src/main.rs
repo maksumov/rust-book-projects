@@ -41,11 +41,12 @@ fn main() {
     // Nested functions are legal in Rust; the book defines `plus_one`
     // inside `main` for listing compactness.
 
-    // Intentionally non-compiling: without the `None` arm the match
-    // is non-exhaustive -- "pattern `None` not covered". The compiler
-    // forces every possible variant to be handled.
+    // Exhaustive again: restoring the `None` arm fixes the
+    // "pattern `None` not covered" error. Rust checks match
+    // exhaustiveness at compile time -- no case can be forgotten.
     fn plus_one(x: Option<i32>) -> Option<i32> {
         match x {
+            None => None,
             Some(i) => Some(i + 1),
         }
     }
