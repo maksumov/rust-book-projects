@@ -73,6 +73,20 @@ fn main() {
     let none = plus_one(None);
 
     println!("plus_one(five) = {six:?}, plus_one(None) = {none:?}");
+
+    // Catch-all arm: `other` binds the value of any case not covered
+    // above (here: 9) and passes it on. Type inference makes the whole
+    // chain u8: `9` is an untyped literal, `move_player` expects u8.
+    let dice_roll = 9;
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        other => move_player(other),
+    }
+
+    fn add_fancy_hat() {}
+    fn remove_fancy_hat() {}
+    fn move_player(_num_spaces: u8) {}
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
