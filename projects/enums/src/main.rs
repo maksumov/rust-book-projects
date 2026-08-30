@@ -1,10 +1,10 @@
 // An enum is a type that can be exactly one of its named variants.
-// Variants can hold data directly (a String here), replacing the
-// struct + kind combination from the previous step.
+// Each variant can hold a different amount and type of data:
+// V4 carries four u8 values, V6 -- a single String.
 #[allow(dead_code)]
 #[derive(Debug)]
 enum IpAddr {
-    V4(String),
+    V4(u8, u8, u8, u8),
     V6(String),
 }
 
@@ -13,7 +13,7 @@ fn route(ip_addr: IpAddr) {
 }
 
 fn main() {
-    let home = IpAddr::V4(String::from("127.0.0.1"));
+    let home = IpAddr::V4(127, 0, 0, 1);
 
     let loopback = IpAddr::V6(String::from("::1"));
 
