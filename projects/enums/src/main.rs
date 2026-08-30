@@ -82,13 +82,17 @@ fn option_demo() {
 
     println!("{some_number:?}, {some_string:?}, {absent_number:?}");
 
-    // Intentionally non-compiling: `x + y` fails with
-    // "cannot add Option<i8> to i8" -- `Option<i8>` must be
-    // unpacked first (see match, chapter 6.2).
+    // Fixed with `match`: unpack `Option<i8>` before arithmetic.
+    // Both arms are required (exhaustiveness); `None` must be
+    // handled explicitly -- that's the point of Option<T>.
     let x: i8 = 5;
     let y: Option<i8> = Some(5);
 
-    let sum = x + y;
+    let sum = match y {
+        Some(i) => x + i,
+        None => 0,
+    };
+    println!("sum = {sum}");
 }
 
 #[allow(dead_code)]
@@ -101,6 +105,7 @@ enum UsState {
 
 // `match` compares a value against patterns; the first matching
 // arm wins. Arms must cover every possible variant (exhaustiveness).
+#[allow(dead_code)]
 enum Coin {
     Penny,
     Nickel,
