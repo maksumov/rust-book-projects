@@ -50,7 +50,10 @@ fn main() {
 
     option_demo();
 
-    println!("Penny is {} cents", value_in_cents(Coin::Penny));
+    println!(
+        "Quarter is {} cents",
+        value_in_cents(Coin::Quarter(UsState::Alaska))
+    );
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
@@ -73,25 +76,35 @@ fn option_demo() {
     let sum = x + y;
 }
 
+#[allow(dead_code)]
+#[derive(Debug)] // so we can inspect the state in a minute
+enum UsState {
+    Alabama,
+    Alaska,
+    // ...
+}
+
 // `match` compares a value against patterns; the first matching
 // arm wins. Arms must cover every possible variant (exhaustiveness).
 enum Coin {
     Penny,
     Nickel,
     Dime,
-    Quarter,
+    Quarter(UsState),
 }
 
 fn value_in_cents(coin: Coin) -> u8 {
     match coin {
-        // Multiple statements in an arm: use a block; the last
-        // expression is the arm's value.
-        Coin::Penny => {
-            println!("Lucky penny!");
-            1
-        }
+        Coin::Penny => 1,
         Coin::Nickel => 5,
         Coin::Dime => 10,
-        Coin::Quarter => 25,
+
+        // The pattern binds the variant's inner value to `state`.
+        // Multiple statements in an arm: use a block; the last
+        // expression is the arm's value.
+        Coin::Quarter(state) => {
+            println!("State quarter from {state:?}!");
+            25
+        }
     }
 }
