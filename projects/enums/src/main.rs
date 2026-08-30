@@ -149,6 +149,10 @@ fn main() {
     if let Some(desc) = describe_state_quarter_nested(Coin::Quarter(UsState::Alaska)) {
         println!("{desc}");
     }
+
+    if let Some(desc) = describe_state_quarter_early_return(Coin::Quarter(UsState::Alabama)) {
+        println!("{desc}");
+    }
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
@@ -235,5 +239,25 @@ fn describe_state_quarter_nested(coin: Coin) -> Option<String> {
         }
     } else {
         None
+    }
+}
+
+// Second variant: `if let` used as a value-producing expression
+// (same "if is an expression" idea as the branches project, ch 3.5)
+// with an early return in the `else`. The main logic is flat now,
+// but the flow is still awkward: one branch produces `state`,
+// the other exits the function entirely. `let...else` (next)
+// expresses exactly this pattern.
+fn describe_state_quarter_early_return(coin: Coin) -> Option<String> {
+    let state = if let Coin::Quarter(state) = coin {
+        state
+    } else {
+        return None;
+    };
+
+    if state.existed_in(1900) {
+        Some(format!("{state:?} is pretty old, for America!"))
+    } else {
+        Some(format!("{state:?} is relatively new."))
     }
 }
