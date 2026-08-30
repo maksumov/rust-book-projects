@@ -10,6 +10,19 @@ enum IpAddr {
     V6(Ipv6Addr),
 }
 
+// Variants can take any form: no data (Quit), named fields (Move,
+// struct-like), a single value (Write), or a tuple (ChangeColor).
+// The book's alternative -- four separate structs -- loses here:
+// each would be a distinct type, while the enum is a single type
+// that a function can accept as one argument.
+#[allow(dead_code)]
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
 fn route(ip_addr: IpAddr) {
     println!("Routing {ip_addr:?} IP address!")
 }
