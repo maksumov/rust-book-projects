@@ -25,10 +25,12 @@ mod front_of_house {
     }
 }
 
-// Intentionally non-compiling: modules are private by default, and
-// `eat_at_restaurant` sits in the crate root -- a parent cannot see
-// private items of its descendants. Both path forms fail until
-// `pub` marks the chain ("Exposing Paths with pub" section).
+// Still non-compiling (listing 7-5): only `hosting` is `pub`, and that's
+// enough for the path -- `front_of_house` stays private but is accessed
+// from its own module (the crate root, where this function lives;
+// items in the same module see each other). The error is now
+// "function `add_to_waitlist` is private" (listing 7-6); the final
+// step is `pub fn` (listing 7-7).
 pub fn eat_at_restaurant() {
     // Absolute path
     crate::front_of_house::hosting::add_to_waitlist();
