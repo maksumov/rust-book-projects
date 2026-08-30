@@ -11,7 +11,7 @@
 //      └── serving (take_order, serve_order, take_payment)
 mod front_of_house {
     pub mod hosting {
-        fn add_to_waitlist() {}
+        pub fn add_to_waitlist() {}
 
         fn seat_at_table() {}
     }
@@ -25,12 +25,11 @@ mod front_of_house {
     }
 }
 
-// Still non-compiling (listing 7-5): only `hosting` is `pub`, and that's
-// enough for the path -- `front_of_house` stays private but is accessed
-// from its own module (the crate root, where this function lives;
-// items in the same module see each other). The error is now
-// "function `add_to_waitlist` is private" (listing 7-6); the final
-// step is `pub fn` (listing 7-7).
+// Compiles now (listing 7-7): the chain `pub mod hosting` +
+// `pub fn add_to_waitlist` opens the path. `front_of_house` stays
+// private and that's fine: it's accessed from its own module (the
+// crate root, where this function lives -- items in the same
+// module see each other).
 pub fn eat_at_restaurant() {
     // Absolute path
     crate::front_of_house::hosting::add_to_waitlist();
