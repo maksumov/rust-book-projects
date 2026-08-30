@@ -112,6 +112,14 @@ fn main() {
         Some(max) => println!("The maximum is configured to be {max}"),
         _ => (),
     }
+
+    // `if let` is sugar for a match with a single arm plus `_ => ()`:
+    // less typing, no exhaustiveness noise. Trade-off: losing match
+    // exhaustiveness checking -- the compiler no longer verifies
+    // that other cases were considered deliberately.
+    if let Some(max) = config_max {
+        println!("The maximum is configured to be {max}");
+    }
 }
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
