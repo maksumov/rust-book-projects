@@ -154,3 +154,19 @@ fn function1() -> fmt::Result {
 fn function2() -> io::Result<()> {
     Ok(())
 }
+
+// `as` renames an import (listing 7-16): both Result types are now
+// imported directly under distinct local names -- no qualification
+// needed at the call sites.
+use std::fmt::Result as FmtResult;
+use std::io::Result as IoResult;
+
+// The formatting Result, via alias
+fn function3() -> FmtResult {
+    Ok(())
+}
+
+// The I/O Result, via alias
+fn function4() -> IoResult<()> {
+    Ok(())
+}
