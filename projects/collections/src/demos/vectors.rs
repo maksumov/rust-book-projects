@@ -53,3 +53,23 @@ pub fn vectors_reading_elements_demo() {
     let does_not_exist = v.get(100);
     println!("{does_not_exist:?} when trying to get an element outside the vector");
 }
+
+// Borrow conflict (listing 8-4): holding `&v[0]` while pushing is
+// rejected -- `push` may reallocate the buffer and dangle `first`
+// (chapter 4: no & and &mut at the same time, even if this push
+// wouldn't actually reallocate -- the compiler can't know that).
+pub fn vectors_borrow_conflict_demo() {
+    println!("\n*** Vector borrow conflict demo ***");
+    let mut v = vec![1, 2, 3, 4, 5];
+
+    let first = &v[0];
+    // The next line fails with "cannot borrow `v` as mutable because
+    // it is also borrowed as immutable": `first` is still used below.
+    // v.push(6);
+    println!("The first element is: {first}");
+
+    // Fine now: `first`'s last use was the println above (NLL),
+    // so the borrow ends before push.
+    v.push(6);
+    println!("After push: {v:?}");
+}
