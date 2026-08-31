@@ -1,17 +1,7 @@
-// Loaded by `mod front_of_house;` in lib.rs. Child modules (hosting,
-// serving) are still inline here; `mod hosting;` would similarly map
-// to src/front_of_house/hosting.rs.
+// Loaded by `mod front_of_house;` in lib.rs. Children live in the
+// like-named directory: `pub mod hosting;` -> hosting.rs and
+// `mod serving;` -> serving.rs, both in src/front_of_house/.
 
-pub mod hosting {
-    pub fn add_to_waitlist() {}
+pub mod hosting;
 
-    fn seat_at_table() {}
-}
-
-mod serving {
-    fn take_order() {}
-
-    fn serve_order() {}
-
-    fn take_payment() {}
-}
+mod serving;
