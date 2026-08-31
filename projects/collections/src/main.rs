@@ -7,4 +7,5 @@ use crate::demos::vectors;
 fn main() {
     vectors::vectors_creation_demo();
     vectors::vectors_updating_demo();
+    vectors::vectors_reading_elements_demo();
 }
