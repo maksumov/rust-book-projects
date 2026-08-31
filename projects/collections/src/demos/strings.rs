@@ -178,3 +178,20 @@ pub fn strings_slicing_demo() {
     //  (bytes 0..2) of `Здравствуйте`"
     // let broken = &hello[0..1];
 }
+
+// The explicit ways to iterate: `chars()` yields Unicode scalar
+// values, `bytes()` yields the raw Vec<u8> content. Grapheme
+// clusters are not offered by std -- see the views demo above.
+pub fn strings_iteration_demo() {
+    println!("\n*** Strings iteration demo ***");
+
+    // Scalar values (chars):
+    for c in "Зд".chars() {
+        println!("{c}"); // З, д
+    }
+
+    // Raw bytes:
+    for b in "Зд".bytes() {
+        println!("{b}"); // 208, 151, 208, 180
+    }
+}
