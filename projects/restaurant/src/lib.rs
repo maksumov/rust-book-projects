@@ -203,3 +203,20 @@ mod seat_writer {
         io::stdout().write_all(b"table ready\n")
     }
 }
+
+// Glob operator: `use std::collections::*;` imports ALL public items
+// of the path at once. Convenient, but the origin of each item becomes
+// unclear -- the book recommends it mostly for tests, not regular code.
+// Scoped inside a module: the crate root already imports HashMap
+// explicitly (listing 7-14), and mixing a glob with it there would
+// only add noise.
+mod glob_demo {
+    use std::collections::*;
+
+    // HashMap here comes from the glob -- no explicit import
+    pub fn table_lookup() {
+        let mut tables: HashMap<u32, u32> = HashMap::new();
+        tables.insert(1, 2);
+        println!("{tables:?}");
+    }
+}
