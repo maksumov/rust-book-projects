@@ -116,3 +116,24 @@ pub fn strings_indexing_into_demo() {
 
     println!("Rust strings don't support indexing");
 }
+
+// A String wraps Vec<u8>: len() counts BYTES, not letters.
+// "Hola" -> 4 (one byte per letter); "Здравствуйте" -> 24
+// (two bytes per Cyrillic letter) -- a byte index would not
+// correlate with character boundaries.
+pub fn strings_internal_representation_demo() {
+    println!("\n*** Strings internal representation demo ***");
+
+    let ascii = String::from("Hola");
+    println!("len of {ascii:?}: {}", ascii.len()); // 4
+
+    let cyrillic = String::from("Здравствуйте");
+    println!("len of {cyrillic:?}: {}", cyrillic.len()); // 24, not 12!
+
+    // If indexing returned a byte, "З" would be 208 -- not a letter
+    // (its UTF-8 encoding is two bytes: 208, 151):
+    println!(
+        "first byte of the Cyrillic string: {}",
+        cyrillic.as_bytes()[0]
+    ); // 208
+}

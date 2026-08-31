@@ -16,4 +16,5 @@ fn main() {
     strings::strings_appending_demo();
     strings::strings_concatenation_demo();
     strings::strings_indexing_into_demo();
+    strings::strings_internal_representation_demo();
 }
