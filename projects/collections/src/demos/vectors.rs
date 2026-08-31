@@ -73,3 +73,23 @@ pub fn vectors_borrow_conflict_demo() {
     v.push(6);
     println!("After push: {v:?}");
 }
+
+// Iterating: `for i in &v` yields references (read-only); the
+// mutable variant (`&mut v`) yields &mut and needs `*` -- the
+// dereference operator -- to modify the element in place.
+pub fn vectors_iteration_demo() {
+    println!("\n*** Vector iteration demo ***");
+    let mut v = vec![100, 200, 300];
+    println!("After creation: {v:?}");
+
+    // Immutable iteration: i is &i32
+    for i in &v {
+        println!("{i}");
+    }
+
+    // Mutable iteration: i is &mut i32, `*i` writes through the reference
+    for i in &mut v {
+        *i += 50;
+    }
+    println!("After mutable iteration: {v:?}");
+}
