@@ -182,3 +182,18 @@ pub fn lucky_table() {
     let table: u32 = rand::rng().random_range(1..=10);
     println!("You're seated at table {table}");
 }
+
+// `self` inside a nested path imports the prefix module itself:
+// `use std::io::{self, Write};` brings BOTH `io` and the `Write`
+// trait into scope in one line. Scoped inside a module on purpose:
+// the crate root already imports `io` via the group above, and two
+// imports of the same name in one scope would clash (E0252).
+mod seat_writer {
+    use std::io::{self, Write};
+
+    // Uses both: `io` as a module qualifier, and `write_all` --
+    // a Write-trait method on Stdout
+    pub fn function5() -> io::Result<()> {
+        io::stdout().write_all(b"table ready\n")
+    }
+}
