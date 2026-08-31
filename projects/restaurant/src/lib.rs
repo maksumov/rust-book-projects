@@ -138,3 +138,19 @@ mod back_of_house {
 
     fn cook_order() {}
 }
+
+// Two different `Result` types share a name -- importing both
+// directly would clash. The workaround (listing 7-15):
+// import the parent modules and qualify (fmt::Result, io::Result).
+use std::fmt;
+use std::io;
+
+// The formatting Result, via module qualification
+fn function1() -> fmt::Result {
+    Ok(())
+}
+
+// The I/O Result with () success type, likewise qualified
+fn function2() -> io::Result<()> {
+    Ok(())
+}
