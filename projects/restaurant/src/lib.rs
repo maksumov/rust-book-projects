@@ -29,7 +29,13 @@ mod front_of_house {
 // Idiom: import the MODULE and call through it (hosting::add_to_waitlist),
 // not the function itself -- the call site stays clear about where
 // the item comes from. (For structs and enums, import the item directly.)
-use crate::front_of_house::hosting;
+
+// `pub` turns this import into a RE-EXPORT: the shortcut itself
+// becomes part of the public API (external path:
+// restaurant::hosting), while the private internal structure
+// stays hidden -- refactoring `front_of_house` won't break
+// consumers of the public path.
+pub use crate::front_of_house::hosting;
 
 // Importing the function itself (listing 7-13) -- legal, but less
 // idiomatic: a bare `add_to_waitlist()` call doesn't show where the
