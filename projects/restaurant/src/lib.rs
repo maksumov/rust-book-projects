@@ -37,6 +37,13 @@ use crate::front_of_house::hosting;
 // (the `hosting` use above) keeps the call site self-explanatory.
 use crate::front_of_house::hosting::add_to_waitlist;
 
+// Listing 7-14 idiom: for structs and enums, specify the FULL path to
+// the type itself (`std::collections::HashMap`), unlike functions where
+// importing the module and calling through it is preferred. The book
+// demonstrates this in a binary crate's main.rs; the idiom is identical
+// in the library root.
+use std::collections::HashMap;
+
 // Compiles now (listing 7-7): the chain `pub mod hosting` +
 // `pub fn add_to_waitlist` opens the path. `front_of_house` stays
 // private and that's fine: it's accessed from its own module (the
@@ -55,6 +62,11 @@ pub fn eat_at_restaurant() {
     // Via directly imported function -- works, but the origin is
     // unclear at a glance (non-idiomatic, see the comment above)
     add_to_waitlist();
+
+    // HashMap via full-path import (listing 7-14 idiom demo)
+    let mut table_map: HashMap<i32, i32> = HashMap::new();
+    table_map.insert(1, 2);
+    println!("{table_map:?}");
 
     // Order a breakfast in the summer with Rye toast.
     let mut meal = back_of_house::Breakfast::summer("Rye");
