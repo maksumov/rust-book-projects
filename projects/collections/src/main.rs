@@ -2,7 +2,7 @@
 // `mod demos;` loads demos.rs, its children live in demos/.
 mod demos;
 
-use crate::demos::vectors;
+use crate::demos::{strings, vectors};
 
 fn main() {
     vectors::vectors_creation_demo();
@@ -11,4 +11,6 @@ fn main() {
     vectors::vectors_borrow_conflict_demo();
     vectors::vectors_iteration_demo();
     vectors::vectors_multiple_types_demo();
+
+    strings::strings_creation_demo();
 }
