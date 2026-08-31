@@ -137,3 +137,25 @@ pub fn strings_internal_representation_demo() {
         cyrillic.as_bytes()[0]
     ); // 208
 }
+
+// Three views of "नमस्ते" (Devanagari), per the book: as raw bytes,
+// as Unicode scalar values (chars), and as grapheme clusters --
+// what a human calls letters. Graphemes are NOT computable in std
+// (needs e.g. the unicode-segmentation crate), so that line is
+// hardcoded verbatim from the book.
+pub fn strings_views_demo() {
+    println!("\n*** String views demo ***");
+
+    let s = "नमस्ते";
+
+    // 18 numbers -- how the computer stores it:
+    println!("bytes: {s:?} -> {:?}", s.as_bytes());
+
+    // 6 scalar values -- note the 4th and 6th are diacritics
+    // (combining marks), not standalone letters:
+    let scalars: Vec<char> = s.chars().collect();
+    println!("scalar values: {scalars:?}");
+
+    // 4 grapheme clusters -- what a person sees as letters:
+    println!("grapheme clusters: [\"न\", \"म\", \"स्\", \"ते\"]");
+}
