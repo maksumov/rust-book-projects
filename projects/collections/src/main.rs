@@ -18,4 +18,5 @@ fn main() {
     strings::strings_indexing_into_demo();
     strings::strings_internal_representation_demo();
     strings::strings_views_demo();
+    strings::strings_slicing_demo();
 }

@@ -159,3 +159,22 @@ pub fn strings_views_demo() {
     // 4 grapheme clusters -- what a person sees as letters:
     println!("grapheme clusters: [\"न\", \"म\", \"स्\", \"ते\"]");
 }
+
+// Slicing IS allowed with a range -- but the range selects BYTES,
+// and its bounds must land on char boundaries. "Здравствуйте" uses
+// two bytes per letter, so [0..4] is exactly "Зд"; a bound that
+// cuts a letter in half panics at runtime.
+pub fn strings_slicing_demo() {
+    println!("\n*** Strings slicing demo ***");
+
+    let hello = "Здравствуйте";
+    println!("hello is {hello:?}");
+
+    let s = &hello[0..4];
+    println!("&hello[0..4] is {s:?}"); // "Зд" -- two letters, four bytes
+
+    // The next line panics at RUNTIME (not a compile error):
+    // "byte index 1 is not a char boundary; it is inside 'З'
+    //  (bytes 0..2) of `Здравствуйте`"
+    // let broken = &hello[0..1];
+}
