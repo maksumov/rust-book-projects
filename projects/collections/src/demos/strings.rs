@@ -101,3 +101,18 @@ pub fn strings_concatenation_demo() {
     println!("s is {s:?}");
     println!("s1 is still valid after format!: {s1:?}");
 }
+
+// Strings cannot be indexed: `s[0]` would have no unambiguous
+// meaning -- byte? char? grapheme cluster? A compile error is
+// safer than a surprising value. The "why" lives in the
+// representation demo below.
+pub fn strings_indexing_into_demo() {
+    println!("\n*** Strings indexing into demo ***");
+
+    // The next line fails with "the type `str` cannot be indexed by
+    // `{integer}`"; the compiler suggests `.chars().nth()` or
+    // `.bytes().nth()` instead.
+    // let h = String::from("hi")[0];
+
+    println!("Rust strings don't support indexing");
+}
