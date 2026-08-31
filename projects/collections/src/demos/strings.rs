@@ -63,3 +63,41 @@ pub fn strings_appending_demo() {
     println!("String after appending {ch:?} using .push() method: {s:?}");
     println!("ch: char is still valid (chars are Copy): {ch:?}");
 }
+
+// Concatenation with `+`: `s1 + &s2` is sugar for `s1.add(&s2)` with
+// `fn add(self, s: &str) -> String` -- `self` by value (s1 is MOVED
+// and dies), `s` as &str (s2 survives: borrowed via deref coercion
+// &String -> &str, chapter 4/15 preview).
+pub fn strings_concatenation_demo() {
+    println!("\n*** Strings concatenation demo ***");
+
+    // Note the asymmetry: `s1` without `&`, `s2` with `&` -- exactly
+    // the `add(self, s: &str)` signature from the comment above:
+    // only the LEFT operand is consumed.
+    let s1 = String::from("Hello, ");
+    let s2 = String::from("world!");
+    let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
+
+    println!("s3 is {s3:?}");
+    // The next line fails with "borrow of moved value: `s1`":
+    // println!("{s1:?}");
+
+    // Chaining works (each `+` consumes the previous String result)
+    // but gets unwieldy fast -- hard to read, easy to mess up the &.
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+
+    let s = s1 + "-" + &s2 + "-" + &s3;
+    println!("s is {s:?}");
+
+    // `format!` formats like println! but RETURNS a String; it borrows
+    // every argument, so nothing is consumed -- the idiomatic choice.
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+
+    let s = format!("{s1}-{s2}-{s3}");
+    println!("s is {s:?}");
+    println!("s1 is still valid after format!: {s1:?}");
+}
