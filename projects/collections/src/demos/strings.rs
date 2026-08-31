@@ -42,3 +42,24 @@ pub fn strings_creation_demo() {
 
     println!("Hellos in different languages: {different_hellos:#?}");
 }
+
+// Appending: `push_str` takes &str and borrows, so the appended
+// variable stays usable (listing 8-16); `push` takes a single char
+// by value -- chars are Copy, so the variable survives regardless.
+pub fn strings_appending_demo() {
+    println!("\n*** Strings appending demo ***");
+
+    let mut s = String::from("foo");
+    let bar = "bar";
+    let ch = 'c';
+
+    println!("String after creation: {s:?}");
+
+    s.push_str(bar);
+    println!("String after appending {bar:?} using .push_str() method: {s:?}");
+    println!("bar: &str is still valid: {bar:?}");
+
+    s.push(ch);
+    println!("String after appending {ch:?} using .push() method: {s:?}");
+    println!("ch: char is still valid (chars are Copy): {ch:?}");
+}

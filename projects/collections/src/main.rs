@@ -13,4 +13,5 @@ fn main() {
     vectors::vectors_multiple_types_demo();
 
     strings::strings_creation_demo();
+    strings::strings_appending_demo();
 }
