@@ -62,6 +62,16 @@ pub fn eat_at_restaurant() {
     println!("Order1 is {order1:?} and order2 is {order2:?}");
 }
 
+mod customer {
+    pub fn eat_at_restaurant() {
+        // The next line won't compile if we uncomment it: `use` binds
+        // a name only within the module where it appears -- the
+        // crate-root `use ... hosting;` is not visible inside `customer`.
+
+        // hosting::add_to_waitlist();
+    }
+}
+
 fn deliver_order() {}
 
 mod back_of_house {
