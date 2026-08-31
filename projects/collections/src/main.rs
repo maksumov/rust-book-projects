@@ -22,4 +22,5 @@ fn main() {
     strings::strings_iteration_demo();
 
     hashmaps::hashmaps_creation_demo();
+    hashmaps::hashmaps_creation_via_collect_demo();
 }
