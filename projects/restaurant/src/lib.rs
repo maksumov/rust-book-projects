@@ -36,16 +36,46 @@ pub fn eat_at_restaurant() {
 
     // Relative path
     front_of_house::hosting::add_to_waitlist();
+
+    // Order a breakfast in the summer with Rye toast.
+    let mut meal = back_of_house::Breakfast::summer("Rye");
+    // Change our mind about what bread we'd like.
+    meal.toast = String::from("Wheat");
+    println!("I'd like {} toast please", meal.toast);
+
+    // The next line won't compile if we uncomment it; we're not allowed
+    // to see or modify the seasonal fruit that comes with the meal.
+    // meal.seasonal_fruit = String::from("blueberries");
 }
 
 fn deliver_order() {}
 
-// `super` starts a relative path from the parent module -- like `..`
-// in a filesystem path. Useful when the item is closely related to
-// its parent: if the tree is reorganized and both move together,
-// the path stays valid. Note the privacy contrast: children CAN see
-// their ancestors' private items (`deliver_order` needs no `pub`).
 mod back_of_house {
+    // `pub` on a struct makes the TYPE public, not its fields:
+    // fields stay private unless each is marked `pub` individually
+    // (`toast` public, `seasonal_fruit` private -- the chef decides).
+    // A private field means no struct literal is possible outside
+    // this module, so a public associated constructor (`summer`)
+    // is the only way to build an instance.
+    pub struct Breakfast {
+        pub toast: String,
+        seasonal_fruit: String,
+    }
+
+    impl Breakfast {
+        pub fn summer(toast: &str) -> Breakfast {
+            Breakfast {
+                toast: String::from(toast),
+                seasonal_fruit: String::from("peaches"),
+            }
+        }
+    }
+
+    // `super` starts a relative path from the parent module -- like `..`
+    // in a filesystem path. Useful when the item is closely related to
+    // its parent: if the tree is reorganized and both move together,
+    // the path stays valid. Note the privacy contrast: children CAN see
+    // their ancestors' private items (`deliver_order` needs no `pub`).
     fn fix_incorrect_order() {
         cook_order();
         super::deliver_order();
