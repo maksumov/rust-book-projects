@@ -2,28 +2,14 @@
 
 // A library crate: the root is src/lib.rs (no main); the artifact
 // is a library for other crates to consume.
-// Unlike backyard's `mod x;` files, these modules are inline --
-// the whole tree lives in one file (listing 7-2):
+// The tree started inline (listing 7-1); chapter 7.5 extracts modules
+// into files: `mod front_of_house;` loads src/front_of_house.rs.
 //
 // crate
 //  └── front_of_house
 //      ├── hosting (add_to_waitlist, seat_at_table)
 //      └── serving (take_order, serve_order, take_payment)
-mod front_of_house {
-    pub mod hosting {
-        pub fn add_to_waitlist() {}
-
-        fn seat_at_table() {}
-    }
-
-    mod serving {
-        fn take_order() {}
-
-        fn serve_order() {}
-
-        fn take_payment() {}
-    }
-}
+mod front_of_house;
 
 // `use` brings a path into scope once; after that, short paths suffice.
 // Idiom: import the MODULE and call through it (hosting::add_to_waitlist),
