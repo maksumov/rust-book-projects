@@ -139,11 +139,12 @@ mod back_of_house {
     fn cook_order() {}
 }
 
-// Two different `Result` types share a name -- importing both
-// directly would clash. The workaround (listing 7-15):
-// import the parent modules and qualify (fmt::Result, io::Result).
-use std::fmt;
-use std::io;
+// fmt and io are imported as MODULES for the listing 7-15 workaround:
+// the name-clashing Result types are qualified at the call sites
+// (fmt::Result, io::Result).
+// Nested paths merge imports sharing a prefix: the two separate
+// `use` lines become one; same names in scope.
+use std::{fmt, io};
 
 // The formatting Result, via module qualification
 fn function1() -> fmt::Result {
