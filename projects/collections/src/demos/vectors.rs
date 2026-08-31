@@ -93,3 +93,32 @@ pub fn vectors_iteration_demo() {
     }
     println!("After mutable iteration: {v:?}");
 }
+
+// Vectors are homogeneous: one element type. To store "different"
+// values, define an enum whose variants carry each type -- every
+// element is then the SAME enum type (chapter 6 at work). A match
+// on the variant unpacks the value with its type back.
+#[derive(Debug)]
+enum Cell {
+    Int(i32),
+    Float(f64),
+    Text(String),
+}
+
+pub fn vectors_multiple_types_demo() {
+    println!("\n*** Vector multiple types demo ***");
+
+    let row = vec![
+        Cell::Int(3),
+        Cell::Text(String::from("blue")),
+        Cell::Float(10.12),
+    ];
+
+    for cell in &row {
+        match cell {
+            Cell::Int(i) => println!("Int cell: {i}"),
+            Cell::Float(f) => println!("Float cell: {f}"),
+            Cell::Text(s) => println!("Text cell: {s}"),
+        }
+    }
+}

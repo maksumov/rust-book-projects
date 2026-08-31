@@ -10,4 +10,5 @@ fn main() {
     vectors::vectors_reading_elements_demo();
     vectors::vectors_borrow_conflict_demo();
     vectors::vectors_iteration_demo();
+    vectors::vectors_multiple_types_demo();
 }
