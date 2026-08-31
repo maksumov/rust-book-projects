@@ -6,4 +6,5 @@ use crate::demos::vectors;
 
 fn main() {
     vectors::vectors_creation_demo();
+    vectors::vectors_updating_demo();
 }
