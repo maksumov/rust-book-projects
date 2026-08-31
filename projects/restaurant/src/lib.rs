@@ -170,3 +170,14 @@ fn function3() -> FmtResult {
 fn function4() -> IoResult<()> {
     Ok(())
 }
+
+// External packages: paths start with the crate NAME, not `crate::`
+// (that prefix is only for the current crate). The version in
+// Cargo.toml ("0.9.5") is shorthand for ^0.9.5: any compatible
+// 0.9.x. `std` is the implicit dependency -- no Cargo.toml entry.
+use rand::Rng;
+
+pub fn lucky_table() {
+    let table: u32 = rand::rng().random_range(1..=10);
+    println!("You're seated at table {table}");
+}
