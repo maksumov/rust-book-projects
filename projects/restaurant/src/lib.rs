@@ -25,6 +25,12 @@ mod front_of_house {
     }
 }
 
+// `use` brings a path into scope once; after that, short paths suffice.
+// Idiom: import the MODULE and call through it (hosting::add_to_waitlist),
+// not the function itself -- the call site stays clear about where
+// the item comes from. (For structs and enums, import the item directly.)
+use crate::front_of_house::hosting;
+
 // Compiles now (listing 7-7): the chain `pub mod hosting` +
 // `pub fn add_to_waitlist` opens the path. `front_of_house` stays
 // private and that's fine: it's accessed from its own module (the
@@ -36,6 +42,9 @@ pub fn eat_at_restaurant() {
 
     // Relative path
     front_of_house::hosting::add_to_waitlist();
+
+    // Path via `use` shortcut
+    hosting::add_to_waitlist();
 
     // Order a breakfast in the summer with Rye toast.
     let mut meal = back_of_house::Breakfast::summer("Rye");
