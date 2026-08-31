@@ -31,6 +31,12 @@ mod front_of_house {
 // the item comes from. (For structs and enums, import the item directly.)
 use crate::front_of_house::hosting;
 
+// Importing the function itself (listing 7-13) -- legal, but less
+// idiomatic: a bare `add_to_waitlist()` call doesn't show where the
+// item comes from (locally defined? imported?). Importing the module
+// (the `hosting` use above) keeps the call site self-explanatory.
+use crate::front_of_house::hosting::add_to_waitlist;
+
 // Compiles now (listing 7-7): the chain `pub mod hosting` +
 // `pub fn add_to_waitlist` opens the path. `front_of_house` stays
 // private and that's fine: it's accessed from its own module (the
@@ -45,6 +51,10 @@ pub fn eat_at_restaurant() {
 
     // Path via `use` shortcut
     hosting::add_to_waitlist();
+
+    // Via directly imported function -- works, but the origin is
+    // unclear at a glance (non-idiomatic, see the comment above)
+    add_to_waitlist();
 
     // Order a breakfast in the summer with Rye toast.
     let mut meal = back_of_house::Breakfast::summer("Rye");
