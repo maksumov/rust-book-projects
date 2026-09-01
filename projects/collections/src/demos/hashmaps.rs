@@ -5,7 +5,7 @@ use std::collections::HashMap;
 // prelude: the least used of the three collections, needs an
 // explicit `use` (unlike Vec and String).
 pub fn hashmaps_creation_demo() {
-    println!("\n*** Hashmaps creation demo ***");
+    println!("\n*** Hash maps creation demo ***");
 
     let mut scores = HashMap::new();
 
@@ -20,7 +20,7 @@ pub fn hashmaps_creation_demo() {
 // (key, value) tuples. The `HashMap<_, _>` annotation is needed:
 // `collect` is generic over the target collection.
 pub fn hashmaps_creation_via_collect_demo() {
-    println!("\n*** Hashmaps creation via collect demo ***");
+    println!("\n*** Hash maps creation via collect demo ***");
 
     // collect from tuples: zip pairs the teams with initial scores
     let teams = vec![String::from("Blue"), String::from("Yellow")];
@@ -34,7 +34,7 @@ pub fn hashmaps_creation_via_collect_demo() {
 // hash maps have no indexing syntax, and a missing key is None,
 // not a panic. The copied/unwrap_or chain below handles absence.
 pub fn hashmaps_accessing_values_demo() {
-    println!("\n*** Hashmaps accessing values demo ***");
+    println!("\n*** Hash maps accessing values demo ***");
 
     let mut scores = HashMap::new();
 
@@ -57,7 +57,7 @@ pub fn hashmaps_accessing_values_demo() {
 // Iterating yields (&K, &V) pairs in ARBITRARY order -- the hash
 // function decides the layout, not insertion order.
 pub fn hashmaps_iteration_demo() {
-    println!("\n*** Hashmaps iteration demo ***");
+    println!("\n*** Hash maps iteration demo ***");
 
     let mut scores = HashMap::new();
     scores.insert(String::from("Blue"), 10);
@@ -73,7 +73,7 @@ pub fn hashmaps_iteration_demo() {
 // (i32) are copied and stay usable. References can't just be
 // inserted -- their data must outlive the map (lifetimes, ch 10).
 pub fn hashmaps_managing_ownership_demo() {
-    println!("\n*** Hashmaps managing ownership demo ***");
+    println!("\n*** Hash maps managing ownership demo ***");
 
     let field_name = String::from("Favorite color");
     let field_value = String::from("Blue");
@@ -102,7 +102,7 @@ pub fn hashmaps_managing_ownership_demo() {
 // Updating strategy 1 of 3: `insert` on an existing key REPLACES
 // the value outright -- the old value is dropped.
 pub fn hashmaps_overwriting_value_demo() {
-    println!("\n*** Hashmaps overwriting value demo ***");
+    println!("\n*** Hash maps overwriting value demo ***");
 
     let mut scores = HashMap::new();
 
