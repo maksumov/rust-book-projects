@@ -1,0 +1,12 @@
+[package]
+name = "panic"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+# Ch 9.1: panics unwind by default (stack walked back, destructors
+# run). `abort` skips unwinding -- smaller binaries, no cleanup.
+# Release builds only: debug (where the demos run) still unwinds.
+[profile.release]
+panic = 'abort'
