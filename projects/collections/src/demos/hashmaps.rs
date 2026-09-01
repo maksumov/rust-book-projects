@@ -113,3 +113,37 @@ pub fn hashmaps_overwriting_value_demo() {
     println!("insert returned the old value: {old:?}"); // Some(10)
     println!("HashMap with overwritten value: {scores:?}");
 }
+
+// Updating strategy 2 of 3: insert only if the key is ABSENT.
+//
+// Why a dedicated API exists -- `get` vs `entry`:
+//
+//   get:   fn get(&self, k: &Q) -> Option<&V>
+//     -- immutable borrow of the map, read-only lookup: it cannot
+//        insert anything, and the Option<&V> it returns cannot be
+//        mutated through.
+//
+//   entry: fn entry(&mut self, key: K) -> Entry<K, V>
+//     -- mutable borrow, and the key is taken by VALUE (it may be
+//        needed for the insert). Returns an Occupied/Vacant "slot",
+//        and or_insert(default) returns &mut V in BOTH cases --
+//        inserting the default for a vacant key, keeping the old
+//        value for an occupied one.
+//
+// A manual check-then-insert would take two lookups and trips the
+// borrow checker: the check borrows the map immutably, the insert
+// needs it mutably. `entry` fuses check-and-insert into one call --
+// "plays more nicely with the borrow checker" (the book's words).
+pub fn hashmaps_insert_if_absent_demo() {
+    println!("\n*** Hash maps insert if absent demo ***");
+
+    let mut scores = HashMap::new();
+    scores.insert(String::from("Blue"), 10);
+    println!("HashMap with original value: {scores:?}");
+
+    scores.entry(String::from("Yellow")).or_insert(50);
+    println!("HashMap with the additional entry: {scores:?}");
+
+    scores.entry(String::from("Blue")).or_insert(50);
+    println!("HashMap didn't change: {scores:?}");
+}

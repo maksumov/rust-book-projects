@@ -27,4 +27,5 @@ fn main() {
     hashmaps::hashmaps_iteration_demo();
     hashmaps::hashmaps_managing_ownership_demo();
     hashmaps::hashmaps_overwriting_value_demo();
+    hashmaps::hashmaps_insert_if_absent_demo();
 }
