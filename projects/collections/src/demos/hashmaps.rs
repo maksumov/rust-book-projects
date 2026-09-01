@@ -29,3 +29,41 @@ pub fn hashmaps_creation_via_collect_demo() {
 
     println!("scores via collect: {scores:?}");
 }
+
+// `get` looks up a key and returns Option<&V> -- the safe form:
+// hash maps have no indexing syntax, and a missing key is None,
+// not a panic. The copied/unwrap_or chain below handles absence.
+pub fn hashmaps_accessing_values_demo() {
+    println!("\n*** Hashmaps accessing values demo ***");
+
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+
+    // `get` returns Option<&V>: copied() -> Option<V>, then
+    // unwrap_or(default) -> V. "Green" is deliberately absent from
+    // the map, so the loop demonstrates BOTH paths: Some -> the
+    // stored value, None -> the default.
+    for team_name in ["Blue", "Green"] {
+        // Lookup by &str directly: `get` is generic over Q where
+        // K: Borrow<Q>, and String: Borrow<str> -- no allocation,
+        // unlike building a String key per lookup.
+        let score = scores.get(team_name).copied().unwrap_or(0);
+        println!("The {team_name:?} have {score} points");
+    }
+}
+
+// Iterating yields (&K, &V) pairs in ARBITRARY order -- the hash
+// function decides the layout, not insertion order.
+pub fn hashmaps_iteration_demo() {
+    println!("\n*** Hashmaps iteration demo ***");
+
+    let mut scores = HashMap::new();
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+
+    for (key, value) in &scores {
+        println!("{key}: {value}");
+    }
+}

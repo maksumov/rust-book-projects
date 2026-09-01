@@ -23,4 +23,6 @@ fn main() {
 
     hashmaps::hashmaps_creation_demo();
     hashmaps::hashmaps_creation_via_collect_demo();
+    hashmaps::hashmaps_accessing_values_demo();
+    hashmaps::hashmaps_iteration_demo();
 }
