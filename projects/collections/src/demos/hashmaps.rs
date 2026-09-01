@@ -98,3 +98,18 @@ pub fn hashmaps_managing_ownership_demo() {
     counts.insert("Blue", number);
     println!("number is still valid: {number}");
 }
+
+// Updating strategy 1 of 3: `insert` on an existing key REPLACES
+// the value outright -- the old value is dropped.
+pub fn hashmaps_overwriting_value_demo() {
+    println!("\n*** Hashmaps overwriting value demo ***");
+
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("Blue"), 10);
+    println!("HashMap with original value: {scores:?}");
+
+    let old = scores.insert(String::from("Blue"), 25);
+    println!("insert returned the old value: {old:?}"); // Some(10)
+    println!("HashMap with overwritten value: {scores:?}");
+}
