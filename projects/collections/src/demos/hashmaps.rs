@@ -67,3 +67,34 @@ pub fn hashmaps_iteration_demo() {
         println!("{key}: {value}");
     }
 }
+
+// `insert` takes ownership: owned keys/values (String) are MOVED
+// into the map and become invalid at the call site; Copy types
+// (i32) are copied and stay usable. References can't just be
+// inserted -- their data must outlive the map (lifetimes, ch 10).
+pub fn hashmaps_managing_ownership_demo() {
+    println!("\n*** Hashmaps managing ownership demo ***");
+
+    let field_name = String::from("Favorite color");
+    let field_value = String::from("Blue");
+
+    let mut map = HashMap::new();
+    map.insert(field_name, field_value);
+
+    // The next line fails with "borrow of moved value: `field_name`"
+    // (the book invites you to try it):
+    // println!("{field_name:?}");
+
+    // The next line fails with "borrow of moved value: `field_value`"
+    // (the book invites you to try it):
+    // println!("{field_value:?}");
+
+    // The data lives in the map now:
+    println!("map: {map:?}");
+
+    // Copy types are copied, not moved -- still usable after insert:
+    let mut counts = HashMap::new();
+    let number = 10;
+    counts.insert("Blue", number);
+    println!("number is still valid: {number}");
+}
