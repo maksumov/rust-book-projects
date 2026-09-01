@@ -1,3 +1,7 @@
+// Under the hood: the default hasher is SipHash -- DoS-resistant,
+// trading some speed for security. A slower/faster hasher can be
+// plugged in via the BuildHasher trait (ch 10).
+// additional info: https://en.wikipedia.org/wiki/SipHash
 use std::collections::HashMap;
 
 // Creating a HashMap: `new` + `insert` (insert takes OWNERSHIP of
