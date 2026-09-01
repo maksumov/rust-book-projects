@@ -147,3 +147,25 @@ pub fn hashmaps_insert_if_absent_demo() {
     scores.entry(String::from("Blue")).or_insert(50);
     println!("HashMap didn't change: {scores:?}");
 }
+
+// Updating strategy 3 of 3: update based on the OLD value.
+// `or_insert(0)` returns &mut V -- write through it with
+// `*count += 1` (the same dereference-write as in the mutable
+// vector iteration). The keys are &str borrowed from `text`
+// (split_whitespace yields slices): the map borrows, so `text`
+// must outlive it.
+pub fn hashmaps_update_based_on_old_value_demo() {
+    println!("\n*** Hash maps update based on the old value demo ***");
+
+    let text = "hello world wonderful world";
+
+    let mut map = HashMap::new();
+
+    for word in text.split_whitespace() {
+        let count = map.entry(word).or_insert(0);
+        *count += 1;
+    }
+
+    println!("Original text: {text:?}");
+    println!("Word count result: {map:#?}");
+}
