@@ -17,10 +17,12 @@
 
 mod error_kind_match;
 mod open_match;
+mod unwrap_or_else;
 
 fn main() {
     // panics first when hello.txt is missing -- blocks the demos below:
     open_match::demo();
 
     error_kind_match::demo();
+    unwrap_or_else::demo();
 }
