@@ -18,6 +18,7 @@
 mod error_kind_match;
 mod error_propagation;
 mod open_match;
+mod question_in_main;
 mod unwrap_expect;
 mod unwrap_or_else;
 
@@ -44,4 +45,9 @@ fn main() {
     // print the same Ok. Delete the file to see all four return
     // the same Err -- propagation at work.
     error_propagation::demo();
+
+    // `?` lives in any fn returning Result/Option; main itself may
+    // return Result<(), Box<dyn Error>> (the broken-main variant
+    // is documented inside the module).
+    question_in_main::demo();
 }
