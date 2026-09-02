@@ -2,9 +2,12 @@
 // item -- here, the whole crate (a plain `#[...]` is OUTER and
 // attaches to the next item only, e.g. a single `mod` line).
 //
-// Demos are orchestrated manually: commenting out a call leaves
-// its module unused -- expected here, not real dead code.
-#![allow(dead_code)]
+// Disabled on purpose: an active `#![allow(dead_code)]` silences
+// the warnings caused by orchestrating demos via commented-out
+// calls, but it also hides the IDE's "unused function" hint --
+// which is what catches forgotten demo() calls. Uncomment for a
+// warning-free experimentation session if ever needed.
+// #![allow(dead_code)]
 
 // The demos open "hello.txt" in the CURRENT directory and PANIC by
 // design on the Err paths, so only the FIRST call ever runs --
