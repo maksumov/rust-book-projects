@@ -23,6 +23,12 @@ fn main() {
     // panics first when hello.txt is missing -- blocks the demos below:
     open_match::demo();
 
+    // The next two demos implement the SAME open-or-create logic:
+    // a nested-match primitive vs a combinator chain. Idiomatic
+    // Rust prefers combinators -- small closure-taking methods
+    // (unwrap_or_else & friends) that compose flat pipelines
+    // instead of match pyramids; match stays for genuinely
+    // multi-way logic. Closures themselves arrive in chapter 13.
     error_kind_match::demo();
     unwrap_or_else::demo();
 }
