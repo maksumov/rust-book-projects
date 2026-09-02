@@ -7,6 +7,8 @@
 // closure-based unwrap_or_else alternative (chapter 13 preview).
 
 pub fn demo() {
+    println!("\n*** error_kind_match demo: different actions per error kind (listing 9-5) ***");
+
     use std::fs::File;
     use std::io::ErrorKind;
 
@@ -14,17 +16,23 @@ pub fn demo() {
     let greeting_file_result = File::open(filename);
 
     let greeting_file = match greeting_file_result {
-        Ok(file) => file,
+        Ok(file) => {
+            println!("Ok branch: file opened");
+            file
+        }
         Err(error) => match error.kind() {
-            ErrorKind::NotFound => match File::create(filename) {
-                Ok(fc) => fc,
-                Err(e) => panic!("Problem creating the file {filename:?}: {e:?}"),
-            },
+            ErrorKind::NotFound => {
+                println!("Err branch: NotFound -- creating the file");
+                match File::create(filename) {
+                    Ok(fc) => fc,
+                    Err(e) => panic!("Problem creating the file {filename:?}: {e:?}"),
+                }
+            }
             _ => {
                 panic!("Problem opening the file {filename:?}: {error:?}");
             }
         },
     };
 
-    dbg!(greeting_file);
+    println!("opened: {greeting_file:?}");
 }

@@ -6,15 +6,20 @@
 // file to observe both branches.
 
 pub fn demo() {
+    println!("\n*** open_match demo: File::open handled with match (listings 9-3, 9-4) ***");
+
     use std::fs::File;
 
     let filename = "hello.txt";
     let greeting_file_result = File::open(filename);
 
     let greeting_file = match greeting_file_result {
-        Ok(file) => file,
+        Ok(file) => {
+            println!("Ok branch: file opened");
+            file
+        }
         Err(error) => panic!("Problem opening the file {filename:?}: {error:?}"),
     };
 
-    dbg!(greeting_file);
+    println!("opened: {greeting_file:?}");
 }
