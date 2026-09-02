@@ -17,6 +17,7 @@
 
 mod error_kind_match;
 mod open_match;
+mod unwrap_expect;
 mod unwrap_or_else;
 
 fn main() {
@@ -31,4 +32,9 @@ fn main() {
     // multi-way logic. Closures themselves arrive in chapter 13.
     error_kind_match::demo();
     unwrap_or_else::demo();
+
+    // unwrap/expect: shorthands for the open_match pattern -- the
+    // Ok value comes out, Err panics; expect lets the panic carry
+    // your own message.
+    unwrap_expect::demo();
 }
