@@ -19,6 +19,7 @@ mod error_kind_match;
 mod error_propagation;
 mod open_match;
 mod question_in_main;
+mod question_on_option;
 mod unwrap_expect;
 mod unwrap_or_else;
 
@@ -50,4 +51,8 @@ fn main() {
     // return Result<(), Box<dyn Error>> (the broken-main variant
     // is documented inside the module).
     question_in_main::demo();
+
+    // `?` works on Option too (None -> early return, Some -> the
+    // value); the only demo in this project needing no hello.txt.
+    question_on_option::demo();
 }
