@@ -15,6 +15,13 @@
 // is not committed; note that error_kind_match CREATES it as a side
 // effect of the NotFound branch.
 
+// Chapter 9.3 guidelines: panic! (and unwrap/expect) is for
+// failures that mean a BUG -- a broken invariant, invalid state --
+// and is fine in examples, prototypes and tests. Result is for
+// EXPECTED failures -- missing files, bad input -- where the caller
+// may recover. The panic! side of this split lives in the panic
+// project; this project demonstrates the Result side.
+
 mod error_kind_match;
 mod error_propagation;
 mod open_match;
