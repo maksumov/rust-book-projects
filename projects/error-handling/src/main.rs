@@ -16,6 +16,7 @@
 // effect of the NotFound branch.
 
 mod error_kind_match;
+mod error_propagation;
 mod open_match;
 mod unwrap_expect;
 mod unwrap_or_else;
@@ -37,4 +38,10 @@ fn main() {
     // Ok value comes out, Err panics; expect lets the panic carry
     // your own message.
     unwrap_expect::demo();
+
+    // The successful path expects hello.txt to EXIST and contain
+    // some text (e.g. `echo user > hello.txt`): all four versions
+    // print the same Ok. Delete the file to see all four return
+    // the same Err -- propagation at work.
+    error_propagation::demo();
 }
