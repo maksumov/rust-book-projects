@@ -4,6 +4,9 @@
 // (the book's own advice); for now, read `|error| { ... }` as
 // an inline function receiving the error.
 
+// Real-world shortcut for this exact open-or-create pattern:
+// OpenOptions::new().write(true).create(true).open(path).
+
 pub fn demo() {
     println!("\n*** unwrap_or_else demo: the 9-5 logic without any match ***");
 
