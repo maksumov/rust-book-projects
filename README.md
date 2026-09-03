@@ -9,7 +9,7 @@ Code-along projects and exercises from
 |---|---|---|---|
 | 1 | Getting Started | `projects/hello_world`, `projects/hello_cargo` | |
 | 2 | Programming a Guessing Game | `projects/guessing_game` | |
-| 3 | Common Programming Concepts | `projects/functions`, `projects/branches`, `projects/loops` | |
+| 3 | Common Programming Concepts | `projects/functions`, `projects/branches`, `projects/loops` | + `exercises/03_common_concepts` |
 | 4 | Understanding Ownership | `projects/ownership` | incl. slices |
 | 5 | Using Structs to Structure Related Data | `projects/structs`, `projects/rectangles` | |
 | 6 | Enums and Pattern Matching | `projects/enums` | incl. `let...else` |
