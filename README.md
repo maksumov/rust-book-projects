@@ -16,7 +16,7 @@ Code-along projects and exercises from
 | 7 | Managing Growing Projects | `projects/backyard`, `projects/restaurant` | modules; first lib crate |
 | 8 | Common Collections | `projects/collections` | + `exercises/08_collections` |
 | 9 | Error Handling | `projects/panic`, `projects/error-handling` | 9.3 guidelines anchored in both |
-| 10 | Generic Types, Traits, and Lifetimes | — | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md`; `aggregator` planned |
+| 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator` | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md` |
 
 ## Other artifacts
 
