@@ -49,3 +49,10 @@ impl Summary for SocialPost {
         format!("{}: {}", self.summarize_author(), self.content)
     }
 }
+
+// "Using Traits as Parameters": &impl Trait accepts any type
+// implementing the trait -- sugar for a trait bound
+// (<T: Summary>), which the next fragments introduce.
+pub fn notify(item: &impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}

@@ -2,7 +2,7 @@
 // only exist in scope with the trait imported (glossary: "Trait
 // must be in scope").
 
-use aggregator::{NewsArticle, SocialPost, Summary};
+use aggregator::{self, NewsArticle, SocialPost, Summary};
 
 fn main() {
     let post = SocialPost {
@@ -20,8 +20,14 @@ fn main() {
         author: String::from("Iceburgh"),
         content: String::from("..."),
     };
+
     // The trait evolved (summarize_author finale) -- the article's
     // output changed WITHOUT touching main: now prints
     // "(Read more from by Iceburgh...)":
     println!("New article available! {}", article.summarize());
+
+    // `notify` takes &impl Summary -- ANY type implementing the
+    // trait; a String or an i32 argument would not compile:
+    aggregator::notify(&post);
+    aggregator::notify(&article);
 }
