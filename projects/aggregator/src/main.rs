@@ -20,6 +20,8 @@ fn main() {
         author: String::from("Iceburgh"),
         content: String::from("..."),
     };
-    // Prints "(Read more...)" -- the untouched default:
+    // The trait evolved (summarize_author finale) -- the article's
+    // output changed WITHOUT touching main: now prints
+    // "(Read more from by Iceburgh...)":
     println!("New article available! {}", article.summarize());
 }
