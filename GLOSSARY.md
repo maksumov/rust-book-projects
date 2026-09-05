@@ -9,6 +9,7 @@ the term first appeared in the study flow.
 ## Table of Contents
 
 - [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
+- [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
 - [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
@@ -16,9 +17,12 @@ the term first appeared in the study flow.
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
+- [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
 - [Orphan rule (ch 10.2)](#orphan-rule-ch-102)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
+- [Trait (ch 10.2)](#trait-ch-102)
+- [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 
 ---
@@ -35,6 +39,16 @@ Related: [Deref coercion](#deref-coercion-ch-42)
 In repo: `projects/collections/src/demos/hashmaps.rs` (comment inside the lookup loop)
 Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#accessing-values-in-a-hash-map
 
+## Blanket implementations (ch 10.2)
+
+Implementing a trait for EVERY type satisfying a bound:
+`impl<T: Display> ToString for T`. Powers the everyday `.to_string()`
+on any Display type. Listed in the trait docs "Implementors" section.
+
+Related: [Trait bound](#trait-bound-ch-101)
+In repo: —
+Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#using-trait-bounds-to-conditionally-implement-methods
+
 ## Coherence (ch 10.2)
 
 The global property: for any (trait, type) pair there is at most
@@ -43,7 +57,7 @@ implement `Display for Vec<i32>`, making method calls ambiguous --
 so Rust makes such programs impossible to compile. Enforced by the
 orphan rule.
 
-Related: [Orphan rule](#orphan-rule-ch-102), [Newtype pattern](#newtype-pattern-ch-102)
+Related: [Orphan rule](#orphan-rule-ch-102), [Newtype pattern](#newtype-pattern-ch-102), [Trait](#trait-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
 
@@ -89,7 +103,7 @@ times. The opposite strategy is type erasure (TypeScript, Java):
 one copy, dynamic dispatch. The practical trade-off returns in
 chapter 18 as `impl Trait` vs `dyn Trait`.
 
-Related: [Trait must be in scope](#trait-must-be-in-scope-ch-92)
+Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound](#trait-bound-ch-101), [Trait must be in scope](#trait-must-be-in-scope-ch-92)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-01-syntax.html#performance-of-code-using-generics
 
@@ -113,6 +127,17 @@ mutating between two uses does not.
 Related: —
 In repo: `projects/collections/src/demos/vectors.rs` (borrow conflict demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
+
+## Opaque type, impl Trait (ch 10.2)
+
+`-> impl Trait` hides the concrete return type; the caller sees only
+the trait's methods (no Debug/Display through it) and cannot name
+the type. A single concrete type only -- different types per branch
+need Box<dyn Trait> (ch 18).
+
+Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101)
+In repo: `projects/aggregator/src/main.rs` (the return summarizable comment)
+Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#returning-types-that-implement-traits
 
 ## Orphan rule (ch 10.2)
 
@@ -146,12 +171,34 @@ Related: —
 In repo: `projects/collections/src/demos/hashmaps.rs` (comment above the use line)
 Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#hashing-functions
 
+## Trait (ch 10.2)
+
+A nominal declaration of shared behavior: method signatures that an
+implementing type must provide via an explicit `impl Trait for Type`
+(unlike structural TS interfaces). Defaults allowed; impls governed
+by coherence and the orphan rule.
+
+Related: [Trait bound](#trait-bound-ch-101), [Coherence](#coherence-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102)
+In repo: `projects/aggregator/src/lib.rs`
+Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#defining-a-trait
+
+## Trait bound (ch 10.1)
+
+A constraint on a generic parameter -- `T: Summary`: the code works
+only with types having that behavior. `&impl Trait` is sugar for it;
+several bounds combine with `+`; `where` moves them out of the
+signature for readability.
+
+Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101), [Blanket implementations](#blanket-implementations-ch-102)
+In repo: `projects/aggregator/src/lib.rs` (the notify family)
+Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#trait-bound-syntax
+
 ## Trait must be in scope (ch 9.2)
 
 Calling a trait method requires the trait itself to be imported:
 `read_to_string` only exists on `File` with `use std::io::Read` in
 scope. Inherent methods (like `File::open`) need no import.
 
-Related: [Monomorphization](#monomorphization-ch-101)
+Related: [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/error-handling/src/error_propagation.rs` (module header note)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
