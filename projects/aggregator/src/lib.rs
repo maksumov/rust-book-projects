@@ -69,7 +69,11 @@ pub fn notify_bound<T: Summary>(item: &T) {
 
 // Two params of possibly DIFFERENT types: each &impl is its own type.
 pub fn notify_two_different(item1: &impl Summary, item2: &impl Summary) {
-    println!("Two different: {} | {}", item1.summarize(), item2.summarize());
+    println!(
+        "Two different: {} | {}",
+        item1.summarize(),
+        item2.summarize()
+    );
 }
 
 // A single bound forces BOTH params to be the SAME type -- the
@@ -103,3 +107,45 @@ impl Display for SocialPost {
         write!(f, "@{}", self.username)
     }
 }
+
+// "Returning Types That Implement Traits": the concrete type stays
+// hidden from the caller -- especially useful for iterator and
+// closure types (chapter 13). Only ONE concrete type may be
+// returned; see the commented switch variant below (trait objects,
+// chapter 18, lift that restriction).
+pub fn returns_summarizable() -> impl Summary {
+    SocialPost {
+        username: String::from("horse_ebooks"),
+        content: String::from("of course, as you probably already know, people"),
+        reply: false,
+        repost: false,
+    }
+}
+
+// The book's "single type only" lesson: returning DIFFERENT types
+// through impl Trait fails with E0308:
+//     "`if` and `else` have incompatible types"
+//     expected `NewsArticle`, found `SocialPost`
+// The compiler's help even suggests the fix: "you could change the
+// return type to be a boxed trait object" -- Box<dyn Trait>,
+// covered in chapter 18. Uncomment and build to see it.
+// pub fn returns_summarizable_switch(switch: bool) -> impl Summary {
+//     if switch {
+//         NewsArticle {
+//             headline: String::from("Penguins win the Stanley Cup Championship!"),
+//             location: String::from("Pittsburgh, PA, USA"),
+//             author: String::from("Iceburgh"),
+//             content: String::from(
+//                 "The Pittsburgh Penguins once again are the best \
+//                  hockey team in the NHL.",
+//             ),
+//         }
+//     } else {
+//         SocialPost {
+//             username: String::from("horse_ebooks"),
+//             content: String::from("of course, as you probably already know, people"),
+//             reply: false,
+//             repost: false,
+//         }
+//     }
+// }

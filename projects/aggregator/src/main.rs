@@ -54,4 +54,10 @@ fn main() {
     // Simple types fit the bounds: i32: Display + Clone,
     // String: Clone + Debug:
     aggregator::some_function(&42, &String::from("x"));
+
+    println!("\n--- return summarizable ---");
+    // The opaque `impl Summary` exposes ONLY the trait's methods:
+    // no Debug/Display, the concrete type is not even nameable.
+    // Print through the trait API:
+    println!("{}", aggregator::returns_summarizable().summarize());
 }
