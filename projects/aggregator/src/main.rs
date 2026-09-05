@@ -60,4 +60,16 @@ fn main() {
     // no Debug/Display, the concrete type is not even nameable.
     // Print through the trait API:
     println!("{}", aggregator::returns_summarizable().summarize());
+
+    println!("\n--- conditional impls: methods exist only for fitting T ---");
+    // new() is unconditional; i32 satisfies Display + PartialOrd,
+    // so cmp_display exists -- and prints by itself:
+    aggregator::Pair::new(12, 9).cmp_display();
+
+    // The conditional half: &NewsArticle satisfies NEITHER bound --
+    // Pair::new compiles (unconditional), but the next line fails
+    // with E0599: "the method `cmp_display` exists for struct
+    // `Pair<&NewsArticle>`, but its trait bounds were not
+    // satisfied". Uncomment and build to see it:
+    // aggregator::Pair::new(&article, &article).cmp_display();
 }

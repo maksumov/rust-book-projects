@@ -149,3 +149,33 @@ pub fn returns_summarizable() -> impl Summary {
 //         }
 //     }
 // }
+
+// Listing 10-15: `new` is unconditional (impl<T>), while
+// cmp_display exists only for T: Display + PartialOrd -- methods
+// appear per TYPE, not per value. Private fields: outside this
+// crate, Pair is built through Pair::new only.
+//
+// The subsection's other half -- blanket implementations -- is
+// the same idea one level up: impl<T: Display> ToString for T;
+// that is why .to_string() exists for every Display type
+// (see the glossary: "Blanket implementations").
+pub struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Pair<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    pub fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
