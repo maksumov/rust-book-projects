@@ -3,7 +3,12 @@
 // Everything `pub` here is the public API the bin gets to see.
 
 pub trait Summary {
-    fn summarize(&self) -> String;
+    // Listing 10-14: a DEFAULT implementation -- types may keep it
+    // (empty impl block) or override it (the overriding syntax is
+    // exactly the implementing syntax).
+    fn summarize(&self) -> String {
+        String::from("(Read more...)")
+    }
 }
 
 pub struct NewsArticle {
@@ -13,11 +18,8 @@ pub struct NewsArticle {
     pub content: String,
 }
 
-impl Summary for NewsArticle {
-    fn summarize(&self) -> String {
-        format!("{}, by {} ({})", self.headline, self.author, self.location)
-    }
-}
+// Keeps the trait default as-is:
+impl Summary for NewsArticle {}
 
 pub struct SocialPost {
     pub username: String,
@@ -27,6 +29,7 @@ pub struct SocialPost {
 }
 
 impl Summary for SocialPost {
+    // Overrides default implementation (unchanged from 10-13):
     fn summarize(&self) -> String {
         format!("{}: {}", self.username, self.content)
     }
