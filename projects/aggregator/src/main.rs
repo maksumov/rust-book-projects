@@ -26,8 +26,32 @@ fn main() {
     // "(Read more from by Iceburgh...)":
     println!("New article available! {}", article.summarize());
 
-    // `notify` takes &impl Summary -- ANY type implementing the
-    // trait; a String or an i32 argument would not compile:
+    println!("\n--- &impl Summary (sugar): any implementing type ---");
     aggregator::notify(&post);
     aggregator::notify(&article);
+
+    println!("\n--- <T: Summary> (the bound form) ---");
+    aggregator::notify_bound(&post);
+
+    println!("\n--- two params: different types allowed ---");
+    aggregator::notify_two_different(&post, &article);
+
+    println!("\n--- two params: same type forced ---");
+    aggregator::notify_two_same(&post, &post);
+
+    // The next line fails with E0308 "mismatched types":
+    // expected `&SocialPost`, found `&NewsArticle`
+    // aggregator::notify_two_same(&post, &article);
+
+    println!("\n--- multiple bounds: Summary + Display ---");
+    aggregator::notify_display(&post);
+
+    // The next line fails with E0277: "`NewsArticle` doesn't
+    // implement `std::fmt::Display`"
+    // aggregator::notify_display(&article);
+
+    println!("\n--- where clause ---");
+    // Simple types fit the bounds: i32: Display + Clone,
+    // String: Clone + Debug:
+    aggregator::some_function(&42, &String::from("x"));
 }
