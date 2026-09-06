@@ -46,7 +46,7 @@ Implementing a trait for EVERY type satisfying a bound:
 on any Display type. Listed in the trait docs "Implementors" section.
 
 Related: [Trait bound](#trait-bound-ch-101)
-In repo: —
+In repo: `projects/aggregator/src/lib.rs` (the Pair block comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#using-trait-bounds-to-conditionally-implement-methods
 
 ## Coherence (ch 10.2)
