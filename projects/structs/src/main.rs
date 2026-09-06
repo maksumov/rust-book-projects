@@ -1,5 +1,6 @@
 // Structs holding references require lifetime annotations
-// to ensure the data they point to stays valid (see chapter 10).
+// to ensure the data they point to stays valid (see projects/lifetimes
+// and the glossary: "Lifetime").
 // This does not compile: `missing lifetime specifier` error.
 struct User {
     active: bool,
