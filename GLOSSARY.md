@@ -10,10 +10,13 @@ the term first appeared in the study flow.
 
 - [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
+- [Borrow checker (ch 10.3)](#borrow-checker-ch-103)
 - [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
+- [Lifetime (ch 10.3)](#lifetime-ch-103)
+- [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
@@ -21,6 +24,7 @@ the term first appeared in the study flow.
 - [Orphan rule (ch 10.2)](#orphan-rule-ch-102)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
+- [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
@@ -48,6 +52,16 @@ on any Display type. Listed in the trait docs "Implementors" section.
 Related: [Trait bound](#trait-bound-ch-101)
 In repo: `projects/aggregator/src/lib.rs` (the Pair block comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#using-trait-bounds-to-conditionally-implement-methods
+
+## Borrow checker (ch 10.3)
+
+The compiler pass comparing the scopes of borrows: a reference may
+not outlive the data it points to. Rejects violations with E0597
+"does not live long enough"; made ergonomic by NLL.
+
+Related: [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42)
+In repo: `projects/lifetimes/src/dangling.rs`
+Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-borrow-checker
 
 ## Coherence (ch 10.2)
 
@@ -94,6 +108,29 @@ Related: —
 In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
 Book: https://doc.rust-lang.org/reference/attributes.html
 
+## Lifetime (ch 10.3)
+
+`'a`: generic lifetime parameters tying references together in a
+signature. They describe RELATIONSHIPS ("valid as long as...") and
+never change how long anything lives. Every reference has a
+lifetime; usually it is inferred.
+
+Related: [Borrow checker](#borrow-checker-ch-103), [Lifetime elision rules](#lifetime-elision-rules-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Static lifetime](#static-lifetime-ch-103)
+In repo: `projects/lifetimes/src/longest.rs`
+Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#lifetime-annotation-syntax
+
+## Lifetime elision rules (ch 10.3)
+
+Three deterministic patterns the compiler applies so annotations
+can be omitted: (1) each reference parameter gets its own lifetime;
+(2) with exactly one input lifetime, it is assigned to all outputs;
+(3) in a method with &self, self's lifetime is assigned to all
+outputs. Ambiguity after the rules -> E0106.
+
+Related: [Lifetime](#lifetime-ch-103)
+In repo: `projects/lifetimes/src/excerpt.rs` (rule 3 in announce_and_return_part)
+Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#lifetime-elision
+
 ## Monomorphization (ch 10.1)
 
 How Rust compiles generics: the compiler generates a concrete copy
@@ -124,7 +161,7 @@ A borrow ends at its LAST USE, not at the end of the scope: using a
 reference and mutating the owner afterwards compiles fine, while
 mutating between two uses does not.
 
-Related: —
+Related: [Borrow checker](#borrow-checker-ch-103), [Lifetime](#lifetime-ch-103)
 In repo: `projects/collections/src/demos/vectors.rs` (borrow conflict demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
 
@@ -170,6 +207,17 @@ via a type implementing the `BuildHasher` trait.
 Related: —
 In repo: `projects/collections/src/demos/hashmaps.rs` (comment above the use line)
 Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#hashing-functions
+
+## Static lifetime (ch 10.3)
+
+`'static`: the reference is valid for the entire program; every
+string literal is 'static (stored in the binary). An error message
+suggesting 'static is usually a dangling-reference smell -- fix
+the lifetimes instead of reaching for it.
+
+Related: [Lifetime](#lifetime-ch-103)
+In repo: `projects/lifetimes/src/excerpt.rs`
+Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
 
 ## Trait (ch 10.2)
 
