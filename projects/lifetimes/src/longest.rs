@@ -59,3 +59,58 @@ pub fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
         y
     }
 }
+
+pub fn relationships_demo() {
+    println!("\n--- relationships: only connected references need 'a ---");
+
+    // When the function ALWAYS returns the first parameter, y has
+    // no relationship with the output -- no annotation needed on y:
+    let string1 = String::from("abcd");
+    let string2 = "efghijklmnopqrstuvwxyz";
+    let result = always_first(string1.as_str(), string2);
+    println!("Always first: {result}");
+
+    // The opposite extreme: returning a reference to a LOCAL value.
+    // No lifetime annotation can fix this -- uncomment and build:
+    //     error[E0515]: cannot return value referencing local
+    //       variable `result`
+    //       returns a value referencing data owned by the current
+    //       function
+    // fn broken<'a>(x: &str, y: &str) -> &'a str {
+    //     let result = String::from("really long string");
+    //     result.as_str()
+    // }
+
+    // The chapter's finale: lifetime + generic type + trait bound +
+    // where clause -- all in one signature. Lifetimes and types
+    // live in the SAME angle-bracket list:
+    let result = longest_with_an_announcement(
+        string1.as_str(),
+        string2,
+        "Today is someone's birthday!",
+    );
+    println!("The longest string is {result}");
+}
+
+// y is unrelated to the output: its lifetime needs no annotation.
+pub fn always_first<'a>(x: &'a str, y: &str) -> &'a str {
+    let _ = y; // silence: y is deliberately unused
+    x
+}
+
+// The all-in-one finale of chapter 10.
+pub fn longest_with_an_announcement<'a, T>(
+    x: &'a str,
+    y: &'a str,
+    ann: T,
+) -> &'a str
+where
+    T: std::fmt::Display,
+{
+    println!("Announcement! {ann}");
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}

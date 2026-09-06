@@ -6,4 +6,5 @@ mod longest;
 fn main() {
     dangling::demo();
     longest::demo();
+    longest::relationships_demo();
 }
