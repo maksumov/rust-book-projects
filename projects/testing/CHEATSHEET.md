@@ -78,6 +78,58 @@ test adder::tests::prints_and_passes ... ok
 test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out
 ```
 
+## Integration tests (tests/ directory)
+
+Each file in tests/ is its own crate with its own output section;
+no #[cfg(test)] needed, and only the public API is reachable
+(the use statement brings the library in -- like any outside
+consumer). Test names here have NO module prefix:
+
+```
+     Running tests/integration_test.rs
+running 1 test
+test it_adds_two ... ok
+test result: ok. 1 passed; ...
+```
+
+```sh
+cargo test --test integration_test   # one file's tests only
+```
+
+Helpers shared between integration files go to tests/common/mod.rs
+(the mod.rs style, ch 7): a plain tests/common.rs would get its own
+"running 0 tests" section in the output.
+
+Binary-only crates (src/main.rs without src/lib.rs) CANNOT have
+integration tests: a use statement cannot import from main.rs --
+only library crates expose items to other crates. The remedy is
+the lib+bin pattern (ch 7.3): logic in lib.rs, a thin main.rs
+calling it -- see projects/aggregator in this repo.
+
+### Test sections: order and the skip rule
+
+cargo test runs in order: (1) unit tests (each src crate), (2)
+integration tests (each tests/*.rs -- its own crate and section),
+(3) Doc-tests. If ANY test in a section fails, the following
+sections are NOT run at all: a failing unit test makes the
+integration section disappear from the output entirely.
+
+- Granularity is the SECTION, not the test: within a section every
+  test runs regardless of siblings failing (see the another /
+  exploration panels in src/adder.rs -- both ran, one FAILED)
+- Rationale: fail fast -- if the units are broken, testing the
+  integration on top of them is predetermined
+- Consequence: a failing unit test MASKS integration problems;
+  fixing units and rerunning may reveal the next layer red -- the
+  normal "fix by layers" rhythm
+- Experiment: uncomment `another` in src/adder.rs and run
+  cargo test -- the "Running tests/integration_test.rs" section
+  vanishes, though its own test is green
+
+Doc-tests: the third section runs code examples from /// doc
+comments -- covered in chapter 14 (that's why it shows
+"running 0 tests" for now).
+
 ## Ignoring tests (#[ignore])
 
 `#[ignore]` after `#[test]` excludes the test from the default run.
