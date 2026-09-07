@@ -80,4 +80,21 @@ mod tests {
         let result = add_two(2);
         assert_eq!(result, 4);
     }
+
+    // The Result form: Ok(()) passes, Err fails -- and the ?
+    // operator becomes usable in the body (any failing operation
+    // aborts the test). The harness accepts it via the same
+    // Termination trait as main() -> Result (error-handling
+    // project, question_in_main). #[should_panic] does NOT combine
+    // with Result; assert an Err via assert!(value.is_err()).
+    #[test]
+    fn it_works() -> Result<(), String> {
+        let result = add(2, 2);
+
+        if result == 4 {
+            Ok(())
+        } else {
+            Err(String::from("two plus two does not equal four"))
+        }
+    }
 }
