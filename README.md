@@ -17,6 +17,7 @@ Code-along projects and exercises from
 | 8 | Common Collections | `projects/collections` | + `exercises/08_collections` |
 | 9 | Error Handling | `projects/panic`, `projects/error-handling` | 9.3 guidelines anchored in both |
 | 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator`, `projects/lifetimes` | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md` |
+| 11 | Writing Automated Tests | `projects/testing` | |
 
 ## Other artifacts
 
