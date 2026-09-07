@@ -14,34 +14,35 @@ use std::fs;
 // Everything else moves to lib.rs.
 
 fn main() {
-    // Listing 12-1: std::env::args -- an iterator over the CLI
-    // arguments; collect() materializes it. Note: args[0] is the
-    // binary path itself, the user's arguments start at index 1.
+    // User arguments start at index 1 (args[0] is the binary path).
     let args: Vec<String> = env::args().collect();
 
-    // Listing 12-5: parsing extracted from main -- it no longer
-    // decides which argument goes where. The {:?} adaptation stays
-    // (Debug quotes make stray whitespace visible).
-    let (query, file_path) = parse_config(&args);
+    let config = parse_config(&args);
 
-    println!("Searching for {query:?}");
-    println!("In file {file_path:?}");
+    println!("Searching for {:?}", config.query);
+    println!("In file {:?}", config.file_path);
 
-    // Listing 12-4: fs::read_to_string -- the std one-shot shortcut
-    // (opens, reads to String, returns io::Result<String>; expect
-    // panics on Err).
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    // The std one-shot file read: io::Result<String>;
+    // expect panics on Err (replaced later in this chapter).
+    let contents =
+        fs::read_to_string(config.file_path).expect("Should have been able to read the file");
 
     println!("\nWith text:\n{contents}");
 }
 
-// Listing 12-5: the args -> (query, file_path) mapping lives here
-// now. Still borrowing by index; ownership questions surface with
-// the Config struct (next listings). Panics on missing arguments
-// -- fixed later in this section.
-fn parse_config(args: &[String]) -> (&str, &str) {
-    let query = &args[1];
-    let file_path = &args[2];
+// Program configuration: the parsed CLI arguments as owned data.
+struct Config {
+    query: String,
+    file_path: String,
+}
 
-    (query, file_path)
+// Maps CLI arguments to a Config. Cloning is deliberate:
+// simplicity over performance (iterator-based parsing without
+// clones arrives in chapter 13). Panics on missing arguments
+// (fixed later in this chapter).
+fn parse_config(args: &[String]) -> Config {
+    let query = args[1].clone();
+    let file_path = args[2].clone();
+
+    Config { query, file_path }
 }
