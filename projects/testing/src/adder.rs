@@ -13,7 +13,7 @@ pub fn add(left: u64, right: u64) -> u64 {
 // on the compared type (both derivable; u64 has them). The mirror
 // macro assert_ne! asserts "definitely not this value".
 pub fn add_two(a: u64) -> u64 {
-    a + 2
+    internal_adder(a, 2)
 }
 
 // The BUG variant from the book (+ 3 instead of + 2): it_adds_two
@@ -32,6 +32,16 @@ pub fn add_two(a: u64) -> u64 {
 // pub fn add_two(a: u64) -> u64 {
 //     a + 3
 // }
+
+// Listing 11-12: a PRIVATE implementation detail of add_two --
+// testable because the tests module is a CHILD of this module
+// (ch 7 privacy: descendants see their ancestors' private items;
+// use super::* imports them all). The same mechanism lets
+// rectangle's tests build Rectangle with private fields via a
+// struct literal.
+fn internal_adder(left: u64, right: u64) -> u64 {
+    left + right
+}
 
 #[cfg(test)]
 mod tests {
@@ -116,5 +126,14 @@ mod tests {
         } else {
             Err(String::from("two plus two does not equal four"))
         }
+    }
+
+    // Calls the private function directly. The book notes the
+    // community debate on testing private functions; Rust simply
+    // allows it -- no #[allow] gymnastics needed.
+    #[test]
+    fn internal() {
+        let result = internal_adder(2, 2);
+        assert_eq!(result, 4);
     }
 }
