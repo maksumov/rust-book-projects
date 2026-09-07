@@ -23,8 +23,9 @@ mod tests {
     // Note the module-qualified name: after the refactoring into
     // modules the runner reports adder::tests::another, not
     // tests::another as in the flat lib.rs (listing 11-4).
-    // Uncomment and `cargo test` to see the panel below (the
-    // thread id in parentheses varies per run):
+    // Uncomment and `cargo test` -- the panel below is an example
+    // of the failure output (counts, line numbers and the thread
+    // id reflect one particular run):
     //
     //     test adder::tests::another ... FAILED
     //
@@ -38,7 +39,7 @@ mod tests {
     //     failures:
     //         adder::tests::another
     //
-    //     test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    //     test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     //
     //     error: test failed, to rerun pass `--lib`
     //
