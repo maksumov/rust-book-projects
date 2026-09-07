@@ -7,45 +7,43 @@ came from. Entries are alphabetical; the chapter tag shows where
 the term first appeared in the study flow.
 
 ## Table of Contents
-
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
-
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
 - [Borrow checker (ch 10.3)](#borrow-checker-ch-103)
+- [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
 - [Borrowing (ch 4.2)](#borrowing-ch-42)
 - [Buffer overread (ch 9.1)](#buffer-overread-ch-91)
-
+- [Coherence (ch 10.2)](#coherence-ch-102)
+- [Combinators (ch 9.2)](#combinators-ch-92)
 - [Constants (ch 3.1)](#constants-ch-31)
 - [Crate (ch 7.1)](#crate-ch-71)
 - [Crate root (ch 7.1)](#crate-root-ch-71)
 - [Data race (ch 4.2)](#data-race-ch-42)
-
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
-
+- [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
-
+- [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
+- [Orphan rule (ch 10.2)](#orphan-rule-ch-102)
 - [Ownership (ch 4.1)](#ownership-ch-41)
-
 - [Package (ch 7.1)](#package-ch-71)
-
+- [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
+- [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
-
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
-
 ---
 
 ## Associated functions (ch 5.3)
