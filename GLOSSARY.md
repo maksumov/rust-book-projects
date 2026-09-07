@@ -8,28 +8,67 @@ the term first appeared in the study flow.
 
 ## Table of Contents
 
-- [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
+- [Associated functions (ch 5.3)](#associated-functions-ch-53)
+- [Backtrace (ch 9.1)](#backtrace-ch-91)
+
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
 - [Borrow checker (ch 10.3)](#borrow-checker-ch-103)
-- [Coherence (ch 10.2)](#coherence-ch-102)
-- [Combinators (ch 9.2)](#combinators-ch-92)
+- [Borrowing (ch 4.2)](#borrowing-ch-42)
+- [Buffer overread (ch 9.1)](#buffer-overread-ch-91)
+
+- [Constants (ch 3.1)](#constants-ch-31)
+- [Crate (ch 7.1)](#crate-ch-71)
+- [Crate root (ch 7.1)](#crate-root-ch-71)
+- [Data race (ch 4.2)](#data-race-ch-42)
+
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
-- [Lifetime (ch 10.3)](#lifetime-ch-103)
+- [Integration tests (ch 11.3)](#integration-tests-ch-113)
+
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
-- [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
+- [Move (ch 4.1)](#move-ch-41)
+
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
-- [Orphan rule (ch 10.2)](#orphan-rule-ch-102)
-- [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
-- [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
+- [Ownership (ch 4.1)](#ownership-ch-41)
+
+- [Package (ch 7.1)](#package-ch-71)
+
+- [RAII (ch 4.1)](#raii-ch-41)
+- [Shadowing (ch 3.1)](#shadowing-ch-31)
+- [Slice (ch 4.3)](#slice-ch-43)
+
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
+- [Unit tests (ch 11.3)](#unit-tests-ch-113)
+- [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
 
 ---
+
+## Associated functions (ch 5.3)
+
+Functions defined in an `impl` block, associated with the type --
+with or without `self`. Without `self` they need no instance
+(`String::from`, `Rectangle::square`) and often serve as
+constructors.
+
+Related: —
+In repo: `projects/rectangles/src/main.rs` (the square constructor)
+Book: https://doc.rust-lang.org/stable/book/ch05-03-method-syntax.html#associated-functions
+
+## Backtrace (ch 9.1)
+
+The list of all functions called to reach a point; shown on panic
+with RUST_BACKTRACE=1. Read from the top until the first file YOU
+wrote -- that is where the problem originated. Requires debug
+symbols (default in debug builds).
+
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
+In repo: `projects/panic/src/backtrace.rs`
+Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
 
 ## Borrow-based lookup (ch 8.3)
 
@@ -59,9 +98,30 @@ The compiler pass comparing the scopes of borrows: a reference may
 not outlive the data it points to. Rejects violations with E0597
 "does not live long enough"; made ergonomic by NLL.
 
-Related: [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42)
+Related: [Borrowing](#borrowing-ch-42), [Data race](#data-race-ch-42), [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42)
 In repo: `projects/lifetimes/src/dangling.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-borrow-checker
+
+## Borrowing (ch 4.2)
+
+Creating a reference to a value: `&T` borrows without taking
+ownership -- the owner keeps it, and the borrower may not outlive
+it. Mutable borrowing (`&mut T`) follows the one-mutable-or-many-
+immutable rule.
+
+Related: [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Ownership](#ownership-ch-41)
+In repo: `projects/ownership` (chapter 4.2 comments)
+Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html
+
+## Buffer overread (ch 9.1)
+
+Reading past the end of a data structure -- undefined behavior in
+C and a security vulnerability class. Rust's indexing panics
+instead of returning arbitrary adjacent memory.
+
+Related: —
+In repo: `projects/panic/src/backtrace.rs` (v[99] panics)
+Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html
 
 ## Coherence (ch 10.2)
 
@@ -74,6 +134,48 @@ orphan rule.
 Related: [Orphan rule](#orphan-rule-ch-102), [Newtype pattern](#newtype-pattern-ch-102), [Trait](#trait-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## Constants (ch 3.1)
+
+`const NAME: Type = expr;` -- always immutable, the type annotation
+is required, the value must be computable at compile time; valid
+for the whole program within its scope. SCREAMING_SNAKE naming.
+
+Related: —
+In repo: —
+Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#declaring-constants
+
+## Crate (ch 7.1)
+
+The smallest unit of compilation. Two forms: binary crates
+(runnable, have `main`) and library crates (shared functionality;
+what "crate" colloquially means). A package may hold many binaries
+but at most one library.
+
+Related: [Crate root](#crate-root-ch-71), [Package](#package-ch-71)
+In repo: `projects/aggregator` (both forms in one package)
+Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
+
+## Crate root (ch 7.1)
+
+The source file the compiler starts from, making up the root
+module of the crate: src/main.rs (binary) or src/lib.rs (library).
+Its contents form the implicit module `crate`.
+
+Related: [Crate](#crate-ch-71), [Package](#package-ch-71)
+In repo: `projects/restaurant/src/lib.rs`
+Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
+
+## Data race (ch 4.2)
+
+Two or more pointers to the same data, at least one writing, no
+synchronization -- undefined behavior in most languages. Rust's
+borrow rules (one mutable XOR many immutable) prevent data races
+at compile time.
+
+Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42)
+In repo: —
+Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
 
 ## Combinators (ch 9.2)
 
@@ -93,7 +195,7 @@ The compiler converts `&String` to `&str` (and similar reference
 conversions) at call sites automatically -- why `s1 + &s2` works
 when `add` actually takes `&str`. Covered in depth in chapter 15.
 
-Related: [Borrow-based lookup](#borrow-based-lookup-ch-83)
+Related: [Borrow-based lookup](#borrow-based-lookup-ch-83), [Slice](#slice-ch-43)
 In repo: `projects/collections/src/demos/strings.rs` (concatenation comment)
 Book: https://doc.rust-lang.org/stable/book/ch08-02-strings.html#concatenating-with--or-format
 
@@ -108,6 +210,18 @@ Related: —
 In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
 Book: https://doc.rust-lang.org/reference/attributes.html
 
+## Integration tests (ch 11.3)
+
+External to the library: files in tests/, each compiled as its
+own crate using only the public API -- exactly like an outside
+consumer. No #[cfg(test)] needed. Impossible for binary-only
+crates (main.rs exposes nothing to `use`); the lib+bin pattern
+is the remedy.
+
+Related: [Crate](#crate-ch-71), [Unit tests](#unit-tests-ch-113)
+In repo: `projects/testing/tests/integration_test.rs`
+Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#integration-tests
+
 ## Lifetime (ch 10.3)
 
 `'a`: generic lifetime parameters tying references together in a
@@ -115,7 +229,7 @@ signature. They describe RELATIONSHIPS ("valid as long as...") and
 never change how long anything lives. Every reference has a
 lifetime; usually it is inferred.
 
-Related: [Borrow checker](#borrow-checker-ch-103), [Lifetime elision rules](#lifetime-elision-rules-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Static lifetime](#static-lifetime-ch-103)
+Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42), [Lifetime elision rules](#lifetime-elision-rules-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Static lifetime](#static-lifetime-ch-103)
 In repo: `projects/lifetimes/src/longest.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#lifetime-annotation-syntax
 
@@ -144,6 +258,18 @@ Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-01-syntax.html#performance-of-code-using-generics
 
+## Move (ch 4.1)
+
+Assignment that invalidates the source: the stack part (pointer,
+length, capacity) is copied, the heap data is not, and the source
+variable dies. Not a shallow copy -- precisely because of the
+invalidation; this prevents double free. Rust never deep-copies
+implicitly (explicit deep copy: clone).
+
+Related: [Borrowing](#borrowing-ch-42), [Ownership](#ownership-ch-41)
+In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
+Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
+
 ## Newtype pattern (ch 10.2)
 
 Wrap a foreign type in a local tuple struct (`struct Meters(f64)`)
@@ -161,7 +287,7 @@ A borrow ends at its LAST USE, not at the end of the scope: using a
 reference and mutating the owner afterwards compiles fine, while
 mutating between two uses does not.
 
-Related: [Borrow checker](#borrow-checker-ch-103), [Lifetime](#lifetime-ch-103)
+Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42), [Lifetime](#lifetime-ch-103)
 In repo: `projects/collections/src/demos/vectors.rs` (borrow conflict demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
 
@@ -176,6 +302,17 @@ Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101)
 In repo: `projects/aggregator/src/main.rs` (the return summarizable comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#returning-types-that-implement-traits
 
+## Ownership (ch 4.1)
+
+The set of rules governing memory: each value has exactly ONE
+owner; when the owner goes out of scope, `drop` frees the memory
+(RAII). Checked entirely at compile time -- the third way between
+garbage collection and manual malloc/free.
+
+Related: [Borrowing](#borrowing-ch-42), [Move](#move-ch-41), [RAII](#raii-ch-41)
+In repo: `projects/ownership`
+Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
+
 ## Orphan rule (ch 10.2)
 
 The enforcement mechanism of coherence: writing `impl Trait for
@@ -187,6 +324,17 @@ Related: [Coherence](#coherence-ch-102), [Newtype pattern](#newtype-pattern-ch-1
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
 
+## Package (ch 7.1)
+
+A bundle of one or more crates with a Cargo.toml describing how to
+build them. At most one library crate; any number of binaries
+(src/main.rs plus each file in src/bin/). Cargo itself is a
+package.
+
+Related: [Crate](#crate-ch-71), [Crate root](#crate-root-ch-71)
+In repo: every project's Cargo.toml in this repo
+Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
+
 ## panic vs Result guidelines (ch 9.3)
 
 panic! (and unwrap/expect) is for failures that mean a bug -- a
@@ -194,9 +342,41 @@ broken invariant -- and is fine in examples, prototypes and tests.
 Result is for expected failures (missing files, bad input) where
 the caller may recover; propagate with `?`.
 
-Related: [Combinators](#combinators-ch-92)
+Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
 In repo: anchors in `projects/error-handling/src/main.rs` and `projects/panic/src/main.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-03-to-panic-or-not-to-panic.html
+
+## RAII (ch 4.1)
+
+Resource Acquisition Is Initialization (a C++ term): resources are
+released at the end of an item's lifetime. Rust's drop-at-scope-end
+is this pattern -- the book notes the kinship explicitly.
+
+Related: [Ownership](#ownership-ch-41)
+In repo: —
+Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
+
+## Shadowing (ch 3.1)
+
+`let` with an already-used name creates a NEW variable that
+overshadows the old one until it is itself shadowed or the scope
+ends. Unlike `mut`: the type may change across shadowings, and the
+variable stays immutable between them.
+
+Related: —
+In repo: `projects/error-handling/src/error_propagation.rs` (string1 re-bound per version)
+Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#shadowing
+
+## Slice (ch 4.3)
+
+A reference to a contiguous sequence: `&str` for strings, `&[T]`
+for collections. A fat reference (pointer + length) with no
+ownership; taking &str (not &String) lets a function accept both
+String slices and literals -- via deref coercions.
+
+Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42)
+In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
+Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
 
 ## SipHash and BuildHasher (ch 8.3)
 
@@ -250,3 +430,24 @@ scope. Inherent methods (like `File::open`) need no import.
 Related: [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/error-handling/src/error_propagation.rs` (module header note)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## Unit tests (ch 11.3)
+
+Small, focused tests in src/ beside the code they test (the
+#[cfg(test)] mod tests convention): one module in isolation, and
+CAN test private interfaces -- the tests module is a child, and
+children see their ancestors' private items.
+
+Related: [Integration tests](#integration-tests-ch-113)
+In repo: `projects/testing/src/*` (the tests module in each)
+Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#unit-tests
+
+## Unwinding vs abort (ch 9.1)
+
+Default panic behavior: unwind -- walk back up the stack, running
+destructors. panic = 'abort' in a [profile] skips cleanup: smaller
+binaries, but cleanup and thread isolation (catch_unwind) are gone.
+
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
+In repo: `projects/panic/Cargo.toml` (the release-profile comment)
+Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
