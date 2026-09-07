@@ -81,6 +81,26 @@ mod tests {
         assert_eq!(result, 4);
     }
 
+    // A println!-in-test demo for the output-capture behavior (ch
+    // 11.2): by default a PASSING test's stdout is captured (not
+    // shown); `cargo test -- --show-output` reveals it.
+    #[test]
+    fn prints_and_passes() {
+        println!("I got the value 4");
+        assert_eq!(add_two(2), 4);
+    }
+
+    // #[ignore] (ch 11.2): excluded from the default run (listed
+    // as `ignored`); run via `cargo test -- --ignored`, or include
+    // with `-- --include-ignored`. The book's motivation is
+    // expensive tests; in practice also flaky/broken quarantine
+    // and tests needing external resources.
+    #[test]
+    #[ignore]
+    fn expensive_test() {
+        // code that takes an hour to run
+    }
+
     // The Result form: Ok(()) passes, Err fails -- and the ?
     // operator becomes usable in the body (any failing operation
     // aborts the test). The harness accepts it via the same
