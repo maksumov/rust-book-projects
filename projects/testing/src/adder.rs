@@ -6,6 +6,33 @@ pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
 
+// Listing 11-7: assert_eq! compares with == and, on failure,
+// prints BOTH values -- unlike assert!, which only says the
+// condition was false. Rust names the arguments left/right (order
+// doesn't matter), not expected/actual. Requires PartialEq + Debug
+// on the compared type (both derivable; u64 has them). The mirror
+// macro assert_ne! asserts "definitely not this value".
+pub fn add_two(a: u64) -> u64 {
+    a + 2
+}
+
+// The BUG variant from the book (+ 3 instead of + 2): it_adds_two
+// fails, and assert_eq! shows exactly WHY -- both values in the
+// panel. Uncomment and `cargo test` -- the panel below is an
+// example of the failure output (counts, line numbers and the
+// thread id reflect one particular run):
+//
+//     ---- adder::tests::it_adds_two stdout ----
+//     thread 'adder::tests::it_adds_two' (163435) panicked at src/adder.rs:76:9:
+//     assertion `left == right` failed
+//       left: 5
+//      right: 4
+//     note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+//
+// pub fn add_two(a: u64) -> u64 {
+//     a + 3
+// }
+
 #[cfg(test)]
 mod tests {
     // use super::* brings the outer module's items into the tests
@@ -47,4 +74,10 @@ mod tests {
     // fn another() {
     //     panic!("Make this test fail");
     // }
+
+    #[test]
+    fn it_adds_two() {
+        let result = add_two(2);
+        assert_eq!(result, 4);
+    }
 }
