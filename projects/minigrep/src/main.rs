@@ -1,3 +1,9 @@
+// The CLI contract: two arguments expected --
+//     cargo run -- <search-string> <file-path>
+// e.g. cargo run -- thebody poem.txt
+// The argument parsing, validation and error messages arrive
+// with the next listings (Config::build in ch 12.2).
+
 // Listing 12-1: std::env::args -- an iterator over the CLI
 // arguments; collect() materializes it. Note: args[0] is the
 // binary path itself, the user's arguments start at index 1.
