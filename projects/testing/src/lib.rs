@@ -3,4 +3,5 @@
 // `cargo test`, not `cargo run` -- a lib has no binary.
 
 pub mod adder;
+pub mod greeter;
 pub mod rectangle;
