@@ -4,4 +4,5 @@
 
 pub mod adder;
 pub mod greeter;
+pub mod guess;
 pub mod rectangle;
