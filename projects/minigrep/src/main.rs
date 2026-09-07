@@ -17,7 +17,7 @@ fn main() {
     // User arguments start at index 1 (args[0] is the binary path).
     let args: Vec<String> = env::args().collect();
 
-    let config = parse_config(&args);
+    let config = Config::new(&args);
 
     println!("Searching for {:?}", config.query);
     println!("In file {:?}", config.file_path);
@@ -36,13 +36,16 @@ struct Config {
     file_path: String,
 }
 
-// Maps CLI arguments to a Config. Cloning is deliberate:
-// simplicity over performance (iterator-based parsing without
-// clones arrives in chapter 13). Panics on missing arguments
-// (fixed later in this chapter).
-fn parse_config(args: &[String]) -> Config {
-    let query = args[1].clone();
-    let file_path = args[2].clone();
+impl Config {
+    // Maps CLI arguments to a Config. An associated fn -- the
+    // String::new idiom for constructors. Cloning is deliberate:
+    // simplicity over performance (iterator-based parsing arrives
+    // in chapter 13). Panics on missing arguments (fixed later
+    // in this chapter).
+    fn new(args: &[String]) -> Config {
+        let query = args[1].clone();
+        let file_path = args[2].clone();
 
-    Config { query, file_path }
+        Config { query, file_path }
+    }
 }
