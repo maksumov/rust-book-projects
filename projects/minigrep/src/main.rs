@@ -28,12 +28,7 @@ fn main() {
     println!("Searching for {:?}", config.query);
     println!("In file {:?}", config.file_path);
 
-    // The std one-shot file read: io::Result<String>;
-    // expect panics on Err (replaced later in this chapter).
-    let contents =
-        fs::read_to_string(config.file_path).expect("Should have been able to read the file");
-
-    println!("\nWith text:\n{contents}");
+    run(config);
 }
 
 // Program configuration: the parsed CLI arguments as owned data.
@@ -60,4 +55,15 @@ impl Config {
 
         Ok(Config { query, file_path })
     }
+}
+
+// The program's logic: everything except config parsing and
+// error handling (main stays a thin orchestrator).
+fn run(config: Config) {
+    // The std one-shot file read: io::Result<String>;
+    // expect panics on Err (replaced later in this chapter).
+    let contents =
+        fs::read_to_string(config.file_path).expect("Should have been able to read the file");
+
+    println!("\nWith text:\n{contents}");
 }
