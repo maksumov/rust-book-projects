@@ -2,7 +2,7 @@
 //     cargo run -- <search-string> <file-path>
 // e.g. cargo run -- thebody poem.txt
 
-use minigrep::search;
+use minigrep::{search, search_case_insensitive};
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -33,10 +33,12 @@ fn main() {
     }
 }
 
-// Program configuration: the parsed CLI arguments as owned data.
-struct Config {
-    query: String,
-    file_path: String,
+// Program configuration: the parsed CLI arguments as owned data,
+// plus process-environment state (ignore_case).
+pub struct Config {
+    pub query: String,
+    pub file_path: String,
+    pub ignore_case: bool,
 }
 
 impl Config {
@@ -55,7 +57,13 @@ impl Config {
         let query = args[1].clone();
         let file_path = args[2].clone();
 
-        Ok(Config { query, file_path })
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        Ok(Config {
+            query,
+            file_path,
+            ignore_case,
+        })
     }
 }
 
@@ -66,7 +74,13 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // the ? operator propagates any error up to the caller.
     let contents = fs::read_to_string(config.file_path)?;
 
-    for line in search(&config.query, &contents) {
+    let results = if config.ignore_case {
+        search_case_insensitive(&config.query, &contents)
+    } else {
+        search(&config.query, &contents)
+    };
+
+    for line in results {
         println!("{line}");
     }
 
