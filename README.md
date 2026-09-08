@@ -18,7 +18,7 @@ Code-along projects and exercises from
 | 9 | Error Handling | `projects/panic`, `projects/error-handling` | 9.3 guidelines anchored in both |
 | 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator`, `projects/lifetimes` | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md` |
 | 11 | Writing Automated Tests | `projects/testing` | + `CHEATSHEET.md` (cargo test flags) |
-| 12 | An I/O Project: minigrep | `projects/minigrep` | |
+| 12 | An I/O Project: minigrep | `projects/minigrep` | + `exercises/12_minigrep` |
 
 ## Other artifacts
 
