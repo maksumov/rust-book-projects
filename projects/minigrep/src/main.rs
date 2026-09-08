@@ -23,12 +23,12 @@ fn main() {
     // Build errors are usage errors: a friendly message + a nonzero
     // exit code, not a panic (the chapter 9 guidelines).
     let config = Config::build(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {err}");
+        eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
 
     if let Err(e) = run(config) {
-        println!("Application error: {e}");
+        eprintln!("Application error: {e}");
         process::exit(1);
     }
 }
