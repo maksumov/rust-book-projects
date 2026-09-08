@@ -3,6 +3,7 @@
 // e.g. cargo run -- thebody poem.txt
 
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::process;
 
@@ -28,7 +29,10 @@ fn main() {
     println!("Searching for {:?}", config.query);
     println!("In file {:?}", config.file_path);
 
-    run(config);
+    if let Err(e) = run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
+    }
 }
 
 // Program configuration: the parsed CLI arguments as owned data.
@@ -59,11 +63,12 @@ impl Config {
 
 // The program's logic: everything except config parsing and
 // error handling (main stays a thin orchestrator).
-fn run(config: Config) {
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // The std one-shot file read: io::Result<String>;
-    // expect panics on Err (replaced later in this chapter).
-    let contents =
-        fs::read_to_string(config.file_path).expect("Should have been able to read the file");
+    // the ? operator propagates any error up to the caller.
+    let contents = fs::read_to_string(config.file_path)?;
 
     println!("\nWith text:\n{contents}");
+
+    Ok(())
 }
