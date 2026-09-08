@@ -43,6 +43,11 @@ impl Config {
     // in chapter 13). Panics on missing arguments (fixed later
     // in this chapter).
     fn new(args: &[String]) -> Config {
+        // 3 = binary path + query + file_path; fewer means usage error
+        if args.len() < 3 {
+            panic!("not enough arguments");
+        }
+
         let query = args[1].clone();
         let file_path = args[2].clone();
 
