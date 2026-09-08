@@ -2,6 +2,7 @@
 //     cargo run -- <search-string> <file-path>
 // e.g. cargo run -- thebody poem.txt
 
+use minigrep::search;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -25,9 +26,6 @@ fn main() {
         println!("Problem parsing arguments: {err}");
         process::exit(1);
     });
-
-    println!("Searching for {:?}", config.query);
-    println!("In file {:?}", config.file_path);
 
     if let Err(e) = run(config) {
         println!("Application error: {e}");
@@ -68,7 +66,9 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // the ? operator propagates any error up to the caller.
     let contents = fs::read_to_string(config.file_path)?;
 
-    println!("\nWith text:\n{contents}");
+    for line in search(&config.query, &contents) {
+        println!("{line}");
+    }
 
     Ok(())
 }
