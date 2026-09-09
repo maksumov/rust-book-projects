@@ -34,6 +34,8 @@ impl Inventory {
 }
 
 pub fn demo() {
+    println!("\n*** shirt company demo ***");
+
     let store = Inventory {
         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
     };
