@@ -14,8 +14,8 @@ the term first appeared in the study flow.
 - [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
 - [Borrowing (ch 4.2)](#borrowing-ch-42)
 - [Buffer overread (ch 9.1)](#buffer-overread-ch-91)
-- [Coherence (ch 10.2)](#coherence-ch-102)
 - [Closure (ch 13.1)](#closure-ch-131)
+- [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
 - [Constants (ch 3.1)](#constants-ch-31)
 - [Crate (ch 7.1)](#crate-ch-71)
@@ -71,18 +71,6 @@ Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
 In repo: `projects/panic/src/backtrace.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
 
-## Borrow-based lookup (ch 8.3)
-
-`HashMap::get` is generic over `Q` where `K: Borrow<Q>`; since
-`String: Borrow<str>`, a map with `String` keys can be looked up
-by a plain `&str` -- no allocation, unlike building a `String` key
-per lookup. Distinct from deref coercion: this is `Borrow`-based
-type equality at the API level.
-
-Related: [Deref coercion](#deref-coercion-ch-42)
-In repo: `projects/collections/src/demos/hashmaps.rs` (comment inside the lookup loop)
-Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#accessing-values-in-a-hash-map
-
 ## Blanket implementations (ch 10.2)
 
 Implementing a trait for EVERY type satisfying a bound:
@@ -102,6 +90,18 @@ not outlive the data it points to. Rejects violations with E0597
 Related: [Borrowing](#borrowing-ch-42), [Data race](#data-race-ch-42), [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42)
 In repo: `projects/lifetimes/src/dangling.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-borrow-checker
+
+## Borrow-based lookup (ch 8.3)
+
+`HashMap::get` is generic over `Q` where `K: Borrow<Q>`; since
+`String: Borrow<str>`, a map with `String` keys can be looked up
+by a plain `&str` -- no allocation, unlike building a `String` key
+per lookup. Distinct from deref coercion: this is `Borrow`-based
+type equality at the API level.
+
+Related: [Deref coercion](#deref-coercion-ch-42)
+In repo: `projects/collections/src/demos/hashmaps.rs` (comment inside the lookup loop)
+Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#accessing-values-in-a-hash-map
 
 ## Borrowing (ch 4.2)
 
@@ -124,6 +124,17 @@ Related: —
 In repo: `projects/panic/src/backtrace.rs` (v[99] panics)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html
 
+## Closure (ch 13.1)
+
+An anonymous function, storable in a variable or passable as an
+argument; unlike `fn` items, it captures its defining environment
+(immutably, mutably, or by value via `move`). Parameter and return
+types are inferred from the first call and locked in (E0308);
+a `fn` item can see the environment but never capture it (E0434).
+
+Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131)
+In repo: `projects/closures/src/function_vs_closure.rs`
+
 ## Coherence (ch 10.2)
 
 The global property: for any (trait, type) pair there is at most
@@ -135,6 +146,18 @@ orphan rule.
 Related: [Orphan rule](#orphan-rule-ch-102), [Newtype pattern](#newtype-pattern-ch-102), [Trait](#trait-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## Combinators (ch 9.2)
+
+Small closure-taking adapter methods on `Option`/`Result`/iterators
+that compose flat pipelines instead of nested match pyramids:
+`unwrap_or_else`, `map`, `map_err`, `and_then`, `ok_or`, ... The
+`_else` variants are lazy -- the default is computed only on the
+error path. Match stays preferable for genuinely multi-way logic.
+
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131)
+In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
+Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
 ## Constants (ch 3.1)
 
@@ -177,29 +200,6 @@ at compile time.
 Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
-
-## Closure (ch 13.1)
-
-An anonymous function, storable in a variable or passable as an
-argument; unlike `fn` items, it captures its defining environment
-(immutably, mutably, or by value via `move`). Parameter and return
-types are inferred from the first call and locked in (E0308);
-a `fn` item can see the environment but never capture it (E0434).
-
-Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131)
-In repo: `projects/closures/src/function_vs_closure.rs`
-
-## Combinators (ch 9.2)
-
-Small closure-taking adapter methods on `Option`/`Result`/iterators
-that compose flat pipelines instead of nested match pyramids:
-`unwrap_or_else`, `map`, `map_err`, `and_then`, `ok_or`, ... The
-`_else` variants are lazy -- the default is computed only on the
-error path. Match stays preferable for genuinely multi-way logic.
-
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131)
-In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
-Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
 ## Deref coercion (ch 4.2)
 
@@ -293,6 +293,16 @@ Related: [Borrowing](#borrowing-ch-42), [Ownership](#ownership-ch-41), [move clo
 In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
 
+## move closures (ch 13.1)
+
+The `move` keyword before a closure's parameter list forces capture
+by value even when the body would only need a reference -- required
+when the closure must outlive the enclosing scope (thread::spawn
+demands 'static data).
+
+Related: [Closure](#closure-ch-131), [Move](#move-ch-41), [Static lifetime](#static-lifetime-ch-103)
+In repo: `projects/closures/src/capturing_references.rs`
+
 ## Newtype pattern (ch 10.2)
 
 Wrap a foreign type in a local tuple struct (`struct Meters(f64)`)
@@ -303,16 +313,6 @@ in TypeScript. Covered in depth in chapter 19.
 Related: [Coherence](#coherence-ch-102), [Orphan rule](#orphan-rule-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
-
-## move closures (ch 13.1)
-
-The `move` keyword before a closure's parameter list forces capture
-by value even when the body would only need a reference -- required
-when the closure must outlive the enclosing scope (thread::spawn
-demands 'static data).
-
-Related: [Closure](#closure-ch-131), [Move](#move-ch-41), [Static lifetime](#static-lifetime-ch-103)
-In repo: `projects/closures/src/capturing_references.rs`
 
 ## NLL, non-lexical lifetimes (ch 4.2)
 
@@ -335,17 +335,6 @@ Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101)
 In repo: `projects/aggregator/src/main.rs` (the return summarizable comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#returning-types-that-implement-traits
 
-## Ownership (ch 4.1)
-
-The set of rules governing memory: each value has exactly ONE
-owner; when the owner goes out of scope, `drop` frees the memory
-(RAII). Checked entirely at compile time -- the third way between
-garbage collection and manual malloc/free.
-
-Related: [Borrowing](#borrowing-ch-42), [Move](#move-ch-41), [RAII](#raii-ch-41)
-In repo: `projects/ownership`
-Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
-
 ## Orphan rule (ch 10.2)
 
 The enforcement mechanism of coherence: writing `impl Trait for
@@ -356,6 +345,17 @@ trait and the type) are absent from the current crate.
 Related: [Coherence](#coherence-ch-102), [Newtype pattern](#newtype-pattern-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## Ownership (ch 4.1)
+
+The set of rules governing memory: each value has exactly ONE
+owner; when the owner goes out of scope, `drop` frees the memory
+(RAII). Checked entirely at compile time -- the third way between
+garbage collection and manual malloc/free.
+
+Related: [Borrowing](#borrowing-ch-42), [Move](#move-ch-41), [RAII](#raii-ch-41)
+In repo: `projects/ownership`
+Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
 
 ## Package (ch 7.1)
 
@@ -400,6 +400,16 @@ Related: —
 In repo: `projects/error-handling/src/error_propagation.rs` (string1 re-bound per version)
 Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#shadowing
 
+## SipHash and BuildHasher (ch 8.3)
+
+The default `HashMap` hasher is SipHash: DoS-resistant, trading
+some speed for security. A faster/slower hasher can be plugged in
+via a type implementing the `BuildHasher` trait.
+
+Related: —
+In repo: `projects/collections/src/demos/hashmaps.rs` (comment above the use line)
+Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#hashing-functions
+
 ## Slice (ch 4.3)
 
 A reference to a contiguous sequence: `&str` for strings, `&[T]`
@@ -410,16 +420,6 @@ String slices and literals -- via deref coercions.
 Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42)
 In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
-
-## SipHash and BuildHasher (ch 8.3)
-
-The default `HashMap` hasher is SipHash: DoS-resistant, trading
-some speed for security. A faster/slower hasher can be plugged in
-via a type implementing the `BuildHasher` trait.
-
-Related: —
-In repo: `projects/collections/src/demos/hashmaps.rs` (comment above the use line)
-Book: https://doc.rust-lang.org/stable/book/ch08-03-hash-maps.html#hashing-functions
 
 ## Static lifetime (ch 10.3)
 
