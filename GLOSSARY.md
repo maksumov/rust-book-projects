@@ -15,18 +15,21 @@ the term first appeared in the study flow.
 - [Borrowing (ch 4.2)](#borrowing-ch-42)
 - [Buffer overread (ch 9.1)](#buffer-overread-ch-91)
 - [Coherence (ch 10.2)](#coherence-ch-102)
+- [Closure (ch 13.1)](#closure-ch-131)
 - [Combinators (ch 9.2)](#combinators-ch-92)
 - [Constants (ch 3.1)](#constants-ch-31)
 - [Crate (ch 7.1)](#crate-ch-71)
 - [Crate root (ch 7.1)](#crate-root-ch-71)
 - [Data race (ch 4.2)](#data-race-ch-42)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
+- [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
+- [move closures (ch 13.1)](#move-closures-ch-131)
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
@@ -175,6 +178,17 @@ Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
 
+## Closure (ch 13.1)
+
+An anonymous function, storable in a variable or passable as an
+argument; unlike `fn` items, it captures its defining environment
+(immutably, mutably, or by value via `move`). Parameter and return
+types are inferred from the first call and locked in (E0308);
+a `fn` item can see the environment but never capture it (E0434).
+
+Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131)
+In repo: `projects/closures/src/function_vs_closure.rs`
+
 ## Combinators (ch 9.2)
 
 Small closure-taking adapter methods on `Option`/`Result`/iterators
@@ -183,7 +197,7 @@ that compose flat pipelines instead of nested match pyramids:
 `_else` variants are lazy -- the default is computed only on the
 error path. Match stays preferable for genuinely multi-way logic.
 
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131)
 In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
 Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
@@ -196,6 +210,17 @@ when `add` actually takes `&str`. Covered in depth in chapter 15.
 Related: [Borrow-based lookup](#borrow-based-lookup-ch-83), [Slice](#slice-ch-43)
 In repo: `projects/collections/src/demos/strings.rs` (concatenation comment)
 Book: https://doc.rust-lang.org/stable/book/ch08-02-strings.html#concatenating-with--or-format
+
+## Fn traits (ch 13.1)
+
+The additive closure hierarchy picked by API bounds: `FnOnce`
+(may move captures out -- callable once), `FnMut` (may mutate --
+repeatable), `Fn` (read-only). Every closure implements all it
+can; bounds choose the weakest they need (e.g. `unwrap_or_else`
+takes `FnOnce`, `sort_by_key` takes `FnMut`).
+
+Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101)
+In repo: `projects/closures/src/fn_traits.rs`
 
 ## Inner vs outer attributes (ch 9.2)
 
@@ -264,7 +289,7 @@ variable dies. Not a shallow copy -- precisely because of the
 invalidation; this prevents double free. Rust never deep-copies
 implicitly (explicit deep copy: clone).
 
-Related: [Borrowing](#borrowing-ch-42), [Ownership](#ownership-ch-41)
+Related: [Borrowing](#borrowing-ch-42), [Ownership](#ownership-ch-41), [move closures](#move-closures-ch-131)
 In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
 
@@ -278,6 +303,16 @@ in TypeScript. Covered in depth in chapter 19.
 Related: [Coherence](#coherence-ch-102), [Orphan rule](#orphan-rule-ch-102)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## move closures (ch 13.1)
+
+The `move` keyword before a closure's parameter list forces capture
+by value even when the body would only need a reference -- required
+when the closure must outlive the enclosing scope (thread::spawn
+demands 'static data).
+
+Related: [Closure](#closure-ch-131), [Move](#move-ch-41), [Static lifetime](#static-lifetime-ch-103)
+In repo: `projects/closures/src/capturing_references.rs`
 
 ## NLL, non-lexical lifetimes (ch 4.2)
 
@@ -393,7 +428,7 @@ string literal is 'static (stored in the binary). An error message
 suggesting 'static is usually a dangling-reference smell -- fix
 the lifetimes instead of reaching for it.
 
-Related: [Lifetime](#lifetime-ch-103)
+Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131)
 In repo: `projects/lifetimes/src/excerpt.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
 
