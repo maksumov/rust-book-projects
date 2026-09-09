@@ -19,7 +19,7 @@ Code-along projects and exercises from
 | 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator`, `projects/lifetimes` | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md` |
 | 11 | Writing Automated Tests | `projects/testing` | + `CHEATSHEET.md` (cargo test flags) |
 | 12 | An I/O Project: minigrep | `projects/minigrep` | + `exercises/12_minigrep` |
-| 13 | Functional Language Features: Closures and Iterators | `projects/closures` | |
+| 13 | Functional Language Features: Closures and Iterators | `projects/closures`, `projects/iterators` | |
 
 ## Other artifacts
 
