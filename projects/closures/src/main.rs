@@ -1,3 +1,4 @@
+mod capturing_references;
 mod function_vs_closure;
 mod shirt_company;
 mod type_annotations;
@@ -10,5 +11,9 @@ fn main() {
     type_annotations::demo_third();
 
     // beyond the book
-    function_vs_closure::demo()
+    function_vs_closure::demo();
+
+    capturing_references::demo_immutable();
+    capturing_references::demo_mutable();
+    capturing_references::demo_moving_ownership();
 }
