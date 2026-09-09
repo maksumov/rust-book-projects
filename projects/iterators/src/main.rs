@@ -1,4 +1,5 @@
 mod iteration_forms;
+mod iterator_adapters;
 mod laziness;
 
 fn main() {
@@ -6,4 +7,6 @@ fn main() {
 
     // beyond the book
     iteration_forms::demo();
+
+    iterator_adapters::demo();
 }

@@ -48,4 +48,29 @@ mod tests {
 
         assert_eq!(total, 6);
     }
+
+    #[test]
+    fn iterator_producer_and_consumer() {
+        let v: Vec<i32> = vec![1, 2, 3];
+
+        // v.iter().map(|x| x + 1);
+        // warning: unused `Map` that must be used
+        //   --> src/lib.rs:56:9
+        //    |
+        // 56 |         v.iter().map(|x| x + 1);
+        //    |         ^^^^^^^^^^^^^^^^^^^^^^^
+        //    |
+        //    = note: iterators are lazy and do nothing unless consumed
+        //    = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+        // help: use `let _ = ...` to ignore the resulting value
+        //    |
+        // 56 |         let _ = v.iter().map(|x| x + 1);
+        //    |         +++++++
+
+        let producer = v.iter().map(|x| x + 1);
+
+        let consumer: Vec<i32> = producer.collect();
+
+        assert_eq!(consumer, vec![2, 3, 4]);
+    }
 }
