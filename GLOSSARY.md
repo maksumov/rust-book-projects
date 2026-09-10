@@ -25,6 +25,8 @@ the term first appeared in the study flow.
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
+- [Iterator (ch 13.2)](#iterator-ch-132)
+- [Iterator adapters vs consuming adapters (ch 13.2)](#iterator-adapters-vs-consuming-adapters-ch-132)
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
@@ -132,7 +134,7 @@ argument; unlike `fn` items, it captures its defining environment
 types are inferred from the first call and locked in (E0308);
 a `fn` item can see the environment but never capture it (E0434).
 
-Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131)
+Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131), [Iterator](#iterator-ch-132)
 In repo: `projects/closures/src/function_vs_closure.rs`
 
 ## Coherence (ch 10.2)
@@ -155,7 +157,7 @@ that compose flat pipelines instead of nested match pyramids:
 `_else` variants are lazy -- the default is computed only on the
 error path. Match stays preferable for genuinely multi-way logic.
 
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131)
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131), [Iterator](#iterator-ch-132)
 In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
 Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
@@ -244,6 +246,29 @@ is the remedy.
 Related: [Crate](#crate-ch-71), [Unit tests](#unit-tests-ch-113)
 In repo: `projects/testing/tests/integration_test.rs`
 Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#integration-tests
+
+## Iterator (ch 13.2)
+
+The sequence abstraction: a type implementing the `Iterator` trait
+(sole required method `next`, handing out one `Item` at a time as
+Some, then None). Lazy -- no work happens until a consuming method
+runs; a for loop creates and consumes one implicitly. iter() borrows
+immutably, iter_mut() mutably, into_iter() takes ownership.
+
+Related: [Closure](#closure-ch-131), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Combinators](#combinators-ch-92)
+In repo: `projects/iterators/src/laziness.rs`
+
+## Iterator adapters vs consuming adapters (ch 13.2)
+
+Two method families on `Iterator`: adapters (map, filter, take) are
+lazy -- they wrap the source in a NEW iterator and do no work; a
+chain must end in a consuming adapter (sum, collect) that calls
+next to exhaustion and takes ownership of the iterator. The
+unused-`Map` warning is how the compiler enforces laziness
+awareness.
+
+Related: [Iterator](#iterator-ch-132), [Closure](#closure-ch-131), [Combinators](#combinators-ch-92)
+In repo: `projects/iterators/src/iterator_adapters.rs`
 
 ## Lifetime (ch 10.3)
 
