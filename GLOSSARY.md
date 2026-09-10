@@ -49,6 +49,7 @@ the term first appeared in the study flow.
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
+- [Zero-cost abstraction (ch 13.4)](#zero-cost-abstraction-ch-134)
 ---
 
 ## Associated functions (ch 5.3)
@@ -255,7 +256,7 @@ Some, then None). Lazy -- no work happens until a consuming method
 runs; a for loop creates and consumes one implicitly. iter() borrows
 immutably, iter_mut() mutably, into_iter() takes ownership.
 
-Related: [Closure](#closure-ch-131), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Combinators](#combinators-ch-92)
+Related: [Closure](#closure-ch-131), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Combinators](#combinators-ch-92), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
 In repo: `projects/iterators/src/laziness.rs`
 
 ## Iterator adapters vs consuming adapters (ch 13.2)
@@ -302,7 +303,7 @@ times. The opposite strategy is type erasure (TypeScript, Java):
 one copy, dynamic dispatch. The practical trade-off returns in
 chapter 18 as `impl Trait` vs `dyn Trait`.
 
-Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound](#trait-bound-ch-101), [Trait must be in scope](#trait-must-be-in-scope-ch-92)
+Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound](#trait-bound-ch-101), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-01-syntax.html#performance-of-code-using-generics
 
@@ -509,3 +510,16 @@ binaries, but cleanup and thread isolation (catch_unwind) are gone.
 Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
 In repo: `projects/panic/Cargo.toml` (the release-profile comment)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
+
+## Zero-cost abstraction (ch 13.4)
+
+An abstraction that imposes no runtime overhead over hand-written
+lower-level code: iterators compile to roughly the same assembly
+as explicit loops (unrolling, bounds-check elimination). The
+book's evidence: for-loop vs iterator search on a large text --
+~19.6M vs ~19.2M ns, parity. Stroustrup's phrasing: "What you
+don't use, you don't pay for. And what you do use, you couldn't
+hand code any better."
+
+Related: [Monomorphization](#monomorphization-ch-101), [Iterator](#iterator-ch-132)
+In repo: `projects/minigrep` (13.3 rewrite as the case study)
