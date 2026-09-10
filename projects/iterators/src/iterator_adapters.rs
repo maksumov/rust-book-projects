@@ -14,3 +14,17 @@ pub fn demo() {
     let consumer: Vec<_> = producer.collect();
     println!("collected: {consumer:?}");
 }
+
+// beyond the book
+//
+// Infinite iterators exist precisely because of laziness: (1..)
+// never materializes; take(5) caps the consumption.
+pub fn demo_infinite() {
+    println!("\n*** iterator adapters: infinite source ***");
+
+    let evens = (1..).map(|x| x * 2);
+
+    for v in evens.take(5) {
+        println!("{v}");
+    }
+}

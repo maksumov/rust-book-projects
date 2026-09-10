@@ -9,4 +9,7 @@ fn main() {
     iteration_forms::demo();
 
     iterator_adapters::demo();
+
+    // beyond the book
+    iterator_adapters::demo_infinite();
 }
