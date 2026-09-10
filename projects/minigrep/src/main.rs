@@ -17,12 +17,9 @@ use std::process;
 // Everything else moves to lib.rs.
 
 fn main() {
-    // User arguments start at index 1 (args[0] is the binary path).
-    let args: Vec<String> = env::args().collect();
-
     // Build errors are usage errors: a friendly message + a nonzero
     // exit code, not a panic (the chapter 9 guidelines).
-    let config = Config::build(&args).unwrap_or_else(|err| {
+    let config = Config::build(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
@@ -44,18 +41,22 @@ pub struct Config {
 impl Config {
     // Maps CLI arguments to a Config. An associated fn -- the
     // build (not new) idiom: new is expected to never fail.
-    // Cloning is deliberate: simplicity over performance
-    // (iterator-based parsing arrives in chapter 13). Errors on
-    // missing arguments; main converts Err into a friendly
-    // message + a nonzero exit code.
-    fn build(args: &[String]) -> Result<Config, &'static str> {
-        // 3 = binary path + query + file_path; fewer means usage error
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
+    // Iterator parsing (13.3): the first next() skips the binary
+    // path; each match pulls an owned String -- no clones needed.
+    // Errors on missing arguments; main converts Err into a
+    // friendly message + a nonzero exit code.
+    fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next();
 
-        let query = args[1].clone();
-        let file_path = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file path"),
+        };
 
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
