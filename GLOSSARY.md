@@ -40,6 +40,7 @@ the term first appeared in the study flow.
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [RAII (ch 4.1)](#raii-ch-41)
+- [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
@@ -415,6 +416,18 @@ Related: [Ownership](#ownership-ch-41)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
 
+## Release profiles (ch 14.1)
+
+Predefined customizable build configurations: dev (cargo build --
+fast compiles, opt-level 0, unoptimized + debuginfo) and release
+(cargo build --release -- opt-level 3, optimized; compile once,
+run many). Overridden per-project via [profile.*] sections in
+Cargo.toml; already used in this repo: panic = 'abort' in the
+panic project's release profile (ch 9.1).
+
+Related: [Unwinding vs abort](#unwinding-vs-abort-ch-91)
+In repo: `projects/panic/Cargo.toml` (the [profile.release] customization)
+
 ## Shadowing (ch 3.1)
 
 `let` with an already-used name creates a NEW variable that
@@ -507,7 +520,7 @@ Default panic behavior: unwind -- walk back up the stack, running
 destructors. panic = 'abort' in a [profile] skips cleanup: smaller
 binaries, but cleanup and thread isolation (catch_unwind) are gone.
 
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Release profiles](#release-profiles-ch-141)
 In repo: `projects/panic/Cargo.toml` (the release-profile comment)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
 
