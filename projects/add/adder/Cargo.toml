@@ -1,0 +1,13 @@
+[package]
+name = "adder"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Workspace membership is NOT a dependency: using add_one requires an
+# explicit path dependency, like any other crate.
+add_one = { path = "../add_one" }
+# Each member declares its own deps: `use rand;` here fails with E0432
+# until this line exists. Both entries share one slot in the workspace
+# Cargo.lock -- one download, one version for the whole workspace.
+rand = "0.8.5"

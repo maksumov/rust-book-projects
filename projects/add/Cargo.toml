@@ -1,0 +1,8 @@
+# Virtual workspace root: [workspace] without [package] -- it owns the
+# shared Cargo.lock and target/ but is not a crate itself. No edition
+# field here either, so the resolver version cannot be inferred and is
+# set explicitly (the legacy default would be "1").
+[workspace]
+resolver = "3"
+# cargo new inside a workspace appends the new package here by itself.
+members = ["add_one", "adder"]

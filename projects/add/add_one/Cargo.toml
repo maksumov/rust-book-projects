@@ -1,0 +1,8 @@
+[package]
+name = "add_one"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# recorded once in the shared workspace Cargo.lock
+rand = "0.8.5"
