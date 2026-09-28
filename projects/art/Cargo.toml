@@ -5,5 +5,6 @@ edition = "2024"
 description = "A library for modeling artistic concepts."
 license = "MIT OR Apache-2.0"
 publish = false # learning crate: keep off the crates.io namespace
+exclude = ["CHEATSHEET.md"] # git-tracked files ship by default; keep the file-set minimal
 
 [dependencies]
