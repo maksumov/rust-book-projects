@@ -22,6 +22,7 @@ the term first appeared in the study flow.
 - [Crate root (ch 7.1)](#crate-root-ch-71)
 - [Data race (ch 4.2)](#data-race-ch-42)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
+- [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
@@ -41,6 +42,7 @@ the term first appeared in the study flow.
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [RAII (ch 4.1)](#raii-ch-41)
+- [Re-export (ch 14.2)](#re-export-ch-142)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
@@ -52,6 +54,7 @@ the term first appeared in the study flow.
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
+- [Yank (ch 14.2)](#yank-ch-142)
 - [Zero-cost abstraction (ch 13.4)](#zero-cost-abstraction-ch-134)
 ---
 
@@ -192,7 +195,7 @@ The source file the compiler starts from, making up the root
 module of the crate: src/main.rs (binary) or src/lib.rs (library).
 Its contents form the implicit module `crate`.
 
-Related: [Crate](#crate-ch-71), [Package](#package-ch-71)
+Related: [Crate](#crate-ch-71), [Documentation comments](#documentation-comments-ch-142), [Package](#package-ch-71), [Re-export](#re-export-ch-142)
 In repo: `projects/restaurant/src/lib.rs`
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
 
@@ -216,6 +219,19 @@ when `add` actually takes `&str`. Covered in depth in chapter 15.
 Related: [Borrow-based lookup](#borrow-based-lookup-ch-83), [Slice](#slice-ch-43)
 In repo: `projects/collections/src/demos/strings.rs` (concatenation comment)
 Book: https://doc.rust-lang.org/stable/book/ch08-02-strings.html#concatenating-with--or-format
+
+## Documentation comments (ch 14.2)
+
+The /// and //! comment styles that generate HTML documentation
+via rustdoc (cargo doc --open): /// documents the item AFTER it,
+//! the containing item (crate or module). Markdown supported; the
+# Examples blocks are compiled and run by cargo test as doctests
+-- the third test section -- keeping docs and code in sync. Common
+sections: # Examples, # Panics, # Errors, # Safety.
+
+Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142)
+In repo: `projects/art/src/lib.rs` (/// and //! incl. Examples/Errors)
+Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments
 
 ## Fn traits (ch 13.1)
 
@@ -432,6 +448,18 @@ Related: [Ownership](#ownership-ch-41)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
 
+## Re-export (ch 14.2)
+
+pub use: making a public item public in ANOTHER location, as if it
+were defined there -- decoupling the internal module hierarchy
+from the public API. Users write use art::PrimaryColor instead of
+use art::kinds::PrimaryColor; cargo doc lists re-exports on the
+crate front page. The deep paths remain available too.
+
+Related: [Crate root](#crate-root-ch-71)
+In repo: `projects/art/src/lib.rs` (the collapsed pub use block)
+Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#exporting-a-convenient-public-api
+
 ## Release profiles (ch 14.1)
 
 Predefined customizable build configurations: dev (cargo build --
@@ -552,6 +580,18 @@ binaries, but cleanup and thread isolation (catch_unwind) are gone.
 Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Release profiles](#release-profiles-ch-141)
 In repo: `projects/panic/Cargo.toml` (the release-profile comment)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
+
+## Yank (ch 14.2)
+
+cargo yank --vers X.Y.Z: marks a published version so that NEW
+projects cannot depend on it, while existing Cargo.lock files keep
+working; --undo reverses it. Versions on crates.io are permanent --
+a yank is the only lever, and it deletes nothing (not even
+accidentally uploaded secrets: rotate those immediately).
+
+Related: —
+In repo: —
+Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#deprecating-versions-from-cratesio
 
 ## Zero-cost abstraction (ch 13.4)
 
