@@ -29,6 +29,7 @@ the term first appeared in the study flow.
 - [Iterator adapters vs consuming adapters (ch 13.2)](#iterator-adapters-vs-consuming-adapters-ch-132)
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
+- [Lint levels (ch 14.2)](#lint-levels-ch-142)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
 - [move closures (ch 13.1)](#move-closures-ch-131)
@@ -233,7 +234,7 @@ a single `mod` line). `#![...]` is an INNER attribute: it applies
 to the enclosing item -- in the crate root, to the whole crate.
 The `!` here means "inner", not a macro invocation.
 
-Related: —
+Related: [Lint levels](#lint-levels-ch-142)
 In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
 Book: https://doc.rust-lang.org/reference/attributes.html
 
@@ -294,6 +295,20 @@ outputs. Ambiguity after the rules -> E0106.
 Related: [Lifetime](#lifetime-ch-103)
 In repo: `projects/lifetimes/src/excerpt.rs` (rule 3 in announce_and_return_part)
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#lifetime-elision
+
+## Lint levels (ch 14.2)
+
+The four strengths a lint attribute can set: allow (silence the
+lint), warn (warning -- the default for most lints), deny (compilation
+error), forbid (deny plus immune to a later allow). Set crate-wide
+with an inner attribute at the crate root: #![warn(missing_docs)]
+demands doc comments on every public item -- including pub mod and
+enum variants, which is stricter than the book's own art example.
+A stricter sibling to try: missing_docs_in_private_items.
+
+Related: [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92)
+In repo: `projects/art/src/lib.rs` (the crate-root attribute)
+Book: https://doc.rust-lang.org/rustc/lints/levels.html
 
 ## Monomorphization (ch 10.1)
 
