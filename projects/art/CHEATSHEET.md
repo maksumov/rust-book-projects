@@ -191,5 +191,5 @@ Cargo itself.
 
 ## Workspaces (ch 14.3)
 
-To be added after the 14.3 study session (cargo run/test -p,
-shared Cargo.lock and target/, building from the workspace root).
+Covered by a dedicated cheatsheet in `projects/add/CHEATSHEET.md`
+(virtual manifests, shared Cargo.lock/target, -p selection, E0432).
