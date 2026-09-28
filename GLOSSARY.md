@@ -45,6 +45,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Re-export (ch 14.2)](#re-export-ch-142)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
+- [Resolver versions (ch 14.3)](#resolver-versions-ch-143)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
@@ -55,6 +56,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
+- [Workspace (ch 14.3)](#workspace-ch-143)
 - [Yank (ch 14.2)](#yank-ch-142)
 - [Zero-cost abstraction (ch 13.4)](#zero-cost-abstraction-ch-134)
 ---
@@ -186,7 +188,7 @@ The smallest unit of compilation. Two forms: binary crates
 what "crate" colloquially means). A package may hold many binaries
 but at most one library.
 
-Related: [Crate root](#crate-root-ch-71), [Integration tests](#integration-tests-ch-113), [Package](#package-ch-71)
+Related: [Crate root](#crate-root-ch-71), [Integration tests](#integration-tests-ch-113), [Package](#package-ch-71), [Workspace](#workspace-ch-143)
 In repo: `projects/aggregator` (both forms in one package)
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
 
@@ -424,7 +426,7 @@ build them. At most one library crate; any number of binaries
 (src/main.rs plus each file in src/bin/). Cargo itself is a
 package.
 
-Related: [Crate](#crate-ch-71), [Crate root](#crate-root-ch-71)
+Related: [Crate](#crate-ch-71), [Crate root](#crate-root-ch-71), [Workspace](#workspace-ch-143)
 In repo: every project's Cargo.toml in this repo
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
 
@@ -472,6 +474,23 @@ panic project's release profile (ch 9.1).
 
 Related: [Unwinding vs abort](#unwinding-vs-abort-ch-91)
 In repo: `projects/panic/Cargo.toml` (the [profile.release] customization)
+
+## Resolver versions (ch 14.3)
+
+The version of Cargo's dependency resolution algorithm
+(resolver = "1"|"2"|"3" in the workspace root). The dividing line
+runs through FEATURE UNIFICATION: resolver 1 merges feature flags
+across all platforms and dependency kinds (host, target, dev),
+activating features a build never asked for; 2 (edition 2021
+default) stopped unifying platform-specific and host deps; 3
+(edition 2024 default) also keeps dev-dependency features out of
+normal builds. A VIRTUAL workspace has no edition to imply the
+version -- it must be set explicitly, or cargo falls back to 1
+with a warning.
+
+Related: [Workspace](#workspace-ch-143)
+In repo: `projects/add/Cargo.toml` (the workspace root)
+Book: https://doc.rust-lang.org/cargo/reference/resolver.html
 
 ## Shadowing (ch 3.1)
 
@@ -581,6 +600,20 @@ binaries, but cleanup and thread isolation (catch_unwind) are gone.
 Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Release profiles](#release-profiles-ch-141)
 In repo: `projects/panic/Cargo.toml` (the release-profile comment)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
+
+## Workspace (ch 14.3)
+
+A set of packages developed in tandem, sharing one Cargo.lock and
+one target/ directory at the workspace root. The root Cargo.toml
+has a [workspace] section (no [package]); membership is listed in
+members, but dependencies between members are still explicit path
+dependencies. One shared lockfile pins every member to the same
+dependency versions; -p selects a package for run/test/publish,
+and each crate is published separately.
+
+Related: [Crate](#crate-ch-71), [Package](#package-ch-71), [Resolver versions](#resolver-versions-ch-143)
+In repo: `projects/add` (the virtual workspace root)
+Book: https://doc.rust-lang.org/stable/book/ch14-03-cargo-workspaces.html
 
 ## Yank (ch 14.2)
 
