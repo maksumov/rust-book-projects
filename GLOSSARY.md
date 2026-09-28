@@ -45,6 +45,7 @@ the term first appeared in the study flow.
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
+- [Standard output vs standard error (ch 12.6)](#standard-output-vs-standard-error-ch-126)
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
@@ -474,6 +475,19 @@ String slices and literals -- via deref coercions.
 Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42)
 In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
+
+## Standard output vs standard error (ch 12.6)
+
+The two output streams of a command line program: stdout carries
+the data (successful results), stderr the diagnostics (error
+messages). The split lets `program > out.txt` capture results in a
+file while errors still reach the screen. println! writes to
+stdout only; eprintln! writes to stderr -- minigrep's error paths
+print via eprintln! and exit nonzero (process::exit(1)).
+
+Related: —
+In repo: `projects/minigrep/src/main.rs` (both eprintln! branches in main)
+Book: https://doc.rust-lang.org/stable/book/ch12-06-writing-to-stderr-instead-of-stdout.html
 
 ## Static lifetime (ch 10.3)
 
