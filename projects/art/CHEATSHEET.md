@@ -36,12 +36,52 @@ tree, or pass `--allow-dirty`.
 
 ### cargo package --list: what goes into the .crate
 
-```sh
-cargo package --list
-```
+In a git repository the .crate ships ALL git-tracked files of the
+package directory by default (hence .cargo_vcs_info.json -- cargo's
+embedded git info). This is also why cargo refuses a dirty tree:
+the package must match a committed state. The list below evolved
+with this project (all outputs real):
+
+Before any metadata -- the warning names everything missing:
 
 ```
 warning: manifest has no description, license, license-file, documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+.cargo_vcs_info.json
+Cargo.lock
+Cargo.toml
+Cargo.toml.orig
+src/lib.rs
+src/main.rs
+```
+
+After description/license were added the warning narrowed to the
+remaining optional fields, and CHEATSHEET.md -- by then a tracked
+file -- joined the list:
+
+```
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+.cargo_vcs_info.json
+CHEATSHEET.md
+Cargo.lock
+Cargo.toml
+Cargo.toml.orig
+src/lib.rs
+src/main.rs
+```
+
+The cheatsheet is documentation, not crate content, so it is kept
+out via package.exclude (a Cargo Reference field, beyond the book):
+
+```toml
+exclude = ["CHEATSHEET.md"]
+```
+
+```
+warning: manifest has no documentation, homepage or repository
   |
   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
 .cargo_vcs_info.json
