@@ -10,6 +10,7 @@ bidirectional: if X lists Y, then Y lists X.
 ## Table of Contents
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
+- [Binary target (ch 14.4)](#binary-target-ch-144)
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
 - [Borrow checker (ch 10.3)](#borrow-checker-ch-103)
 - [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
@@ -21,6 +22,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Constants (ch 3.1)](#constants-ch-31)
 - [Crate (ch 7.1)](#crate-ch-71)
 - [Crate root (ch 7.1)](#crate-root-ch-71)
+- [Custom Cargo subcommands (ch 14.5)](#custom-cargo-subcommands-ch-145)
 - [Data race (ch 4.2)](#data-race-ch-42)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
@@ -82,6 +84,19 @@ symbols (default in debug builds).
 Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
 In repo: `projects/panic/src/backtrace.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
+
+## Binary target (ch 14.4)
+
+The runnable program a crate produces when it has a src/main.rs
+(or a configured [[bin]]) -- as opposed to a library target,
+which cannot run on its own but can be included by other
+programs. cargo install requires binary targets and drops the
+compiled executables into $HOME/.cargo/bin; it is a convenience
+for Rust tools, not a replacement for a system package manager.
+
+Related: [Crate](#crate-ch-71), [Custom Cargo subcommands](#custom-cargo-subcommands-ch-145)
+In repo: every project in this repo has one; projects/art has both target kinds
+Book: https://doc.rust-lang.org/stable/book/ch14-04-installing-binaries.html
 
 ## Blanket implementations (ch 10.2)
 
@@ -188,7 +203,7 @@ The smallest unit of compilation. Two forms: binary crates
 what "crate" colloquially means). A package may hold many binaries
 but at most one library.
 
-Related: [Crate root](#crate-root-ch-71), [Integration tests](#integration-tests-ch-113), [Package](#package-ch-71), [Workspace](#workspace-ch-143)
+Related: [Binary target](#binary-target-ch-144), [Crate root](#crate-root-ch-71), [Integration tests](#integration-tests-ch-113), [Package](#package-ch-71), [Workspace](#workspace-ch-143)
 In repo: `projects/aggregator` (both forms in one package)
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
 
@@ -201,6 +216,18 @@ Its contents form the implicit module `crate`.
 Related: [Crate](#crate-ch-71), [Documentation comments](#documentation-comments-ch-142), [Package](#package-ch-71), [Re-export](#re-export-ch-142)
 In repo: `projects/restaurant/src/lib.rs`
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
+
+## Custom Cargo subcommands (ch 14.5)
+
+Any executable named cargo-something on $PATH becomes cargo
+something. The dispatch is purely name-based -- binary naming,
+not author intent: hexyl is no subcommand, cargo-audit is. Custom
+commands appear in cargo --list, so cargo install doubles as a
+distributor of Cargo extensions.
+
+Related: [Binary target](#binary-target-ch-144)
+In repo: `exercises/14_publishing` (stage 1 installs a cargo-* binary)
+Book: https://doc.rust-lang.org/stable/book/ch14-05-extending-cargo.html
 
 ## Data race (ch 4.2)
 
