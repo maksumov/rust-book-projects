@@ -20,7 +20,7 @@ Code-along projects and exercises from
 | 11 | Writing Automated Tests | `projects/testing` | + `CHEATSHEET.md` (cargo test flags) |
 | 12 | An I/O Project: minigrep | `projects/minigrep` | + `exercises/12_minigrep` |
 | 13 | Functional Language Features: Closures and Iterators | `projects/closures`, `projects/iterators` | 13.3 improves `projects/minigrep`; + `exercises/13_minigrep` |
-| 14 | More About Cargo and Crates.io | `projects/my_crate`, `projects/art` | doctests as tests; `#![warn(missing_docs)]`, `publish = false` — beyond the book; + `CHEATSHEET.md` (cargo package commands); + `exercises/14_publishing` |
+| 14 | More About Cargo and Crates.io | `projects/my_crate`, `projects/art`, `projects/add` | doctests as tests; `#![warn(missing_docs)]`, `publish = false` — beyond the book; + `CHEATSHEET.md` (cargo package commands); + `exercises/14_publishing`; workspaces (14.3): + `CHEATSHEET.md` in `projects/add`, `exercises/14_workspace` |
 
 ## Other artifacts
 
