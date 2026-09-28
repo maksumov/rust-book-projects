@@ -174,7 +174,12 @@ cargo yank --vers 1.0.1 --undo # reverse the yank
 ## Installing binaries (ch 14.4)
 
 ```sh
-cargo install ripgrep   # compiles from source -> ~/.cargo/bin/rg
+cargo install ripgrep        # compiles from source -> ~/.cargo/bin/rg
+cargo install hexyl          # any binary crate works for practice
+cargo install --locked <cr>  # beyond the book: install exactly the
+                             # dependency versions from the crate's Cargo.lock
+cargo install <cr> --version 14.1.1   # beyond the book: pin a version
+cargo uninstall <cr>         # removal
 ```
 
 Only packages with a binary target (src/main.rs or a configured
@@ -182,12 +187,32 @@ Only packages with a binary target (src/main.rs or a configured
 (rustup default) -- keep it on `$PATH`. This is a convenience for
 Rust tools, not a replacement for a system package manager.
 
+### Coexisting with a system package (beyond the book)
+
+`cargo install ripgrep` on a system where the distro already
+ships ripgrep (e.g. pacman's /usr/bin/rg) creates a SECOND copy
+in ~/.cargo/bin. Both coexist; PATH order decides which `rg`
+runs -- `which -a rg` lists them in resolution order, and with
+rustup the cargo copy usually shadows the system one. Caution
+when other tools depend on the system package (a live example:
+opencode requires the pacman ripgrep) -- either practice with a
+different crate or `cargo uninstall ripgrep` afterwards.
+
 ## Custom subcommands (ch 14.5)
 
 Any executable named `cargo-something` on `$PATH` becomes
 `cargo something`; custom commands are listed by `cargo --list`.
 Combined with `cargo install`, distributed crates can extend
 Cargo itself.
+
+The dispatch is purely NAME-based, not intent-based -- observed
+live in ~/.cargo/bin: `hexyl` (no prefix) is a plain binary and
+never appears in `cargo --list`, while `cargo-audit` and
+`cargo-outdated` run as `cargo audit` / `cargo outdated`. Open
+question, to verify while doing exercises/14_publishing: the
+cargo-http-registry binary matches the `cargo-` pattern, yet its
+README claims it "cannot be used as such" -- check whether
+`cargo http-registry` dispatches and record the outcome here.
 
 ## Workspaces (ch 14.3)
 

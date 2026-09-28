@@ -29,6 +29,11 @@ refuses to package a dirty git tree, and the repo stays clean.
 6. beyond the book: with the allow-list in place, run plain
    `cargo publish` and observe the guard message naming the allowed
    registries.
+7. beyond the book (ch 14.5): the installed binary is named
+   `cargo-http-registry`, yet its README claims it "cannot be used
+   as such". Check `cargo --list | grep http-registry` and try
+   `cargo http-registry --help`; record the actual behavior in
+   projects/art/CHEATSHEET.md (Custom subcommands section).
 
 Source: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html
 The registry mechanics are beyond the book:
