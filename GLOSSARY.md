@@ -4,7 +4,8 @@ Terms and concepts from The Rust Book, collected while studying.
 Each entry: a definition, connections to related entries, where the
 concept lives in this repo (if anywhere), and the book section it
 came from. Entries are alphabetical; the chapter tag shows where
-the term first appeared in the study flow.
+the term first appeared in the study flow. Related links are
+bidirectional: if X lists Y, then Y lists X.
 
 ## Table of Contents
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
@@ -119,7 +120,7 @@ ownership -- the owner keeps it, and the borrower may not outlive
 it. Mutable borrowing (`&mut T`) follows the one-mutable-or-many-
 immutable rule.
 
-Related: [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Ownership](#ownership-ch-41)
+Related: [Borrow checker](#borrow-checker-ch-103), [Data race](#data-race-ch-42), [Lifetime](#lifetime-ch-103), [Move](#move-ch-41), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [Ownership](#ownership-ch-41), [Slice](#slice-ch-43)
 In repo: `projects/ownership` (chapter 4.2 comments)
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html
 
@@ -141,7 +142,7 @@ argument; unlike `fn` items, it captures its defining environment
 types are inferred from the first call and locked in (E0308);
 a `fn` item can see the environment but never capture it (E0434).
 
-Related: [Fn traits](#fn-traits-ch-131), [Combinators](#combinators-ch-92), [move closures](#move-closures-ch-131), [Iterator](#iterator-ch-132)
+Related: [Combinators](#combinators-ch-92), [Fn traits](#fn-traits-ch-131), [Iterator](#iterator-ch-132), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [move closures](#move-closures-ch-131)
 In repo: `projects/closures/src/function_vs_closure.rs`
 
 ## Coherence (ch 10.2)
@@ -164,7 +165,7 @@ that compose flat pipelines instead of nested match pyramids:
 `_else` variants are lazy -- the default is computed only on the
 error path. Match stays preferable for genuinely multi-way logic.
 
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Closure](#closure-ch-131), [Iterator](#iterator-ch-132)
+Related: [Closure](#closure-ch-131), [Iterator](#iterator-ch-132), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
 In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
 Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
@@ -185,7 +186,7 @@ The smallest unit of compilation. Two forms: binary crates
 what "crate" colloquially means). A package may hold many binaries
 but at most one library.
 
-Related: [Crate root](#crate-root-ch-71), [Package](#package-ch-71)
+Related: [Crate root](#crate-root-ch-71), [Integration tests](#integration-tests-ch-113), [Package](#package-ch-71)
 In repo: `projects/aggregator` (both forms in one package)
 Book: https://doc.rust-lang.org/stable/book/ch07-01-packages-and-crates.html
 
@@ -323,7 +324,7 @@ demands doc comments on every public item -- including pub mod and
 enum variants, which is stricter than the book's own art example.
 A stricter sibling to try: missing_docs_in_private_items.
 
-Related: [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92)
+Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92)
 In repo: `projects/art/src/lib.rs` (the crate-root attribute)
 Book: https://doc.rust-lang.org/rustc/lints/levels.html
 
@@ -546,7 +547,7 @@ only with types having that behavior. `&impl Trait` is sugar for it;
 several bounds combine with `+`; `where` moves them out of the
 signature for readability.
 
-Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101), [Blanket implementations](#blanket-implementations-ch-102)
+Related: [Blanket implementations](#blanket-implementations-ch-102), [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/aggregator/src/lib.rs` (the notify family)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#trait-bound-syntax
 
