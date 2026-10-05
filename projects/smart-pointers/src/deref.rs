@@ -85,4 +85,8 @@ pub fn demo_my_box() {
 
     assert_eq!(5, x);
     assert_eq!(5, *y);
+
+    // No {:p} here: Pointer is opt-in and MyBox does not implement it
+    // (see the 15-8 note) -- *y speaks for the deref going through.
+    println!("x = {x}, *y = {}", *y);
 }
