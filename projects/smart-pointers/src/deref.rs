@@ -90,3 +90,32 @@ pub fn demo_my_box() {
     // (see the 15-8 note) -- *y speaks for the deref going through.
     println!("x = {x}, *y = {}", *y);
 }
+
+// Listings 15-11..15-12: hello takes &str, but &m is a &MyBox<String>.
+// Deref coercion inserts deref calls as many times as needed, resolved
+// entirely at COMPILE time (no runtime cost): &MyBox<String> -> &String
+// -> &str -- the second hop is String's own Deref impl in std.
+pub fn demo_deref_coercion() {
+    println!("\n*** demo of using the dereference coercion ***");
+
+    let m = MyBox::new(String::from("Rust"));
+    hello(&m); // the coercion chain at work
+
+    // Listing 15-13: without coercion, the same call would need the full
+    // manual unwrapping -- deref to the String, then slice it whole:
+    //
+    // hello(&(*m)[..]);
+}
+
+// Listing 15-11: a plain &str parameter -- the TARGET type that coercion
+// converts to. Signatures stay reference-simple thanks to Deref.
+fn hello(name: &str) {
+    println!("Hello, {name}!");
+}
+
+// The three coercion cases (Deref / DerefMut):
+//   &T     -> &U     when T: Deref<Target = U>
+//   &mut T -> &mut U when T: DerefMut<Target = U>
+//   &mut T -> &U     when T: Deref<Target = U>
+// The reverse (&T -> &mut T) NEVER happens: many shared references may
+// exist, so promoting one to unique would break the borrowing rules.

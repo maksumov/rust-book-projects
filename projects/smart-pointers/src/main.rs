@@ -8,4 +8,5 @@ fn main() {
     deref::demo_deref_operator();
     deref::demo_deref_on_box();
     deref::demo_my_box();
+    deref::demo_deref_coercion();
 }
