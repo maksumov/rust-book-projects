@@ -1,6 +1,8 @@
 // ch 15.2: Deref -- treating smart pointers like regular references
 // (listings 15-6..15-13).
 
+use std::ops::Deref;
+
 pub fn demo_deref_operator() {
     println!(
         "\n*** demo of using the dereference operator to follow a reference to an i32 value ***"
@@ -37,4 +39,50 @@ pub fn demo_deref_on_box() {
     // DIFFER: stack (x) vs heap (the Box's copied 5).
     println!("x = {x}, living at {:p}", &x); // a stack address
     println!("y points to {:p}, and *y = {}", y, *y); // a heap address, not &x
+}
+
+// Listing 15-8: a Box-like wrapper. Unlike the real Box<T>, it does NOT
+// put its data on the heap -- the point is the pointer-like BEHAVIOR
+// (Deref), not the storage. Side effect: our {:p} trick does not apply
+// here -- Pointer is an opt-in trait MyBox does not implement.
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+// Listing 15-9 (the attempt without Deref) fails -- the * operator only
+// works on references and Deref types:
+//
+// // error[E0614]: type `MyBox<{integer}>` cannot be dereferenced
+// //   --> src/main.rs:14:19
+// //    |
+// // 14 |     assert_eq!(5, *y);
+// //    |                   ^^ can't be dereferenced
+
+// Listing 15-10: implementing Deref teaches the compiler to dereference
+// us. The *y sugar desugars to *(y.deref()) -- ONE call, then a plain
+// dereference, so the substitution never recurses infinitely. deref
+// must return a reference: returning the value would MOVE it out of
+// self (ownership, ch 4).
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+pub fn demo_my_box() {
+    println!("\n*** demo of using the dereference operator on a MyBox<i32> ***");
+
+    // Listings 15-9..15-10: the assert trick now compiles -- *y on a
+    // MyBox<i32> goes through our deref.
+    let x = 5;
+    let y = MyBox::new(x);
+
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
 }
