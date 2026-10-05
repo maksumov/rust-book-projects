@@ -1,7 +1,9 @@
 // ch 15.3: Drop -- running code on cleanup (listings 15-14..15-16).
-// The second half of the smart pointer pattern (Deref + Drop): code
-// that runs when a value goes out of scope -- releasing files, locks,
-// heap memory.
+// The second half of the smart pointer pattern (Deref + Drop). Drop
+// releases what the auto field-drop will NOT: files, locks, sockets,
+// counters (Rc ahead) -- and memory held through RAW pointers or FFI,
+// which is why Box/Rc must deallocate in their Drop. Ordinary owning
+// fields (our String) clean themselves after drop() runs.
 
 // Listing 15-14: no explicit drop calls anywhere -- Rust inserts them at
 // scope end, in REVERSE creation order (d would go first; the early
