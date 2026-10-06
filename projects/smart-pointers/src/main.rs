@@ -1,7 +1,4 @@
-mod box_demo;
-mod deref;
-mod drop_demo;
-mod rc;
+use smart_pointers::{box_demo, deref, drop_demo, rc};
 
 fn main() {
     box_demo::demo_box();
