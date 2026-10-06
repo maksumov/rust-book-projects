@@ -1,6 +1,7 @@
 mod box_demo;
 mod deref;
 mod drop_demo;
+mod rc;
 
 fn main() {
     box_demo::demo_box();
@@ -12,4 +13,6 @@ fn main() {
     deref::demo_deref_coercion();
 
     drop_demo::demo_drop_example();
+
+    rc::demo_list();
 }
