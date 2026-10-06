@@ -15,4 +15,5 @@ fn main() {
     drop_demo::demo_drop_example();
 
     rc::demo_list();
+    rc::demo_strong_count();
 }

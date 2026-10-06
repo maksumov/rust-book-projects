@@ -61,3 +61,27 @@ pub fn demo_list() {
     println!("sum of the b values = {}", sum(&b));
     println!("sum of the c values = {}", sum(&c));
 }
+
+// Listing 15-19: strong_count through the lifecycle. The inner scope is
+// the point: closing it drops _c, and Rc's OWN Drop decrements the
+// counter -- the "counters, not memory" case from drop_demo's header.
+// Nobody calls any decrement manually: clone up, scope-end down.
+// The name is strong_count, not count: Rc also tracks a weak_count --
+// Weak<T> references (Rc::downgrade) that do NOT keep the value alive;
+// they arrive in 15.6 as the reference-cycle antidote.
+pub fn demo_strong_count() {
+    println!("\n*** demo of the strong count of a shared Rc<List> ***");
+
+    let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+    println!("count after creating a = {}", Rc::strong_count(&a));
+
+    let _b = Cons(3, Rc::clone(&a));
+    println!("count after creating b = {}", Rc::strong_count(&a));
+
+    {
+        let _c = Cons(4, Rc::clone(&a));
+        println!("count after creating c = {}", Rc::strong_count(&a));
+    }
+
+    println!("count after c goes out of scope = {}", Rc::strong_count(&a));
+}
