@@ -2,5 +2,6 @@
 name = "smart-pointers"
 version = "0.1.0"
 edition = "2024"
+exclude = ["CHEATSHEET.md"] # git-tracked files ship by default; keep the file-set minimal
 
 [dependencies]
