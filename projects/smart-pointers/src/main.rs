@@ -1,4 +1,4 @@
-use smart_pointers::{box_demo, deref, drop_demo, rc};
+use smart_pointers::{box_demo, deref, drop_demo, rc, refcell};
 
 fn main() {
     box_demo::demo_box();
@@ -13,4 +13,6 @@ fn main() {
 
     rc::demo_list();
     rc::demo_strong_count();
+
+    refcell::demo_refcell();
 }
