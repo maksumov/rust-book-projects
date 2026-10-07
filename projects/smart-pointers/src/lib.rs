@@ -1,4 +1,5 @@
 pub mod box_demo;
+pub mod cycles;
 pub mod deref;
 pub mod drop_demo;
 pub mod messenger;
