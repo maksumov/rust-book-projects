@@ -17,4 +17,5 @@ fn main() {
     refcell::demo_refcell();
 
     cycles::demo_cycle();
+    cycles::demo_weak_tree();
 }

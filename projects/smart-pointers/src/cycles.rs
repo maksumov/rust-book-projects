@@ -66,3 +66,57 @@ pub fn demo_cycle() {
     println!("sum depth 4 from a = {}", sum_up_to(&a, 4)); // 5+10+5+10: the cycle repeats
     println!("sum depth 2 from b = {}", sum_up_to(&b, 2)); // 10+5, cut by the guard
 }
+
+// Listing 15-27: a tree that OWNS its children -- Rc links and a
+// RefCell so children can be modified later. No parent yet: that
+// direction is where the cycle risk lives (15-28 makes it Weak).
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+pub fn demo_weak_tree() {
+    println!("\n*** demo of a weak tree ***");
+
+    // the count prints are beyond the book here -- 15-29 will print
+    // strong AND weak counts around an inner scope, the formal version.
+
+    let leaf = Rc::new(Node {
+        value: 3,
+        children: RefCell::new(vec![]),
+    });
+
+    println!(
+        "strong count after creating leaf = {}",
+        Rc::strong_count(&leaf)
+    );
+
+    let branch = Rc::new(Node {
+        value: 5,
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+
+    println!(
+        "strong count after creating branch = {}",
+        Rc::strong_count(&leaf)
+    );
+
+    // beyond the book: the tree's sum. NOTE THE SHAPE -- Node is a
+    // struct, not an enum: there is no variant to match on. The base
+    // case is the EMPTY children vector (an iterator yielding nothing
+    // sums to 0), unlike List's Nil variant:
+    //   List: Cons(v, t) => v + sum(t), Nil => 0
+    //   Node: value + children.iter().map(sum).sum() -- no match at all
+    fn tree_sum(node: &Node) -> i32 {
+        node.value
+            + node
+                .children
+                .borrow()
+                .iter()
+                .map(|child| tree_sum(child))
+                .sum::<i32>()
+    }
+
+    println!("tree sum = {}", tree_sum(&branch));
+}
