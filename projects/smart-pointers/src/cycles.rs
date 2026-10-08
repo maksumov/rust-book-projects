@@ -6,7 +6,7 @@
 
 use List::{Cons, Nil};
 use std::cell::RefCell;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 // Listing 15-25: the tail slot is now RefCell<Rc<List>> -- rewirable;
 // tail() exposes it for the demo.
@@ -68,11 +68,13 @@ pub fn demo_cycle() {
 }
 
 // Listing 15-27: a tree that OWNS its children -- Rc links and a
-// RefCell so children can be modified later. No parent yet: that
-// direction is where the cycle risk lives (15-28 makes it Weak).
+// RefCell so children can be modified later. The parent field below
+// arrives with 15-28 -- as Weak, because that upward direction is
+// where the cycle risk lives.
 #[derive(Debug)]
 struct Node {
     value: i32,
+    parent: RefCell<Weak<Node>>,
     children: RefCell<Vec<Rc<Node>>>,
 }
 
@@ -84,9 +86,16 @@ pub fn demo_weak_tree() {
 
     let leaf = Rc::new(Node {
         value: 3,
+        parent: RefCell::new(Weak::new()),
         children: RefCell::new(vec![]),
     });
 
+    // Listing 15-28: the parent direction -- Weak, not Rc. Parents own
+    // children; a child owning its parent would re-create the 15-26
+    // disease (strong counts never reaching zero). Weak::new() is the
+    // no-parent state; Rc::downgrade links non-owningly; upgrade()
+    // returns Option<Rc<Node>>: None first, Some after the wiring.
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
     println!(
         "strong count after creating leaf = {}",
         Rc::strong_count(&leaf)
@@ -94,9 +103,19 @@ pub fn demo_weak_tree() {
 
     let branch = Rc::new(Node {
         value: 5,
+        parent: RefCell::new(Weak::new()),
         children: RefCell::new(vec![Rc::clone(&leaf)]),
     });
 
+    // Rc::downgrade(&Rc<T>) -> Weak<T>: THE way to obtain a weak link.
+    // It bumps weak_count, not strong_count -- the value can still be
+    // dropped once all STRONG owners are gone (what 15-29 will observe).
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+    // {:#?} (beyond the book): pretty Debug -- Weak links print as
+    // `(Weak)` instead of following them, which is why printing this
+    // tree never overflows (unlike the cycle in demo_cycle).
+    println!("leaf parent = {:#?}", leaf.parent.borrow().upgrade());
     println!(
         "strong count after creating branch = {}",
         Rc::strong_count(&leaf)
