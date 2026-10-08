@@ -81,8 +81,8 @@ struct Node {
 pub fn demo_weak_tree() {
     println!("\n*** demo of a weak tree ***");
 
-    // the count prints are beyond the book here -- 15-29 will print
-    // strong AND weak counts around an inner scope, the formal version.
+    // Listing 15-29: the formal version -- branch lives in an inner
+    // scope, and strong AND weak counts tell the story around it.
 
     let leaf = Rc::new(Node {
         value: 3,
@@ -96,46 +96,69 @@ pub fn demo_weak_tree() {
     // no-parent state; Rc::downgrade links non-owningly; upgrade()
     // returns Option<Rc<Node>>: None first, Some after the wiring.
     println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+
     println!(
-        "strong count after creating leaf = {}",
-        Rc::strong_count(&leaf)
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&leaf),
+        Rc::weak_count(&leaf),
     );
 
-    let branch = Rc::new(Node {
-        value: 5,
-        parent: RefCell::new(Weak::new()),
-        children: RefCell::new(vec![Rc::clone(&leaf)]),
-    });
+    {
+        let branch = Rc::new(Node {
+            value: 5,
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(vec![Rc::clone(&leaf)]),
+        });
 
-    // Rc::downgrade(&Rc<T>) -> Weak<T>: THE way to obtain a weak link.
-    // It bumps weak_count, not strong_count -- the value can still be
-    // dropped once all STRONG owners are gone (what 15-29 will observe).
-    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+        // Rc::downgrade(&Rc<T>) -> Weak<T>: THE way to obtain a weak link.
+        // It bumps weak_count, not strong_count -- the value can still be
+        // dropped once all STRONG owners are gone (observed after the
+        // inner scope below).
+        *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
 
-    // {:#?} (beyond the book): pretty Debug -- Weak links print as
-    // `(Weak)` instead of following them, which is why printing this
-    // tree never overflows (unlike the cycle in demo_cycle).
-    println!("leaf parent = {:#?}", leaf.parent.borrow().upgrade());
-    println!(
-        "strong count after creating branch = {}",
-        Rc::strong_count(&leaf)
-    );
+        println!(
+            "branch strong = {}, weak = {}",
+            Rc::strong_count(&branch),
+            Rc::weak_count(&branch),
+        );
 
-    // beyond the book: the tree's sum. NOTE THE SHAPE -- Node is a
-    // struct, not an enum: there is no variant to match on. The base
-    // case is the EMPTY children vector (an iterator yielding nothing
-    // sums to 0), unlike List's Nil variant:
-    //   List: Cons(v, t) => v + sum(t), Nil => 0
-    //   Node: value + children.iter().map(sum).sum() -- no match at all
-    fn tree_sum(node: &Node) -> i32 {
-        node.value
-            + node
-                .children
-                .borrow()
-                .iter()
-                .map(|child| tree_sum(child))
-                .sum::<i32>()
+        println!(
+            "leaf strong = {}, weak = {}",
+            Rc::strong_count(&leaf),
+            Rc::weak_count(&leaf),
+        );
+
+        // {:#?} (beyond the book): pretty Debug -- Weak links print as
+        // `(Weak)` instead of following them, which is why printing this
+        // tree never overflows (unlike the cycle in demo_cycle).
+        println!("leaf parent = {:#?}", leaf.parent.borrow().upgrade());
+
+        // beyond the book: the tree's sum. NOTE THE SHAPE -- Node is a
+        // struct, not an enum: there is no variant to match on. The base
+        // case is the EMPTY children vector (an iterator yielding nothing
+        // sums to 0), unlike List's Nil variant:
+        //   List: Cons(v, t) => v + sum(t), Nil => 0
+        //   Node: value + children.iter().map(sum).sum() -- no match at all
+        fn tree_sum(node: &Node) -> i32 {
+            node.value
+                + node
+                    .children
+                    .borrow()
+                    .iter()
+                    .map(|child| tree_sum(child))
+                    .sum::<i32>()
+        }
+
+        println!("tree sum = {}", tree_sum(&branch));
     }
 
-    println!("tree sum = {}", tree_sum(&branch));
+    // THE punchline: upgrade() returns None -- branch was dropped at the
+    // scope end even though leaf's weak link still exists. weak_count
+    // never kept the value alive: no leak, no cycle -- the antidote works.
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+    println!(
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&leaf),
+        Rc::weak_count(&leaf),
+    );
 }
