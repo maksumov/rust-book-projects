@@ -11,4 +11,5 @@ fn main() {
     channels::demo_multiple_producers();
 
     shared_state::demo_mutex_api();
+    shared_state::demo_shared_counter();
 }
