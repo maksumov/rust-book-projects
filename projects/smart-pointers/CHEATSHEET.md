@@ -1,4 +1,4 @@
-# smart pointers decision cheatsheet (chapter 15.1-15.5)
+# smart pointers decision cheatsheet (chapter 15)
 
 Which standard-library smart pointer to reach for, and what changes
 when one is involved. All outputs below are examples captured from
@@ -11,7 +11,7 @@ this project's demos (plus one scratch capture for the panic).
 | `Box<T>`        | one    | immutable or mutable | compile time  | any     |
 | `Rc<T>`         | many   | immutable only     | compile time    | single  |
 | `RefCell<T>`    | one    | immutable or mutable | RUNTIME (panic) | single |
-| `Weak<T>` (15.6)| none -- non-owning; `upgrade()` returns `Option<Rc<T>>` | | | single |
+| `Weak<T>`         | none (non-owning) | via `upgrade()` -> `Option<Rc<T>>` | — | single |
 
 The chapter's combination: `Rc<RefCell<T>>` -- many owners AND
 mutation, borrowing rules enforced at runtime.
@@ -76,8 +76,31 @@ heap region. `MyBox` cannot participate: `Pointer` is opt-in and our
 wrapper does not implement it (nor does `{:?}` reveal anything -- Debug
 on a reference transparently formats the pointee).
 
+## Weak links (15.6): the reference-cycle antidote
+
+Captured from demo_weak_tree (listing 15-29) -- branch lives in an
+inner scope, leaf holds a weak parent link to it:
+
+```
+branch strong = 1, weak = 1      <- the weak link counts... but not as an owner
+leaf parent = Some(...)          <- upgrade() works inside the scope
+leaf parent = None               <- after the scope: the value is DROPPED
+leaf strong = 1, weak = 0
+```
+
+upgrade() returning Option is the whole safety story: a weak link
+never keeps the value alive -- and never dangles either.
+
+## Going further: implementing your own smart pointers
+
+The book's own pointer at the end of this chapter: The Rustonomicon
+(https://doc.rust-lang.org/nomicon/) -- the manual of unsafe Rust:
+raw pointers, aliasing invariants, safe APIs over unsafe internals.
+Exactly the toolkit behind Box/Rc/RefCell (raw-pointer fields,
+unsafe wrapped in safe methods). Best read AFTER ch 20 (Unsafe
+Rust) -- it assumes the whole book.
+
 ## Coming with ch 16
 
 `Arc` = thread-safe `Rc`; `Mutex` = thread-safe `RefCell`; `RwLock`
-is the reader/writer refinement. Weak references land in 15.6 as the
-reference-cycle antidote.
+is the reader/writer refinement.
