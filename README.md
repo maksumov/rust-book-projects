@@ -22,6 +22,7 @@ Code-along projects and exercises from
 | 13 | Functional Language Features: Closures and Iterators | `projects/closures`, `projects/iterators` | 13.3 improves `projects/minigrep`; + `exercises/13_minigrep` |
 | 14 | More About Cargo and Crates.io | `projects/my_crate`, `projects/art`, `projects/add` | doctests as tests; `#![warn(missing_docs)]`, `publish = false` — beyond the book; + `CHEATSHEET.md` (cargo package commands); + `exercises/14_publishing`; workspaces (14.3): + `CHEATSHEET.md` in `projects/add`, `exercises/14_workspace` |
 | 15 | Smart Pointers | `projects/smart-pointers` | lib+bin split; + `CHEATSHEET.md` (pointer decision table, weak links, Rustonomicon pointer); terms in `GLOSSARY.md` (ch 15 audit: 8 entries) |
+| 16 | Fearless Concurrency | `projects/concurrency` | |
 
 ## Other artifacts
 
