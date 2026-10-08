@@ -8,6 +8,7 @@ the term first appeared in the study flow. Related links are
 bidirectional: if X lists Y, then Y lists X.
 
 ## Table of Contents
+- [Arc, atomic reference counting (ch 16.3)](#arc-atomic-reference-counting-ch-163)
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
 - [Binary target (ch 14.4)](#binary-target-ch-144)
@@ -16,6 +17,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Borrow-based lookup (ch 8.3)](#borrow-based-lookup-ch-83)
 - [Borrowing (ch 4.2)](#borrowing-ch-42)
 - [Buffer overread (ch 9.1)](#buffer-overread-ch-91)
+- [Channel, mpsc (ch 16.2)](#channel-mpsc-ch-162)
 - [Closure (ch 13.1)](#closure-ch-131)
 - [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
@@ -24,9 +26,11 @@ bidirectional: if X lists Y, then Y lists X.
 - [Crate root (ch 7.1)](#crate-root-ch-71)
 - [Custom Cargo subcommands (ch 14.5)](#custom-cargo-subcommands-ch-145)
 - [Data race (ch 4.2)](#data-race-ch-42)
+- [Deadlock (ch 16.3)](#deadlock-ch-163)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Destructor (ch 15.3)](#destructor-ch-153)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
+- [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Indirection (ch 15.1)](#indirection-ch-151)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
@@ -38,9 +42,11 @@ bidirectional: if X lists Y, then Y lists X.
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Lint levels (ch 14.2)](#lint-levels-ch-142)
 - [Memory leak (ch 15.6)](#memory-leak-ch-156)
+- [Message passing vs shared state (ch 16.0)](#message-passing-vs-shared-state-ch-160)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
 - [move closures (ch 13.1)](#move-closures-ch-131)
+- [Mutex and lock (ch 16.3)](#mutex-and-lock-ch-163)
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
@@ -53,6 +59,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Re-export (ch 14.2)](#re-export-ch-142)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Resolver versions (ch 14.3)](#resolver-versions-ch-143)
+- [Send and Sync (ch 16.4)](#send-and-sync-ch-164)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
@@ -70,6 +77,19 @@ bidirectional: if X lists Y, then Y lists X.
 - [Yank (ch 14.2)](#yank-ch-142)
 - [Zero-cost abstraction (ch 13.4)](#zero-cost-abstraction-ch-134)
 ---
+
+## Arc, atomic reference counting (ch 16.3)
+
+The thread-safe sibling of Rc<T>: the SAME API, but the reference
+count is bumped with atomic operations, safe under concurrency.
+Arc::clone per thread, Mutex inside -- the Arc<Mutex<T>> combo gives
+multiple owners AND mutation across threads. Not the default
+anywhere: thread safety is a performance penalty paid only when
+needed.
+
+Related: [Mutex and lock](#mutex-and-lock-ch-163), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Send and Sync](#send-and-sync-ch-164)
+In repo: `projects/concurrency/src/shared_state.rs` (demo_shared_counter)
+Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html#atomic-reference-counting-with-arct
 
 ## Associated functions (ch 5.3)
 
@@ -159,6 +179,20 @@ Related: —
 In repo: `projects/panic/src/backtrace.rs` (v[99] panics)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html
 
+## Channel, mpsc (ch 16.2)
+
+A channel has two halves: transmitter (tx) and receiver (rx);
+closed when either is dropped. mpsc = multiple producer, single
+consumer: clone the transmitter, never the receiver. send takes
+OWNERSHIP of the value (the sender cannot use it afterwards); recv
+blocks until a value or the close; rx doubles as an iterator ending
+at close. tx.clone() is a true capability clone, unlike Rc::clone's
+refcount bump.
+
+Related: [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Move](#move-ch-41)
+In repo: `projects/concurrency/src/channels.rs`
+Book: https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
+
 ## Closure (ch 13.1)
 
 An anonymous function, storable in a variable or passable as an
@@ -244,9 +278,21 @@ synchronization -- undefined behavior in most languages. Rust's
 borrow rules (one mutable XOR many immutable) prevent data races
 at compile time.
 
-Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42)
+Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42), [Fearless concurrency](#fearless-concurrency-ch-160)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
+
+## Deadlock (ch 16.3)
+
+Two threads, two locks: each acquires one and waits forever for
+the other. The Mutex-era sibling of Rc's reference cycles -- a
+logic bug that is memory safe and that the compiler cannot catch
+(Rust prevents data races, not deadlocks). Mitigations: consistent
+lock ordering, or a channel redesign (single ownership, no locks).
+
+Related: [Memory leak](#memory-leak-ch-156), [Mutex and lock](#mutex-and-lock-ch-163)
+In repo: `exercises/16_deadlock` (the book's dare, as an exercise)
+Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
 
 ## Deref coercion (ch 4.2)
 
@@ -290,6 +336,18 @@ sections: # Examples, # Panics, # Errors, # Safety.
 Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142)
 In repo: `projects/art/src/lib.rs` (/// and //! incl. Examples/Errors)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments
+
+## Fearless concurrency (ch 16.0)
+
+The chapter's namesake: ownership and type checking turn many
+concurrency errors into COMPILE-TIME errors -- a wrong program
+refuses to build instead of racing in production. The tools are
+mostly standard-library types (threads, channels, Mutex, Arc)
+gated by two language-level marker traits, Send and Sync.
+
+Related: [Data race](#data-race-ch-42), [Send and Sync](#send-and-sync-ch-164)
+In repo: `projects/concurrency` (the whole chapter)
+Book: https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
 
 ## Fn traits (ch 13.1)
 
@@ -350,7 +408,7 @@ mock objects recording calls behind &self. Single-threaded;
 Mutex<T> is the threaded sibling (ch 16). Rc<RefCell<T>> combines
 multiple owners with mutation.
 
-Related: [Rc and reference counting](#rc-and-reference-counting-ch-154), [Test double and mock objects](#test-double-and-mock-objects-ch-155)
+Related: [Mutex and lock](#mutex-and-lock-ch-163), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Test double and mock objects](#test-double-and-mock-objects-ch-155)
 In repo: `projects/smart-pointers/src/refcell.rs` and `messenger.rs`
 Book: https://doc.rust-lang.org/stable/book/ch15-05-interior-mutability.html
 
@@ -422,9 +480,23 @@ reference cycles whose strong counts never reach zero -- a logic
 bug the compiler cannot catch. Guards: tests and reviews, or
 breaking the cycle with Weak<T>.
 
-Related: [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+Related: [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156), [Deadlock](#deadlock-ch-163)
 In repo: `projects/smart-pointers/src/cycles.rs` (the frozen 2/2 counts)
 Book: https://doc.rust-lang.org/stable/book/ch15-06-reference-cycles.html
+
+## Message passing vs shared state (ch 16.0)
+
+The two approaches to concurrency, both first-class in Rust
+(the Go slogan: "Do not communicate by sharing memory; instead,
+share memory by communicating"). Message passing = channels, where
+ownership of each value TRANSFERS to the receiver -- single
+ownership, like moving. Shared state = Mutex-protected data with
+multiple owners -- like Rc's shared ownership, with locking instead
+of borrow checking.
+
+Related: [Channel, mpsc](#channel-mpsc-ch-162), [Mutex and lock](#mutex-and-lock-ch-163)
+In repo: `projects/concurrency/src/channels.rs` and `shared_state.rs`
+Book: https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
 
 ## Monomorphization (ch 10.1)
 
@@ -447,7 +519,7 @@ variable dies. Not a shallow copy -- precisely because of the
 invalidation; this prevents double free. Rust never deep-copies
 implicitly (explicit deep copy: clone).
 
-Related: [Borrowing](#borrowing-ch-42), [Ownership](#ownership-ch-41), [move closures](#move-closures-ch-131)
+Related: [Borrowing](#borrowing-ch-42), [Channel, mpsc](#channel-mpsc-ch-162), [Ownership](#ownership-ch-41), [move closures](#move-closures-ch-131)
 In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
 
@@ -460,6 +532,20 @@ demands 'static data).
 
 Related: [Closure](#closure-ch-131), [Move](#move-ch-41), [Static lifetime](#static-lifetime-ch-103)
 In repo: `projects/closures/src/capturing_references.rs`
+
+## Mutex and lock (ch 16.3)
+
+Mutual exclusion: only one thread holds the data at a time. The
+data lives BEHIND Mutex<T> -- the type system forces lock() before
+any use. The returned MutexGuard derefs to the data (Deref) and
+releases the lock at scope end (Drop) -- both ch 15 themes in one
+type; forgetting to unlock is impossible. lock() returns Result: a
+panicking holder poisons the mutex. Mutex provides interior
+mutability, like RefCell -- with deadlocks as its uncatchable bug.
+
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Interior mutability](#interior-mutability-ch-155), [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Deadlock](#deadlock-ch-163)
+In repo: `projects/concurrency/src/shared_state.rs` (demo_mutex_api)
+Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
 
 ## Newtype pattern (ch 10.2)
 
@@ -556,7 +642,7 @@ thread (Arc<T> is the threaded sibling, ch 16). The convention of
 writing Rc::clone(&a) rather than a.clone() exists to keep deep
 copies visually distinguishable from counter bumps.
 
-Related: [Interior mutability](#interior-mutability-ch-155), [Memory leak](#memory-leak-ch-156), [Smart pointers](#smart-pointers-ch-150), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Interior mutability](#interior-mutability-ch-155), [Memory leak](#memory-leak-ch-156), [Smart pointers](#smart-pointers-ch-150), [Strong vs weak references](#strong-vs-weak-references-ch-156)
 In repo: `projects/smart-pointers/src/rc.rs`
 Book: https://doc.rust-lang.org/stable/book/ch15-04-rc.html
 
@@ -600,6 +686,20 @@ with a warning.
 Related: [Workspace](#workspace-ch-143)
 In repo: `projects/add/Cargo.toml` (the workspace root)
 Book: https://doc.rust-lang.org/cargo/reference/resolver.html
+
+## Send and Sync (ch 16.4)
+
+The two language-level marker traits (no methods) behind fearless
+concurrency. Send: ownership of the type may be TRANSFERRED between
+threads (Rc is not Send -- its count is not thread-safe; Arc is).
+Sync: &T is safe to share across threads (&T: Send); RefCell/Cell
+are not Sync, Mutex is. Compositions inherit automatically; manual
+impls are unsafe (ch 20). The E0277 of the Rc counter attempt is
+these traits talking.
+
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160)
+In repo: `projects/concurrency/src/shared_state.rs` (the 16-14 comment)
+Book: https://doc.rust-lang.org/stable/book/ch16-04-extensible-concurrency-sync-and-send.html
 
 ## Shadowing (ch 3.1)
 
