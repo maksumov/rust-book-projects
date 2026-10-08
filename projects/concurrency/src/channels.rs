@@ -7,6 +7,7 @@
 
 use std::sync::mpsc;
 use std::thread;
+use std::time::Duration;
 
 pub fn demo_channel() {
     println!("\n*** demo of channels: a spawned thread sends, main receives ***");
@@ -45,4 +46,82 @@ pub fn demo_channel() {
 
     let received = rx.recv().unwrap();
     println!("Got: {received}");
+}
+
+pub fn demo_channel_stream() {
+    println!("\n*** demo of channels: sending multiple messages and pausing between each one ***");
+
+    // Listing 16-10: the producer sends four strings, pausing a second
+    // between sends. Main has no sleep of its own -- the pauses in the
+    // OUTPUT prove main is waiting on the channel. No explicit recv
+    // anymore: rx IS an iterator, and the loop ends when the channel
+    // closes (all senders dropped -- here, when the spawned thread ends).
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hi"),
+            String::from("from"),
+            String::from("the"),
+            String::from("thread"),
+        ];
+
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx {
+        println!("Got: {received}");
+    }
+}
+
+pub fn demo_multiple_producers() {
+    println!("\n*** demo of channels: mpsc - multiple producers, one receiver ***");
+
+    // Listing 16-11: clone the transmitter BEFORE the first thread:
+    // tx1 goes to thread one, the ORIGINAL tx moves into thread two.
+    // One receiver consumes both streams, interleaved in an order the
+    // scheduler picks per run -- the nondeterminism caveat of the
+    // module header, now by design.
+    let (tx, rx) = mpsc::channel();
+
+    // A true clone of the SENDING CAPABILITY (not a refcount bump like
+    // Rc::clone, ch 15): each thread gets an independent transmitter,
+    // and the channel closes only when ALL of them are dropped -- which
+    // is exactly what ends the for loop below.
+    let tx1 = tx.clone();
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hi"),
+            String::from("from"),
+            String::from("the"),
+            String::from("thread"),
+        ];
+
+        for val in vals {
+            tx1.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("more"),
+            String::from("messages"),
+            String::from("for"),
+            String::from("you"),
+        ];
+
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx {
+        println!("Got: {received}");
+    }
 }

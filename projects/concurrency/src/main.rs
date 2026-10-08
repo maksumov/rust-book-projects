@@ -7,4 +7,6 @@ fn main() {
     threads::demo_move_closures();
 
     channels::demo_channel();
+    channels::demo_channel_stream();
+    channels::demo_multiple_producers();
 }
