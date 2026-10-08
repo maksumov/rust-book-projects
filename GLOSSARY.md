@@ -25,15 +25,19 @@ bidirectional: if X lists Y, then Y lists X.
 - [Custom Cargo subcommands (ch 14.5)](#custom-cargo-subcommands-ch-145)
 - [Data race (ch 4.2)](#data-race-ch-42)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
+- [Destructor (ch 15.3)](#destructor-ch-153)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
+- [Indirection (ch 15.1)](#indirection-ch-151)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
+- [Interior mutability (ch 15.5)](#interior-mutability-ch-155)
 - [Iterator (ch 13.2)](#iterator-ch-132)
 - [Iterator adapters vs consuming adapters (ch 13.2)](#iterator-adapters-vs-consuming-adapters-ch-132)
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Lint levels (ch 14.2)](#lint-levels-ch-142)
+- [Memory leak (ch 15.6)](#memory-leak-ch-156)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
 - [move closures (ch 13.1)](#move-closures-ch-131)
@@ -45,14 +49,18 @@ bidirectional: if X lists Y, then Y lists X.
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [RAII (ch 4.1)](#raii-ch-41)
+- [Rc and reference counting (ch 15.4)](#rc-and-reference-counting-ch-154)
 - [Re-export (ch 14.2)](#re-export-ch-142)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Resolver versions (ch 14.3)](#resolver-versions-ch-143)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
 - [Slice (ch 4.3)](#slice-ch-43)
+- [Smart pointers (ch 15.0)](#smart-pointers-ch-150)
 - [Standard output vs standard error (ch 12.6)](#standard-output-vs-standard-error-ch-126)
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
+- [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
+- [Test double and mock objects (ch 15.5)](#test-double-and-mock-objects-ch-155)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
@@ -244,11 +252,31 @@ Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.htm
 
 The compiler converts `&String` to `&str` (and similar reference
 conversions) at call sites automatically -- why `s1 + &s2` works
-when `add` actually takes `&str`. Covered in depth in chapter 15.
+when `add` actually takes `&str`. The depth version (ch 15.2): the
+coercion chains Deref::deref calls -- &MyBox<String> -> &String ->
+&str -- as many times as needed, resolved at compile time. The
+three cases: &T -> &U and the one-way &mut T -> &U (Deref), plus
+&mut T -> &mut U (DerefMut); &T -> &mut T never happens.
 
-Related: [Borrow-based lookup](#borrow-based-lookup-ch-83), [Slice](#slice-ch-43)
-In repo: `projects/collections/src/demos/strings.rs` (concatenation comment)
+Related: [Borrow-based lookup](#borrow-based-lookup-ch-83), [Slice](#slice-ch-43), [Smart pointers](#smart-pointers-ch-150)
+In repo: `projects/collections/src/demos/strings.rs` (concatenation comment); `projects/smart-pointers/src/deref.rs` (the coercion demo)
 Book: https://doc.rust-lang.org/stable/book/ch08-02-strings.html#concatenating-with--or-format
+
+## Destructor (ch 15.3)
+
+The general term for a cleanup function, the counterpart of a
+constructor; Drop::drop is Rust's destructor -- auto-inserted at
+scope end, in reverse creation order. Explicit calls are forbidden
+(E0040 -- a double free); std::mem::drop is the legal early drop.
+The division of responsibility is enforced: after drop() runs, the
+fields drop recursively by themselves (moving them out is E0509).
+Drop releases what the auto field-drop will NOT: non-memory
+resources, counters (Rc's Drop decrements strong_count), and memory
+held through raw pointers or FFI -- why Box/Rc deallocate in Drop.
+
+Related: [RAII](#raii-ch-41), [Smart pointers](#smart-pointers-ch-150)
+In repo: `projects/smart-pointers/src/drop_demo.rs` (module header)
+Book: https://doc.rust-lang.org/stable/book/ch15-03-drop.html
 
 ## Documentation comments (ch 14.2)
 
@@ -274,6 +302,20 @@ takes `FnOnce`, `sort_by_key` takes `FnMut`).
 Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101)
 In repo: `projects/closures/src/fn_traits.rs`
 
+## Indirection (ch 15.1)
+
+Storing a POINTER to the next value instead of the value inline.
+An enum reserves max(variant sizes) + tag; a recursive variant
+makes that equation self-referential (E0072, "infinite size").
+A pointer occupies usize bytes regardless of the pointee, so a
+Box<List> tail gives every node a fixed size -- the nesting moves
+to the heap. For the cons list, indirection is the ONLY feature
+needed: no Rc/RefCell machinery.
+
+Related: [Smart pointers](#smart-pointers-ch-150)
+In repo: `projects/smart-pointers/src/box_demo.rs` (commented E0072 + size math)
+Book: https://doc.rust-lang.org/stable/book/ch15-01-box.html#enabling-recursive-types-with-boxes
+
 ## Inner vs outer attributes (ch 9.2)
 
 `#[...]` is an OUTER attribute: it attaches to the next item (e.g.
@@ -296,6 +338,21 @@ is the remedy.
 Related: [Crate](#crate-ch-71), [Unit tests](#unit-tests-ch-113)
 In repo: `projects/testing/tests/integration_test.rs`
 Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#integration-tests
+
+## Interior mutability (ch 15.5)
+
+A design pattern: mutating data even though only an immutable
+reference to it exists -- normally forbidden by the borrowing
+rules. Built on unsafe code wrapped in a safe API: RefCell<T>
+moves the borrow checking to RUNTIME (a violation panics -- already
+borrowed -- instead of failing to compile). The canonical use:
+mock objects recording calls behind &self. Single-threaded;
+Mutex<T> is the threaded sibling (ch 16). Rc<RefCell<T>> combines
+multiple owners with mutation.
+
+Related: [Rc and reference counting](#rc-and-reference-counting-ch-154), [Test double and mock objects](#test-double-and-mock-objects-ch-155)
+In repo: `projects/smart-pointers/src/refcell.rs` and `messenger.rs`
+Book: https://doc.rust-lang.org/stable/book/ch15-05-interior-mutability.html
 
 ## Iterator (ch 13.2)
 
@@ -356,6 +413,18 @@ A stricter sibling to try: missing_docs_in_private_items.
 Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92)
 In repo: `projects/art/src/lib.rs` (the crate-root attribute)
 Book: https://doc.rust-lang.org/rustc/lints/levels.html
+
+## Memory leak (ch 15.6)
+
+Memory that is never cleaned up. Rust does NOT guarantee
+leak-freedom: leaks are memory safe. Rc<T> + RefCell<T> can form
+reference cycles whose strong counts never reach zero -- a logic
+bug the compiler cannot catch. Guards: tests and reviews, or
+breaking the cycle with Weak<T>.
+
+Related: [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+In repo: `projects/smart-pointers/src/cycles.rs` (the frozen 2/2 counts)
+Book: https://doc.rust-lang.org/stable/book/ch15-06-reference-cycles.html
 
 ## Monomorphization (ch 10.1)
 
@@ -474,9 +543,22 @@ Resource Acquisition Is Initialization (a C++ term): resources are
 released at the end of an item's lifetime. Rust's drop-at-scope-end
 is this pattern -- the book notes the kinship explicitly.
 
-Related: [Ownership](#ownership-ch-41)
+Related: [Destructor](#destructor-ch-153), [Ownership](#ownership-ch-41)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
+
+## Rc and reference counting (ch 15.4)
+
+Rc<T>: multiple owners of one value. Rc::clone bumps strong_count
+(a counter increment, never a deep copy); the Drop impl decrements;
+at zero the value is cleaned. Immutable access only, single
+thread (Arc<T> is the threaded sibling, ch 16). The convention of
+writing Rc::clone(&a) rather than a.clone() exists to keep deep
+copies visually distinguishable from counter bumps.
+
+Related: [Interior mutability](#interior-mutability-ch-155), [Memory leak](#memory-leak-ch-156), [Smart pointers](#smart-pointers-ch-150), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+In repo: `projects/smart-pointers/src/rc.rs`
+Book: https://doc.rust-lang.org/stable/book/ch15-04-rc.html
 
 ## Re-export (ch 14.2)
 
@@ -551,6 +633,20 @@ Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42)
 In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
 
+## Smart pointers (ch 15.0)
+
+Data structures acting like a pointer while OWNING the data they
+point to (references only borrow); built as structs implementing
+Deref (behave like references) and Drop (custom cleanup). Box::new
+allocates fresh and holds a copy (Copy types) or the moved value --
+a Box can never alias its source. The chapter's set: Box (heap),
+Rc (shared ownership), RefCell (runtime borrow rules), Weak
+(non-owning).
+
+Related: [Deref coercion](#deref-coercion-ch-42), [Destructor](#destructor-ch-153), [Indirection](#indirection-ch-151), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+In repo: `projects/smart-pointers` (the whole chapter)
+Book: https://doc.rust-lang.org/stable/book/ch15-00-smart-pointers.html
+
 ## Standard output vs standard error (ch 12.6)
 
 The two output streams of a command line program: stdout carries
@@ -574,6 +670,32 @@ the lifetimes instead of reaching for it.
 Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131)
 In repo: `projects/lifetimes/src/excerpt.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
+
+## Strong vs weak references (ch 15.6)
+
+Strong links (Rc::clone) express ownership and keep the value
+alive; weak links (Rc::downgrade -> Weak<T>) do neither --
+weak_count is ignored when deciding to drop. Before use a weak
+link must upgrade() to an Option<Rc<T>>: None means the value is
+already gone, so weak links never dangle. The parent direction of
+a tree is the canonical weak link -- it breaks the parent-child
+cycle.
+
+Related: [Memory leak](#memory-leak-ch-156), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Smart pointers](#smart-pointers-ch-150)
+In repo: `projects/smart-pointers/src/cycles.rs` (demo_weak_tree)
+Book: https://doc.rust-lang.org/stable/book/ch15-06-reference-cycles.html#preventing-reference-cycles-using-weakt
+
+## Test double and mock objects (ch 15.5)
+
+A test double stands in for a real type during tests; a mock
+object is the kind that RECORDS what happens, so the test can
+assert on the calls. The book's Messenger mock must push into a
+Vec behind &self -- interior mutability resolves the contradiction
+without changing the production trait for testing's sake.
+
+Related: [Interior mutability](#interior-mutability-ch-155), [Unit tests](#unit-tests-ch-113)
+In repo: `projects/smart-pointers/src/messenger.rs`
+Book: https://doc.rust-lang.org/stable/book/ch15-05-interior-mutability.html#testing-with-mock-objects
 
 ## Trait (ch 10.2)
 
@@ -614,7 +736,7 @@ Small, focused tests in src/ beside the code they test (the
 CAN test private interfaces -- the tests module is a child, and
 children see their ancestors' private items.
 
-Related: [Integration tests](#integration-tests-ch-113)
+Related: [Integration tests](#integration-tests-ch-113), [Test double and mock objects](#test-double-and-mock-objects-ch-155)
 In repo: `projects/testing/src/*` (the tests module in each)
 Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#unit-tests
 
