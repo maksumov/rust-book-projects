@@ -1,4 +1,4 @@
-use concurrency::{channels, threads};
+use concurrency::{channels, shared_state, threads};
 
 fn main() {
     threads::demo_spawn();
@@ -9,4 +9,6 @@ fn main() {
     channels::demo_channel();
     channels::demo_channel_stream();
     channels::demo_multiple_producers();
+
+    shared_state::demo_mutex_api();
 }
