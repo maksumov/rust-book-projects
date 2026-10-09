@@ -1,4 +1,5 @@
 mod futures;
+mod tasks;
 
 // usage: cargo run -- <url> <url2>
 // main stays sync by design: each demo bridges to async via its own
@@ -8,4 +9,7 @@ fn main() {
 
     futures::demo_page_title(&args[1]);
     futures::demo_race(&args[1], &args[2]);
+
+    tasks::demo_spawn_task();
+    tasks::demo_join_handle();
 }
