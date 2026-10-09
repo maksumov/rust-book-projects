@@ -23,6 +23,7 @@ Code-along projects and exercises from
 | 14 | More About Cargo and Crates.io | `projects/my_crate`, `projects/art`, `projects/add` | doctests as tests; `#![warn(missing_docs)]`, `publish = false` — beyond the book; + `CHEATSHEET.md` (cargo package commands); + `exercises/14_publishing`; workspaces (14.3): + `CHEATSHEET.md` in `projects/add`, `exercises/14_workspace` |
 | 15 | Smart Pointers | `projects/smart-pointers` | lib+bin split; + `CHEATSHEET.md` (pointer decision table, weak links, Rustonomicon pointer); terms in `GLOSSARY.md` (ch 15 audit: 8 entries) |
 | 16 | Fearless Concurrency | `projects/concurrency` | terms in `GLOSSARY.md` (ch 16 audit: 7 entries); + `exercises/16_deadlock` |
+| 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking) |
 
 ## Other artifacts
 
