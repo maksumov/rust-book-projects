@@ -5,18 +5,17 @@
 // unlike threads). The trpl crate wraps futures + tokio; block_on is
 // the sync/async bridge. Caveat: network timing varies per run.
 
-use trpl::Html;
+use trpl::{Either, Html};
 
-// Listing 17-1: an async fn -- await each step that takes time (the
-// response headers, then the whole body). Listing 17-2 merely chains
-// the same steps: trpl::get(url).await.text().await. Note that await
-// is a POSTFIX keyword -- it goes after the expression.
-async fn page_title(url: &str) -> Option<String> {
-    let response = trpl::get(url).await;
-    let response_text = response.text().await;
-    Html::parse(&response_text)
+// Listings 17-1..17-2, evolved for 17-5: the chained form (17-2) --
+// await is a POSTFIX keyword -- with the URL riding along in the
+// return: the race needs to name its winner.
+async fn page_title(url: &str) -> (&str, Option<String>) {
+    let response_text = trpl::get(url).await.text().await;
+    let title = Html::parse(&response_text)
         .select_first("title")
-        .map(|title| title.inner_html())
+        .map(|title| title.inner_html());
+    (url, title)
 }
 
 // What the compiler makes of `async fn`: a plain function returning an
@@ -53,9 +52,36 @@ pub fn demo_page_title(url: &str) {
     println!("\n*** demo of futures: one URL, one title, via block_on ***");
 
     trpl::block_on(async {
-        match page_title(url).await {
+        let (_, maybe_title) = page_title(url).await;
+        match maybe_title {
             Some(title) => println!("The title for '{url}' was '{title}'"),
             None => println!("{url} had no title"),
+        }
+    })
+}
+
+// Listing 17-5: both futures are CREATED but not awaited -- laziness
+// is what makes the race possible (creating != running, unlike
+// threads). select awaits whichever finishes FIRST; Either is a
+// two-case type with NO success/failure semantics (unlike Result) --
+// Left = the first argument won, Right = the second. Either URL can
+// legitimately win; which one does varies per run.
+pub fn demo_race(url1: &str, url2: &str) {
+    println!("\n*** demo of futures: two URLs, one winner, via select ***");
+
+    trpl::block_on(async {
+        let title_fut_1 = page_title(url1);
+        let title_fut_2 = page_title(url2);
+
+        let (url, maybe_title) = match trpl::select(title_fut_1, title_fut_2).await {
+            Either::Left(left) => left,
+            Either::Right(right) => right,
+        };
+
+        println!("{url} returned first");
+        match maybe_title {
+            Some(title) => println!("Its page title was: '{title}'"),
+            None => println!("It had no title."),
         }
     })
 }
