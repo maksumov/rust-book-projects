@@ -12,4 +12,5 @@ fn main() {
 
     tasks::demo_spawn_task();
     tasks::demo_join_handle();
+    tasks::demo_join();
 }

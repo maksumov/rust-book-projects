@@ -62,3 +62,37 @@ pub fn demo_join_handle() {
         handle.await.unwrap();
     });
 }
+
+pub fn demo_join() {
+    println!("\n*** demo of tasks: joining two futures -- no spawn at all ***");
+
+    // Listing 17-8: no spawn_task at all -- async blocks ARE futures.
+    // Two of them, then trpl::join(fut1, fut2).await: we await the
+    // JOIN, not the futures -- awaiting them one by one would be
+    // sequential, the opposite of the goal. join is FAIR: it polls
+    // each future equally, alternating, never letting one race ahead
+    // -- the output is deterministic, the exact same order every run,
+    // unlike threads and spawn_task (the 17-6 contrast, resolved).
+    trpl::block_on(async {
+        // The book's experiments (predict the output BEFORE running):
+        //  - remove the async block from either loop
+        //  - await each block immediately after defining it
+        //  - wrap only the first loop, await it after the second's body
+
+        let fut1 = async {
+            for i in 1..10 {
+                println!("hi number {i} from the first task!");
+                trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+            }
+        };
+
+        let fut2 = async {
+            for i in 1..5 {
+                println!("hi number {i} from the second task!");
+                trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+            }
+        };
+
+        trpl::join(fut1, fut2).await;
+    })
+}
