@@ -15,4 +15,5 @@ fn main() {
     tasks::demo_join();
     tasks::demo_channel();
     tasks::demo_channel_multiple();
+    tasks::demo_channel_producers();
 }

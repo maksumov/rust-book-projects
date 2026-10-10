@@ -201,3 +201,57 @@ pub fn demo_channel_multiple() {
         trpl::join(tx_fut, rx_fut).await;
     });
 }
+
+pub fn demo_channel_producers() {
+    println!("\n*** demo of tasks: mpsc async -- multiple producers via join! ***");
+
+    trpl::block_on(async {
+        // Listing 17-13: the section's closing move. Clone the transmitter
+        // (a capability clone, as in ch 16); give each producer its own
+        // async move block -- BOTH must own their senders, a merely
+        // borrowed tx brings back the 17-11 hang; and switch from the join
+        // FUNCTION to the join! MACRO: it takes any number of futures,
+        // known at compile time. The interleaving order is timer-dependent
+        // and varies per run (the module header's caveat).
+
+        let (tx, mut rx) = trpl::channel();
+
+        let tx1 = tx.clone();
+        let tx1_fut = async move {
+            let vals = vec![
+                String::from("hi"),
+                String::from("from"),
+                String::from("the"),
+                String::from("future"),
+            ];
+
+            for val in vals {
+                tx1.send(val).unwrap();
+                trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+            }
+        };
+
+        let rx_fut = async {
+            while let Some(value) = rx.recv().await {
+                println!("received '{value}'");
+            }
+        };
+
+        let tx_fut = async move {
+            let vals = vec![
+                String::from("more"),
+                String::from("messages"),
+                String::from("for"),
+                String::from("you"),
+            ];
+
+            for val in vals {
+                tx.send(val).unwrap();
+                // beyond the book: scaled delays so the producers interleave
+                trpl::sleep(Duration::from_millis(3 * TIME_TO_SLEEP)).await;
+            }
+        };
+
+        trpl::join!(tx1_fut, tx_fut, rx_fut);
+    });
+}
