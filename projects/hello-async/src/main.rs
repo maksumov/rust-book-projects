@@ -13,4 +13,6 @@ fn main() {
     tasks::demo_spawn_task();
     tasks::demo_join_handle();
     tasks::demo_join();
+    tasks::demo_channel();
+    tasks::demo_channel_multiple();
 }

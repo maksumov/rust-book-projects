@@ -96,3 +96,108 @@ pub fn demo_join() {
         trpl::join(fut1, fut2).await;
     })
 }
+
+pub fn demo_channel() {
+    println!("\n*** demo of tasks: an async channel -- one message ***");
+
+    trpl::block_on(async {
+        // Listing 17-9: the async channel vs ch 16's mpsc -- rx is MUT
+        // here, and recv() returns a future: awaiting it yields to the
+        // runtime until a message or the close, instead of blocking the
+        // thread. send needs no await: the channel is unbounded.
+        let (tx, mut rx) = trpl::channel();
+
+        let val = String::from("hi");
+        tx.send(val).unwrap();
+
+        let received = rx.recv().await.unwrap();
+        println!("received '{received}'");
+    });
+}
+
+pub fn demo_channel_multiple() {
+    println!("\n*** demo of tasks: async channel -- multiple messages, clean exit ***");
+
+    trpl::block_on(async {
+        let (tx, mut rx) = trpl::channel();
+
+        // Listing 17-10: both loops in ONE async block -- two problems:
+        // the messages arrive all at once (code within a single async
+        // block is LINEAR: await order IS execution order, so every
+        // send+sleep completes before the receive loop even starts),
+        // and the program never exits (the while let waits for None
+        // forever).
+        //
+        // // let vals = vec![
+        // //     String::from("hi"),
+        // //     String::from("from"),
+        // //     String::from("the"),
+        // //     String::from("future"),
+        // // ];
+        // //
+        // // for val in vals {
+        // //     tx.send(val).unwrap();
+        // //     trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+        // // }
+        // //
+        // // while let Some(value) = rx.recv().await {
+        // //     println!("received '{value}'");
+        // // }
+
+        // Listing 17-11: split into two futures joined with join -- the
+        // pauses appear (concurrent at last), but still no exit. The
+        // book's chain: join waits for BOTH futures; rx_fut ends only
+        // when the while let gets None; None comes only when the channel
+        // closes; it closes when tx is dropped; tx merely BORROWS into
+        // tx_fut, so it lives until the outer block ends -- and the
+        // outer block is blocked on join. An async-flavored deadlock.
+        //
+        // // let tx_fut = async {
+        // //     let vals = vec![
+        // //         String::from("hi"),
+        // //         String::from("from"),
+        // //         String::from("the"),
+        // //         String::from("future"),
+        // //     ];
+        // //
+        // //     for val in vals {
+        // //         tx.send(val).unwrap();
+        // //         trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+        // //     }
+        // // };
+        // //
+        // // let rx_fut = async {
+        // //     while let Some(value) = rx.recv().await {
+        // //         println!("received '{value}'");
+        // //     }
+        // // };
+        // //
+        // // trpl::join(tx_fut, rx_fut).await;
+
+        // Listing 17-12: async move -- one word breaks the chain: tx's
+        // ownership moves into tx_fut, so it drops when tx_fut finishes
+        // -> the channel closes -> recv returns None -> the while let
+        // ends -> rx_fut completes -> join completes -> clean exit.
+        let tx_fut = async move {
+            let vals = vec![
+                String::from("hi"),
+                String::from("from"),
+                String::from("the"),
+                String::from("future"),
+            ];
+
+            for val in vals {
+                tx.send(val).unwrap();
+                trpl::sleep(Duration::from_millis(TIME_TO_SLEEP)).await;
+            }
+        };
+
+        let rx_fut = async {
+            while let Some(value) = rx.recv().await {
+                println!("received '{value}'");
+            }
+        };
+
+        trpl::join(tx_fut, rx_fut).await;
+    });
+}
