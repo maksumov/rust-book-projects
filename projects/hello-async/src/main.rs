@@ -19,4 +19,6 @@ fn main() {
     tasks::demo_channel_producers();
 
     yielding::demo_starvation();
+    yielding::demo_yield_sleep();
+    yielding::demo_yield_now();
 }
