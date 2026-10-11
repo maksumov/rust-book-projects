@@ -1,4 +1,5 @@
 mod futures;
+mod streams;
 mod tasks;
 mod yielding;
 
@@ -22,4 +23,6 @@ fn main() {
     yielding::demo_yield_sleep();
     yielding::demo_yield_now();
     yielding::demo_timeout();
+
+    streams::demo_stream_from_iter();
 }
