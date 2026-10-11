@@ -6,6 +6,7 @@
 // yields NOW.
 
 use std::{thread, time::Duration};
+use trpl::Either;
 
 // Listing 17-14: deliberately BLOCKING -- thread::sleep, not
 // trpl::sleep: a stand-in for real CPU-bound work that never yields.
@@ -130,4 +131,41 @@ pub fn demo_yield_now() {
 
         trpl::select(a, b).await;
     });
+}
+
+pub fn demo_timeout() {
+    println!("\n*** demo of yielding: a hand-built timeout (select + sleep) ***");
+
+    // Listing 17-18: API-first -- write the intended usage BEFORE the
+    // implementation exists. The slow future sleeps 5s; the budget is
+    // 2 -- the timeout wins ("Failed after 2 seconds").
+    trpl::block_on(async {
+        let slow = async {
+            trpl::sleep(Duration::from_secs(5)).await;
+            "Finally finished"
+        };
+
+        match timeout(slow, Duration::from_secs(2)).await {
+            Ok(message) => println!("Succeeded with '{message}'"),
+            Err(duration) => {
+                println!("Failed after {} seconds", duration.as_secs())
+            }
+        }
+    });
+}
+
+// Listings 17-19..17-20: first the SIGNATURE, derived from the usage's
+// requirements: generic over the future (F: Future), a Duration
+// (convenient to hand straight to sleep), Err carrying the spent
+// budget. Then the implementation: race the future against a sleep
+// timer via select. NOTE the argument order: select is NOT fair --
+// it polls the arguments in the order given, so the future goes
+// FIRST, getting a chance to complete even under a tiny budget.
+// Futures compose: select + sleep grows into a new tool; timeouts +
+// retries grow further (the book's closing suggestion).
+async fn timeout<F: Future>(future_to_try: F, max_time: Duration) -> Result<F::Output, Duration> {
+    match trpl::select(future_to_try, trpl::sleep(max_time)).await {
+        Either::Left(output) => Ok(output),
+        Either::Right(_) => Err(max_time),
+    }
 }
