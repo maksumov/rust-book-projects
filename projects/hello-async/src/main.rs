@@ -1,5 +1,6 @@
 mod futures;
 mod tasks;
+mod yielding;
 
 // usage: cargo run -- <url> <url2>
 // main stays sync by design: each demo bridges to async via its own
@@ -16,4 +17,6 @@ fn main() {
     tasks::demo_channel();
     tasks::demo_channel_multiple();
     tasks::demo_channel_producers();
+
+    yielding::demo_starvation();
 }
