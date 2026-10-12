@@ -1,4 +1,5 @@
 mod futures;
+mod pinning;
 mod streams;
 mod tasks;
 mod yielding;
@@ -25,4 +26,6 @@ fn main() {
     yielding::demo_timeout();
 
     streams::demo_stream_from_iter();
+
+    pinning::demo_join_all();
 }
