@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 trpl = "0.3.0"
+
+# git-tracked files ship by default; the study cheatsheet is not crate content
+exclude = ["CHEATSHEET.md"]
