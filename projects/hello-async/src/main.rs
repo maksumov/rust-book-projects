@@ -2,6 +2,7 @@ mod futures;
 mod pinning;
 mod streams;
 mod tasks;
+mod threads_tasks;
 mod yielding;
 
 // usage: cargo run -- <url> <url2>
@@ -28,4 +29,6 @@ fn main() {
     streams::demo_stream_from_iter();
 
     pinning::demo_join_all();
+
+    threads_tasks::demo_mixed_channel();
 }
