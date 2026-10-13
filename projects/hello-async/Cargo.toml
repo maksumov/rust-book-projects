@@ -2,9 +2,8 @@
 name = "hello-async"
 version = "0.1.0"
 edition = "2024"
+# git-tracked files ship by default; the study cheatsheet is not crate content
+exclude = ["CHEATSHEET.md"]
 
 [dependencies]
 trpl = "0.3.0"
-
-# git-tracked files ship by default; the study cheatsheet is not crate content
-exclude = ["CHEATSHEET.md"]
