@@ -10,6 +10,7 @@ bidirectional: if X lists Y, then Y lists X.
 ## Table of Contents
 - [Arc, atomic reference counting (ch 16.3)](#arc-atomic-reference-counting-ch-163)
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
+- [Async runtime (ch 17.1)](#async-runtime-ch-171)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
 - [Binary target (ch 14.4)](#binary-target-ch-144)
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
@@ -21,7 +22,10 @@ bidirectional: if X lists Y, then Y lists X.
 - [Closure (ch 13.1)](#closure-ch-131)
 - [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
+- [Concurrency vs parallelism (ch 17.0)](#concurrency-vs-parallelism-ch-170)
 - [Constants (ch 3.1)](#constants-ch-31)
+- [Cooperative multitasking (ch 17.3)](#cooperative-multitasking-ch-173)
+- [CPU-bound vs I/O-bound (ch 17.0)](#cpu-bound-vs-io-bound-ch-170)
 - [Crate (ch 7.1)](#crate-ch-71)
 - [Crate root (ch 7.1)](#crate-root-ch-71)
 - [Custom Cargo subcommands (ch 14.5)](#custom-cargo-subcommands-ch-145)
@@ -32,6 +36,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
 - [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
+- [Future (ch 17.1)](#future-ch-171)
 - [Indirection (ch 15.1)](#indirection-ch-151)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
@@ -54,6 +59,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Ownership (ch 4.1)](#ownership-ch-41)
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
+- [Pin and Unpin (ch 17.5)](#pin-and-unpin-ch-175)
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Rc and reference counting (ch 15.4)](#rc-and-reference-counting-ch-154)
 - [Re-export (ch 14.2)](#re-export-ch-142)
@@ -66,6 +72,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Smart pointers (ch 15.0)](#smart-pointers-ch-150)
 - [Standard output vs standard error (ch 12.6)](#standard-output-vs-standard-error-ch-126)
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
+- [Stream (ch 17.4)](#stream-ch-174)
 - [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
 - [Test double and mock objects (ch 15.5)](#test-double-and-mock-objects-ch-155)
 - [Trait (ch 10.2)](#trait-ch-102)
@@ -101,6 +108,18 @@ constructors.
 Related: —
 In repo: `projects/rectangles/src/main.rs` (the square constructor)
 Book: https://doc.rust-lang.org/stable/book/ch05-03-method-syntax.html#associated-functions
+
+## Async runtime (ch 17.1)
+
+The crate that drives futures: polling them, parking the Pending
+ones, running the ready ones. Rust ships NO runtime of its own
+(unlike most languages) -- tokio and friends are choices; the
+book's trpl wraps tokio. block_on is the sync->async bridge; the
+polling core is called the executor.
+
+Related: [Cooperative multitasking](#cooperative-multitasking-ch-173), [Future](#future-ch-171)
+In repo: `projects/hello-async` (every demo's block_on)
+Book: https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html#executing-an-async-function-with-a-runtime
 
 ## Backtrace (ch 9.1)
 
@@ -228,6 +247,19 @@ Related: [Closure](#closure-ch-131), [Iterator](#iterator-ch-132), [Iterator ada
 In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
 Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
 
+## Concurrency vs parallelism (ch 17.0)
+
+The team metaphor: one person switching between tasks is
+concurrency; several people, one task each, is parallelism; and
+some work turns out serial no matter what (dependencies between
+tasks). Async usually provides concurrency; threads can provide
+parallelism; the two intersect (a runtime may use threads
+underneath).
+
+Related: [CPU-bound vs I/O-bound](#cpu-bound-vs-io-bound-ch-170), [Fearless concurrency](#fearless-concurrency-ch-160)
+In repo: `projects/concurrency` and `projects/hello-async` (the two models side by side)
+Book: https://doc.rust-lang.org/stable/book/ch17-00-async-await.html#parallelism-and-concurrency
+
 ## Constants (ch 3.1)
 
 `const NAME: Type = expr;` -- always immutable, the type annotation
@@ -237,6 +269,31 @@ for the whole program within its scope. SCREAMING_SNAKE naming.
 Related: —
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#declaring-constants
+
+## Cooperative multitasking (ch 17.3)
+
+Tasks decide WHEN to yield -- only at await points -- and carry
+the responsibility for it: a future without await points starves
+the others (even an already-elapsed timer cannot fire while the
+thread is blocked). The explicit handoff: yield_now. The
+alternative is the OS's preemptive threads (ch 16). The sleep
+triangle: thread::sleep blocks, trpl::sleep waits then yields,
+yield_now yields now.
+
+Related: [Async runtime](#async-runtime-ch-171), [Fearless concurrency](#fearless-concurrency-ch-160)
+In repo: `projects/hello-async/src/yielding.rs` (the sleep triangle)
+Book: https://doc.rust-lang.org/stable/book/ch17-03-more-futures.html#yielding-control-to-the-runtime
+
+## CPU-bound vs I/O-bound (ch 17.0)
+
+What limits the task: processing speed (a video export --
+compute-bound) or the arrival of input/output (a download). The
+rules of thumb that follow: CPU-bound work -> threads; I/O-bound
+work -> async; combine both whenever it helps.
+
+Related: [Concurrency vs parallelism](#concurrency-vs-parallelism-ch-170)
+In repo: `projects/hello-async/src/threads_tasks.rs` (the module header)
+Book: https://doc.rust-lang.org/stable/book/ch17-00-async-await.html
 
 ## Crate (ch 7.1)
 
@@ -345,7 +402,7 @@ refuses to build instead of racing in production. The tools are
 mostly standard-library types (threads, channels, Mutex, Arc)
 gated by two language-level marker traits, Send and Sync.
 
-Related: [Data race](#data-race-ch-42), [Send and Sync](#send-and-sync-ch-164)
+Related: [Concurrency vs parallelism](#concurrency-vs-parallelism-ch-170), [Cooperative multitasking](#cooperative-multitasking-ch-173), [Data race](#data-race-ch-42), [Send and Sync](#send-and-sync-ch-164)
 In repo: `projects/concurrency` (the whole chapter)
 Book: https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
 
@@ -359,6 +416,19 @@ takes `FnOnce`, `sort_by_key` takes `FnMut`).
 
 Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101)
 In repo: `projects/closures/src/fn_traits.rs`
+
+## Future (ch 17.1)
+
+A value that may not be ready yet; `async fn` compiles to a plain
+function returning an anonymous Future type -- a state machine
+over the await points. LAZY, like an iterator: creating a future
+does nothing, awaiting runs it (unlike JS promises, which start on
+creation). The trait's heartbeat: poll(self: Pin<&mut Self>, cx)
+-> Poll<Output>.
+
+Related: [Async runtime](#async-runtime-ch-171), [Iterator](#iterator-ch-132), [Pin and Unpin](#pin-and-unpin-ch-175), [Stream](#stream-ch-174)
+In repo: `projects/hello-async/src/futures.rs` (the desugared form)
+Book: https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html
 
 ## Indirection (ch 15.1)
 
@@ -420,7 +490,7 @@ Some, then None). Lazy -- no work happens until a consuming method
 runs; a for loop creates and consumes one implicitly. iter() borrows
 immutably, iter_mut() mutably, into_iter() takes ownership.
 
-Related: [Closure](#closure-ch-131), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Combinators](#combinators-ch-92), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
+Related: [Closure](#closure-ch-131), [Combinators](#combinators-ch-92), [Future](#future-ch-171), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Stream](#stream-ch-174), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
 In repo: `projects/iterators/src/laziness.rs`
 
 ## Iterator adapters vs consuming adapters (ch 13.2)
@@ -623,6 +693,20 @@ Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Unwi
 In repo: anchors in `projects/error-handling/src/main.rs` and `projects/panic/src/main.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-03-to-panic-or-not-to-panic.html
 
+## Pin and Unpin (ch 17.5)
+
+Compiler-generated futures may be self-referential -- moving one
+would dangle its internal references. Pin<P> wraps a pointer-like
+P guaranteeing the pointed-to value never moves (the pointer
+itself may). Unpin is a marker trait -- like Send/Sync -- meaning
+"safe to move even under Pin"; almost every type has it, and it
+only matters when Pin is involved. Plain await pins implicitly;
+collecting futures (join_all) demands an explicit pin!.
+
+Related: [Future](#future-ch-171), [Send and Sync](#send-and-sync-ch-164)
+In repo: `projects/hello-async/src/pinning.rs`
+Book: https://doc.rust-lang.org/stable/book/ch17-05-traits-for-async.html
+
 ## RAII (ch 4.1)
 
 Resource Acquisition Is Initialization (a C++ term): resources are
@@ -697,7 +781,7 @@ are not Sync, Mutex is. Compositions inherit automatically; manual
 impls are unsafe (ch 20). The E0277 of the Rc counter attempt is
 these traits talking.
 
-Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160)
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160), [Pin and Unpin](#pin-and-unpin-ch-175)
 In repo: `projects/concurrency/src/shared_state.rs` (the 16-14 comment)
 Book: https://doc.rust-lang.org/stable/book/ch16-04-extensible-concurrency-sync-and-send.html
 
@@ -770,6 +854,18 @@ the lifetimes instead of reaching for it.
 Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131)
 In repo: `projects/lifetimes/src/excerpt.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
+
+## Stream (ch 17.4)
+
+An async iterator: items becoming ready over time. poll_next ->
+Poll<Option<Item>> -- Future's single Output crossed with
+Iterator's sequence of Items. Not in std yet: the ecosystem's
+shared definition; StreamExt (the Ext pattern) supplies next,
+blanket-implemented for every Stream.
+
+Related: [Future](#future-ch-171), [Iterator](#iterator-ch-132)
+In repo: `projects/hello-async/src/streams.rs`
+Book: https://doc.rust-lang.org/stable/book/ch17-04-streams.html
 
 ## Strong vs weak references (ch 15.6)
 
