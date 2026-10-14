@@ -1,5 +1,7 @@
 use oop::encapsulation;
 
+mod select_box;
+
 fn main() {
     encapsulation::demo_averaged_collection();
 
@@ -12,4 +14,6 @@ fn main() {
     //
     // The whole point of listing 18-1: only the public API can touch
     // the data -- so `average` can never fall out of sync with `list`.
+
+    select_box::demo_screen();
 }
