@@ -1,5 +1,5 @@
 // Two ways to create: `Vec::new()` gives an empty vector (the type
-// annotation is required -- nothing to infer from), while the
+// annotation is required - nothing to infer from), while the
 // `vec!` macro creates one with initial values (type inferred).
 pub fn vectors_creation_demo() {
     println!("\n*** Vectors creation demo ***");
@@ -29,7 +29,7 @@ pub fn vectors_updating_demo() {
 }
 
 // Two ways to read: `&v[i]` panics on an invalid index, while
-// `v.get(i)` returns Option<&T> -- the failure mode is the choice.
+// `v.get(i)` returns Option<&T> - the failure mode is the choice.
 pub fn vectors_reading_elements_demo() {
     println!("\n*** Vector reading elements demo ***");
     let v = vec![1, 2, 3, 4, 5];
@@ -55,9 +55,9 @@ pub fn vectors_reading_elements_demo() {
 }
 
 // Borrow conflict (listing 8-4): holding `&v[0]` while pushing is
-// rejected -- `push` may reallocate the buffer and dangle `first`
+// rejected - `push` may reallocate the buffer and dangle `first`
 // (chapter 4: no & and &mut at the same time, even if this push
-// wouldn't actually reallocate -- the compiler can't know that).
+// wouldn't actually reallocate - the compiler can't know that).
 pub fn vectors_borrow_conflict_demo() {
     println!("\n*** Vector borrow conflict demo ***");
     let mut v = vec![1, 2, 3, 4, 5];
@@ -75,8 +75,8 @@ pub fn vectors_borrow_conflict_demo() {
 }
 
 // Iterating: `for i in &v` yields references (read-only); the
-// mutable variant (`&mut v`) yields &mut and needs `*` -- the
-// dereference operator -- to modify the element in place.
+// mutable variant (`&mut v`) yields &mut and needs `*` - the
+// dereference operator - to modify the element in place.
 pub fn vectors_iteration_demo() {
     println!("\n*** Vector iteration demo ***");
     let mut v = vec![100, 200, 300];
@@ -95,7 +95,7 @@ pub fn vectors_iteration_demo() {
 }
 
 // Vectors are homogeneous: one element type. To store "different"
-// values, define an enum whose variants carry each type -- every
+// values, define an enum whose variants carry each type - every
 // element is then the SAME enum type (chapter 6 at work). A match
 // on the variant unpacks the value with its type back.
 #[derive(Debug)]

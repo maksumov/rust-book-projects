@@ -45,7 +45,7 @@ pub fn strings_creation_demo() {
 
 // Appending: `push_str` takes &str and borrows, so the appended
 // variable stays usable (listing 8-16); `push` takes a single char
-// by value -- chars are Copy, so the variable survives regardless.
+// by value - chars are Copy, so the variable survives regardless.
 pub fn strings_appending_demo() {
     println!("\n*** Strings appending demo ***");
 
@@ -65,13 +65,13 @@ pub fn strings_appending_demo() {
 }
 
 // Concatenation with `+`: `s1 + &s2` is sugar for `s1.add(&s2)` with
-// `fn add(self, s: &str) -> String` -- `self` by value (s1 is MOVED
+// `fn add(self, s: &str) -> String` - `self` by value (s1 is MOVED
 // and dies), `s` as &str (s2 survives: borrowed via deref coercion
 // &String -> &str, chapter 4/15 preview).
 pub fn strings_concatenation_demo() {
     println!("\n*** Strings concatenation demo ***");
 
-    // Note the asymmetry: `s1` without `&`, `s2` with `&` -- exactly
+    // Note the asymmetry: `s1` without `&`, `s2` with `&` - exactly
     // the `add(self, s: &str)` signature from the comment above:
     // only the LEFT operand is consumed.
     let s1 = String::from("Hello, ");
@@ -83,7 +83,7 @@ pub fn strings_concatenation_demo() {
     // println!("{s1:?}");
 
     // Chaining works (each `+` consumes the previous String result)
-    // but gets unwieldy fast -- hard to read, easy to mess up the &.
+    // but gets unwieldy fast - hard to read, easy to mess up the &.
     let s1 = String::from("tic");
     let s2 = String::from("tac");
     let s3 = String::from("toe");
@@ -92,7 +92,7 @@ pub fn strings_concatenation_demo() {
     println!("s is {s:?}");
 
     // `format!` formats like println! but RETURNS a String; it borrows
-    // every argument, so nothing is consumed -- the idiomatic choice.
+    // every argument, so nothing is consumed - the idiomatic choice.
     let s1 = String::from("tic");
     let s2 = String::from("tac");
     let s3 = String::from("toe");
@@ -103,7 +103,7 @@ pub fn strings_concatenation_demo() {
 }
 
 // Strings cannot be indexed: `s[0]` would have no unambiguous
-// meaning -- byte? char? grapheme cluster? A compile error is
+// meaning - byte? char? grapheme cluster? A compile error is
 // safer than a surprising value. The "why" lives in the
 // representation demo below.
 pub fn strings_indexing_into_demo() {
@@ -119,7 +119,7 @@ pub fn strings_indexing_into_demo() {
 
 // A String wraps Vec<u8>: len() counts BYTES, not letters.
 // "Hola" -> 4 (one byte per letter); "Здравствуйте" -> 24
-// (two bytes per Cyrillic letter) -- a byte index would not
+// (two bytes per Cyrillic letter) - a byte index would not
 // correlate with character boundaries.
 pub fn strings_internal_representation_demo() {
     println!("\n*** Strings internal representation demo ***");
@@ -130,7 +130,7 @@ pub fn strings_internal_representation_demo() {
     let cyrillic = String::from("Здравствуйте");
     println!("len of {cyrillic:?}: {}", cyrillic.len()); // 24, not 12!
 
-    // If indexing returned a byte, "З" would be 208 -- not a letter
+    // If indexing returned a byte, "З" would be 208 - not a letter
     // (its UTF-8 encoding is two bytes: 208, 151):
     println!(
         "first byte of the Cyrillic string: {}",
@@ -148,19 +148,19 @@ pub fn strings_views_demo() {
 
     let s = "नमस्ते";
 
-    // 18 numbers -- how the computer stores it:
+    // 18 numbers - how the computer stores it:
     println!("bytes: {s:?} -> {:?}", s.as_bytes());
 
-    // 6 scalar values -- note the 4th and 6th are diacritics
+    // 6 scalar values - note the 4th and 6th are diacritics
     // (combining marks), not standalone letters:
     let scalars: Vec<char> = s.chars().collect();
     println!("scalar values: {scalars:?}");
 
-    // 4 grapheme clusters -- what a person sees as letters:
+    // 4 grapheme clusters - what a person sees as letters:
     println!("grapheme clusters: [\"न\", \"म\", \"स्\", \"ते\"]");
 }
 
-// Slicing IS allowed with a range -- but the range selects BYTES,
+// Slicing IS allowed with a range - but the range selects BYTES,
 // and its bounds must land on char boundaries. "Здравствуйте" uses
 // two bytes per letter, so [0..4] is exactly "Зд"; a bound that
 // cuts a letter in half panics at runtime.
@@ -171,7 +171,7 @@ pub fn strings_slicing_demo() {
     println!("hello is {hello:?}");
 
     let s = &hello[0..4];
-    println!("&hello[0..4] is {s:?}"); // "Зд" -- two letters, four bytes
+    println!("&hello[0..4] is {s:?}"); // "Зд" - two letters, four bytes
 
     // The next line panics at RUNTIME (not a compile error):
     // "byte index 1 is not a char boundary; it is inside 'З'
@@ -181,7 +181,7 @@ pub fn strings_slicing_demo() {
 
 // The explicit ways to iterate: `chars()` yields Unicode scalar
 // values, `bytes()` yields the raw Vec<u8> content. Grapheme
-// clusters are not offered by std -- see the views demo above.
+// clusters are not offered by std - see the views demo above.
 pub fn strings_iteration_demo() {
     println!("\n*** Strings iteration demo ***");
 

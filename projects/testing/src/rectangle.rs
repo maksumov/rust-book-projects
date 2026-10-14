@@ -11,8 +11,8 @@ pub struct Rectangle {
 
 // The BUG variant from the book (width compared with `<` instead
 // of `>`): with it, larger_can_hold_smaller fails while
-// smaller_cannot_hold_larger still passes -- the tests caught the
-// bug. Uncomment and `cargo test` -- the panel below is an example
+// smaller_cannot_hold_larger still passes - the tests caught the
+// bug. Uncomment and `cargo test` - the panel below is an example
 // of the failure output (counts, line numbers and the thread id
 // reflect one particular run):
 //
@@ -46,7 +46,7 @@ impl Rectangle {
 #[cfg(test)]
 mod tests {
     // use super::* brings the outer module's items into the tests
-    // module -- regular visibility rules apply (ch 7).
+    // module - regular visibility rules apply (ch 7).
     use super::*;
 
     #[test]

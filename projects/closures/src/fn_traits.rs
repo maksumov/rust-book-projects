@@ -1,8 +1,8 @@
 // What a closure does with captured values determines which Fn
 // traits it implements (additively):
-//   1. FnOnce -- may move captures out of its body.
-//   2. FnMut -- may mutate them.
-//   3. Fn -- only reads them (or captures nothing).
+//   1. FnOnce - may move captures out of its body.
+//   2. FnMut - may mutate them.
+//   3. Fn - only reads them (or captures nothing).
 // APIs pick the weakest bound they need.
 
 // `height` is never read: dead code analysis ignores the derived

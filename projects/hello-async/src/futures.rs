@@ -1,14 +1,14 @@
 // ch 17.1: futures and the async syntax (listings 17-1..17-5). A future
 // is a value that may not be ready yet; `async fn` compiles to a
 // function returning an anonymous Future (the desugared form below).
-// Futures are LAZY -- nothing runs until awaited (like iterators,
+// Futures are LAZY - nothing runs until awaited (like iterators,
 // unlike threads). The trpl crate wraps futures + tokio; block_on is
 // the sync/async bridge. Caveat: network timing varies per run.
 
 use trpl::{Either, Html};
 
 // Listings 17-1..17-2, evolved for 17-5: the chained form (17-2) --
-// await is a POSTFIX keyword -- with the URL riding along in the
+// await is a POSTFIX keyword - with the URL riding along in the
 // return: the race needs to name its winner.
 async fn page_title(url: &str) -> (&str, Option<String>) {
     let response_text = trpl::get(url).await.text().await;
@@ -20,7 +20,7 @@ async fn page_title(url: &str) -> (&str, Option<String>) {
 
 // What the compiler makes of `async fn`: a plain function returning an
 // anonymous type implementing Future, body wrapped in an async move
-// block -- the book's "roughly equivalent" form:
+// block - the book's "roughly equivalent" form:
 //
 // // use std::future::Future;
 // //
@@ -40,11 +40,11 @@ async fn page_title(url: &str) -> (&str, Option<String>) {
 // // }
 //
 // Someone must RUN the future, and main is the program's starting
-// point -- it cannot be that someone. The fix: block_on, a SYNC fn
+// point - it cannot be that someone. The fix: block_on, a SYNC fn
 // blocking its thread until the future completes. (#[tokio::main]
 // is exactly this, rewritten by a macro.)
 //
-// Repo adaptation: our main never attempts this -- it stays sync by
+// Repo adaptation: our main never attempts this - it stays sync by
 // design and only calls sync demo functions. The sync->async bridge
 // lives INSIDE each demo (its own block_on), so E0752 is real for
 // the book's layout but hidden here by construction.
@@ -60,7 +60,7 @@ pub fn demo_page_title(url: &str) {
     })
 }
 
-// Listing 17-5: both futures are CREATED but not awaited -- laziness
+// Listing 17-5: both futures are CREATED but not awaited - laziness
 // is what makes the race possible (creating != running, unlike
 // threads). select awaits whichever finishes FIRST; Either is a
 // two-case type with NO success/failure semantics (unlike Result) --

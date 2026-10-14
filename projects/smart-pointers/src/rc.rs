@@ -1,13 +1,13 @@
-// ch 15.4: Rc<T> -- the reference-counted smart pointer (listings
+// ch 15.4: Rc<T> - the reference-counted smart pointer (listings
 // 15-17..15-19). Multiple owners of one value; it is dropped when the
 // LAST owner goes away. Single-threaded only (the multithreaded sibling
-// is Arc, ch 16). Rc is not in the prelude -- hence the use below.
+// is Arc, ch 16). Rc is not in the prelude - hence the use below.
 
 use std::rc::Rc;
 
 use List::{Cons, Nil};
 
-// Listing 15-18: the tail is Rc<List> -- cloning bumps the reference
+// Listing 15-18: the tail is Rc<List> - cloning bumps the reference
 // counter instead of moving or copying the list.
 #[derive(Debug)]
 enum List {
@@ -18,7 +18,7 @@ enum List {
 pub fn demo_list() {
     println!("\n*** demo of a List with shared ownership via Rc<T> ***");
 
-    // Listing 15-17 (the Box version) cannot share a list -- ownership moves:
+    // Listing 15-17 (the Box version) cannot share a list - ownership moves:
     //
     // // enum List {
     // //     Cons(i32, Box<List>),
@@ -50,7 +50,7 @@ pub fn demo_list() {
     println!("c is {c:?}");
 
     // beyond the book: the box_demo sum() walk, now proving shared
-    // reachability -- both sums descend into the SAME nodes.
+    // reachability - both sums descend into the SAME nodes.
     fn sum(list: &List) -> i32 {
         match list {
             Cons(value, tail) => value + sum(tail),
@@ -64,7 +64,7 @@ pub fn demo_list() {
 
 // Listing 15-19: strong_count through the lifecycle. The inner scope is
 // the point: closing it drops _c, and Rc's OWN Drop decrements the
-// counter -- the "counters, not memory" case from drop_demo's header.
+// counter - the "counters, not memory" case from drop_demo's header.
 // Nobody calls any decrement manually: clone up, scope-end down.
 // The name is strong_count, not count: Rc also tracks a weak_count --
 // Weak<T> references (Rc::downgrade) that do NOT keep the value alive;

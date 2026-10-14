@@ -1,4 +1,4 @@
-// ch 16.2: message passing -- channels between threads (listings
+// ch 16.2: message passing - channels between threads (listings
 // 16-6..16-11). "Do not communicate by sharing memory; instead, share
 // memory by communicating" (the Go slogan the book quotes). A channel
 // transfers OWNERSHIP: once sent, the sender must not use the value --
@@ -22,7 +22,7 @@ pub fn demo_channel() {
     // Listings 16-7..16-8: tx MOVES into the spawned thread; send takes
     // ownership and returns Result (error if the receiver is dropped);
     // recv BLOCKS until a value arrives (error once all senders are
-    // dropped -- the channel is closed); try_recv is the non-blocking
+    // dropped - the channel is closed); try_recv is the non-blocking
     // sibling for "check while doing other work".
     let (tx, rx) = mpsc::channel();
 
@@ -30,7 +30,7 @@ pub fn demo_channel() {
         let val = String::from("hi");
         tx.send(val).unwrap();
 
-        // Listing 16-9: using val AFTER sending it is rejected -- the value
+        // Listing 16-9: using val AFTER sending it is rejected - the value
         // now belongs to the receiving thread. Ownership makes message
         // passing safe:
         //
@@ -52,10 +52,10 @@ pub fn demo_channel_stream() {
     println!("\n*** demo of channels: sending multiple messages and pausing between each one ***");
 
     // Listing 16-10: the producer sends four strings, pausing a second
-    // between sends. Main has no sleep of its own -- the pauses in the
+    // between sends. Main has no sleep of its own - the pauses in the
     // OUTPUT prove main is waiting on the channel. No explicit recv
     // anymore: rx IS an iterator, and the loop ends when the channel
-    // closes (all senders dropped -- here, when the spawned thread ends).
+    // closes (all senders dropped - here, when the spawned thread ends).
     let (tx, rx) = mpsc::channel();
 
     thread::spawn(move || {
@@ -83,13 +83,13 @@ pub fn demo_multiple_producers() {
     // Listing 16-11: clone the transmitter BEFORE the first thread:
     // tx1 goes to thread one, the ORIGINAL tx moves into thread two.
     // One receiver consumes both streams, interleaved in an order the
-    // scheduler picks per run -- the nondeterminism caveat of the
+    // scheduler picks per run - the nondeterminism caveat of the
     // module header, now by design.
     let (tx, rx) = mpsc::channel();
 
     // A true clone of the SENDING CAPABILITY (not a refcount bump like
     // Rc::clone, ch 15): each thread gets an independent transmitter,
-    // and the channel closes only when ALL of them are dropped -- which
+    // and the channel closes only when ALL of them are dropped - which
     // is exactly what ends the for loop below.
     let tx1 = tx.clone();
 

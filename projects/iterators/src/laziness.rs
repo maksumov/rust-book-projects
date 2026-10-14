@@ -1,4 +1,4 @@
-// Creating an iterator does nothing by itself -- iterators are
+// Creating an iterator does nothing by itself - iterators are
 // lazy; the for loop consumes it here, calling next under the hood.
 pub fn demo() {
     println!("\n*** iterators usage demo ***");

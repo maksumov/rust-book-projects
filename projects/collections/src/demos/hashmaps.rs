@@ -1,11 +1,11 @@
-// Under the hood: the default hasher is SipHash -- DoS-resistant,
+// Under the hood: the default hasher is SipHash - DoS-resistant,
 // trading some speed for security. A slower/faster hasher can be
 // plugged in via the BuildHasher trait (ch 10).
 // additional info: https://en.wikipedia.org/wiki/SipHash
 use std::collections::HashMap;
 
 // Creating a HashMap: `new` + `insert` (insert takes OWNERSHIP of
-// the key and value -- see the ownership demo later). Not in the
+// the key and value - see the ownership demo later). Not in the
 // prelude: the least used of the three collections, needs an
 // explicit `use` (unlike Vec and String).
 pub fn hashmaps_creation_demo() {
@@ -34,7 +34,7 @@ pub fn hashmaps_creation_via_collect_demo() {
     println!("scores via collect: {scores:?}");
 }
 
-// `get` looks up a key and returns Option<&V> -- the safe form:
+// `get` looks up a key and returns Option<&V> - the safe form:
 // hash maps have no indexing syntax, and a missing key is None,
 // not a panic. The copied/unwrap_or chain below handles absence.
 pub fn hashmaps_accessing_values_demo() {
@@ -51,14 +51,14 @@ pub fn hashmaps_accessing_values_demo() {
     // stored value, None -> the default.
     for team_name in ["Blue", "Green"] {
         // Lookup by &str directly: `get` is generic over Q where
-        // K: Borrow<Q>, and String: Borrow<str> -- no allocation,
+        // K: Borrow<Q>, and String: Borrow<str> - no allocation,
         // unlike building a String key per lookup.
         let score = scores.get(team_name).copied().unwrap_or(0);
         println!("The {team_name:?} have {score} points");
     }
 }
 
-// Iterating yields (&K, &V) pairs in ARBITRARY order -- the hash
+// Iterating yields (&K, &V) pairs in ARBITRARY order - the hash
 // function decides the layout, not insertion order.
 pub fn hashmaps_iteration_demo() {
     println!("\n*** Hash maps iteration demo ***");
@@ -75,7 +75,7 @@ pub fn hashmaps_iteration_demo() {
 // `insert` takes ownership: owned keys/values (String) are MOVED
 // into the map and become invalid at the call site; Copy types
 // (i32) are copied and stay usable. References can't just be
-// inserted -- their data must outlive the map (lifetimes, ch 10).
+// inserted - their data must outlive the map (lifetimes, ch 10).
 pub fn hashmaps_managing_ownership_demo() {
     println!("\n*** Hash maps managing ownership demo ***");
 
@@ -96,7 +96,7 @@ pub fn hashmaps_managing_ownership_demo() {
     // The data lives in the map now:
     println!("map: {map:?}");
 
-    // Copy types are copied, not moved -- still usable after insert:
+    // Copy types are copied, not moved - still usable after insert:
     let mut counts = HashMap::new();
     let number = 10;
     counts.insert("Blue", number);
@@ -104,7 +104,7 @@ pub fn hashmaps_managing_ownership_demo() {
 }
 
 // Updating strategy 1 of 3: `insert` on an existing key REPLACES
-// the value outright -- the old value is dropped.
+// the value outright - the old value is dropped.
 pub fn hashmaps_overwriting_value_demo() {
     println!("\n*** Hash maps overwriting value demo ***");
 
@@ -120,15 +120,15 @@ pub fn hashmaps_overwriting_value_demo() {
 
 // Updating strategy 2 of 3: insert only if the key is ABSENT.
 //
-// Why a dedicated API exists -- `get` vs `entry`:
+// Why a dedicated API exists - `get` vs `entry`:
 //
 //   get:   fn get(&self, k: &Q) -> Option<&V>
-//     -- immutable borrow of the map, read-only lookup: it cannot
+//     - immutable borrow of the map, read-only lookup: it cannot
 //        insert anything, and the Option<&V> it returns cannot be
 //        mutated through.
 //
 //   entry: fn entry(&mut self, key: K) -> Entry<K, V>
-//     -- mutable borrow, and the key is taken by VALUE (it may be
+//     - mutable borrow, and the key is taken by VALUE (it may be
 //        needed for the insert). Returns an Occupied/Vacant "slot",
 //        and or_insert(default) returns &mut V in BOTH cases --
 //        inserting the default for a vacant key, keeping the old
@@ -153,7 +153,7 @@ pub fn hashmaps_insert_if_absent_demo() {
 }
 
 // Updating strategy 3 of 3: update based on the OLD value.
-// `or_insert(0)` returns &mut V -- write through it with
+// `or_insert(0)` returns &mut V - write through it with
 // `*count += 1` (the same dereference-write as in the mutable
 // vector iteration). The keys are &str borrowed from `text`
 // (split_whitespace yields slices): the map borrows, so `text`

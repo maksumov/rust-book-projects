@@ -1,5 +1,5 @@
 // ch 17.3: yielding control to the runtime (listings 17-14..17-20).
-// Between await points, async code is plain synchronous code -- it can
+// Between await points, async code is plain synchronous code - it can
 // STARVE every other future on the same thread. The fix: yield points;
 // the capstone: a hand-built timeout. The module's sleep triangle:
 // thread::sleep BLOCKS; trpl::sleep WAITS, then yields; yield_now
@@ -8,7 +8,7 @@
 use std::{thread, time::Duration};
 use trpl::Either;
 
-// Listing 17-14: deliberately BLOCKING -- thread::sleep, not
+// Listing 17-14: deliberately BLOCKING - thread::sleep, not
 // trpl::sleep: a stand-in for real CPU-bound work that never yields.
 fn slow(name: &str, ms: u64) {
     thread::sleep(Duration::from_millis(ms));
@@ -16,7 +16,7 @@ fn slow(name: &str, ms: u64) {
 }
 
 pub fn demo_starvation() {
-    println!("\n*** demo of yielding: starvation -- no await points, no switching ***");
+    println!("\n*** demo of yielding: starvation - no await points, no switching ***");
 
     trpl::block_on(async {
         // Listing 17-15: two futures, each with blocking slow() work and
@@ -59,7 +59,7 @@ pub fn demo_yield_sleep() {
         // thread::sleep here would change nothing from 17-15. Await
         // points appear, and with them the interleaving. But sleep is
         // a FAKE yield: we do not want to WAIT, we want to hand control
-        // back -- and timers have granularity limits (this sleep takes
+        // back - and timers have granularity limits (this sleep takes
         // at least 1ms even for a 1ns argument).
 
         let one_ms = Duration::from_millis(1);
@@ -93,16 +93,16 @@ pub fn demo_yield_sleep() {
 }
 
 pub fn demo_yield_now() {
-    println!("\n*** demo of yielding: yield_now -- honest cooperative switching ***");
+    println!("\n*** demo of yielding: yield_now - honest cooperative switching ***");
 
     trpl::block_on(async {
-        // Listing 17-17: yield_now().await -- the honest version: hand
+        // Listing 17-17: yield_now().await - the honest version: hand
         // control to the runtime NOW, without waiting for anything.
         // This is COOPERATIVE multitasking: each future decides when to
-        // yield -- and therefore carries the responsibility of yielding
+        // yield - and therefore carries the responsibility of yielding
         // often enough (17-15 is what happens when it does not). Yielding
         // is cheap but not free: break up work where it makes sense, and
-        // measure before optimizing. The output shape matches 17-16 -- the
+        // measure before optimizing. The output shape matches 17-16 - the
         // difference is mechanics and speed, not the interleaving pattern.
 
         let a = async {
@@ -136,9 +136,9 @@ pub fn demo_yield_now() {
 pub fn demo_timeout() {
     println!("\n*** demo of yielding: a hand-built timeout (select + sleep) ***");
 
-    // Listing 17-18: API-first -- write the intended usage BEFORE the
+    // Listing 17-18: API-first - write the intended usage BEFORE the
     // implementation exists. The slow future sleeps 5s; the budget is
-    // 2 -- the timeout wins ("Failed after 2 seconds").
+    // 2 - the timeout wins ("Failed after 2 seconds").
     trpl::block_on(async {
         let slow = async {
             trpl::sleep(Duration::from_secs(5)).await;

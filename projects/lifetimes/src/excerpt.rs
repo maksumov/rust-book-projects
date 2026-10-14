@@ -1,4 +1,4 @@
-// Structs CAN hold references -- at the price of a lifetime
+// Structs CAN hold references - at the price of a lifetime
 // parameter (this closes the loop with the structs project's
 // "missing lifetime specifier" anchor). Elision rule 3 then keeps
 // METHOD signatures clean.
@@ -10,7 +10,7 @@ pub struct ImportantExcerpt<'a> {
 // Listing 10-24: an instance cannot outlive the reference it holds.
 impl<'a> ImportantExcerpt<'a> {
     // Elision rule 1 applies to &self; the return is not a
-    // reference -- no annotations needed at all:
+    // reference - no annotations needed at all:
     pub fn level(&self) -> i32 {
         3
     }
@@ -35,12 +35,12 @@ pub fn demo() {
     println!("level = {}", i.level());
     println!("part = {}", i.announce_and_return_part("a excerpt demo"));
 
-    // The static lifetime: 'static -- valid for the ENTIRE program.
+    // The static lifetime: 'static - valid for the ENTIRE program.
     // Every string literal is 'static (stored in the binary):
     let s: &'static str = "I have a static lifetime.";
     println!("{s}");
 
     // Caution from the book: an error suggesting 'static is usually
-    // a dangling-reference smell -- fix the lifetimes instead of
+    // a dangling-reference smell - fix the lifetimes instead of
     // reaching for 'static.
 }

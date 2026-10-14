@@ -12,7 +12,7 @@ pub fn demo() {
     println!("threshold is {threshold}");
     println!("13 above threshold: {}", is_above(13));
 
-    // A function can SEE `threshold` but cannot capture it -- fn
+    // A function can SEE `threshold` but cannot capture it - fn
     // items have no environment. Uncomment to see the error:
     //
     // fn is_above_fn(x: i32) -> bool {

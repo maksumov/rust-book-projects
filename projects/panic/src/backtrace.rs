@@ -1,5 +1,5 @@
 // Listing 9-2: the panic here comes not from our macro but from
-// the standard library detecting a bug -- indexing out of bounds:
+// the standard library detecting a bug - indexing out of bounds:
 // "the len is 3 but the index is 99". Run as
 //     RUST_BACKTRACE=1 cargo run
 // (with the panic_macro call in main commented out) to see the

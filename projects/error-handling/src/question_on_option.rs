@@ -1,4 +1,4 @@
-// Listing 9-11: `?` also works on Option -- None returns early,
+// Listing 9-11: `?` also works on Option - None returns early,
 // Some unwraps. The enclosing function must return the SAME Option;
 // Result and Option can't be mixed without conversion (ok / ok_or).
 

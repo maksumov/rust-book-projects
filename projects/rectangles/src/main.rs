@@ -51,7 +51,7 @@ fn main() {
         height: 45,
     };
 
-    // `::` syntax -- like `String::from` (chapter 4): the function
+    // `::` syntax - like `String::from` (chapter 4): the function
     // belongs to the type, not to an instance.
     let square = Rectangle::square(25);
 

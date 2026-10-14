@@ -1,9 +1,9 @@
-// ch 18.2: trait objects -- abstracting over shared behavior (listings
+// ch 18.2: trait objects - abstracting over shared behavior (listings
 // 18-3..18-10). A trait object = a pointer to a value + a table of its
-// trait methods, resolved at RUNTIME (dynamic dispatch -- no inlining,
+// trait methods, resolved at RUNTIME (dynamic dispatch - no inlining,
 // a small cost per call). Why dyn needs a pointer: ch 20 (DST). The
 // trait-object rules are called dyn compatibility (renamed from
-// "object safety" -- the old name still roams the wild).
+// "object safety" - the old name still roams the wild).
 
 // Listing 18-3: Definition of the Draw trait
 pub trait Draw {

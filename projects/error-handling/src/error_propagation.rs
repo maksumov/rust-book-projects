@@ -1,4 +1,4 @@
-// Note the `Read` import: read_to_string is a TRAIT method -- it
+// Note the `Read` import: read_to_string is a TRAIT method - it
 // only exists on File with the trait in scope (unlike inherent
 // methods like File::open). Traits are chapter 10.
 use std::fs::{self, File};
@@ -7,12 +7,12 @@ use std::io::{self, Read};
 // Propagating errors: instead of handling (or panicking), the
 // function RETURNS the error to the caller, who has more context.
 // The same read_username_from_file evolves through four versions
-// (listings 9-6 .. 9-9) -- read top to bottom to see the approach
+// (listings 9-6 .. 9-9) - read top to bottom to see the approach
 // shrink from ~15 lines to one.
 
 const FILENAME: &str = "hello.txt";
 
-// Listing 9-6: manual match -- Err(e) => return Err(e) is the
+// Listing 9-6: manual match - Err(e) => return Err(e) is the
 // early return `?` will replace.
 fn read_username_match() -> Result<String, io::Error> {
     let username_file_result = File::open(FILENAME);
@@ -30,7 +30,7 @@ fn read_username_match() -> Result<String, io::Error> {
     }
 }
 
-// Listing 9-7: the `?` operator -- sugar for exactly that match.
+// Listing 9-7: the `?` operator - sugar for exactly that match.
 fn read_username_question() -> Result<String, io::Error> {
     let mut username_file = File::open(FILENAME)?;
     let mut username = String::new();

@@ -7,13 +7,13 @@
 pub fn demo() {
     println!("\n*** iterators: iter / iter_mut / into_iter ***");
 
-    // iter(): borrows immutably -- read-only pass; the owner is
+    // iter(): borrows immutably - read-only pass; the owner is
     // untouched and still usable afterwards.
     let words = vec![String::from("read"), String::from("only")];
     let total: usize = words.iter().map(String::len).sum();
     println!("iter: total chars in {words:?} = {total}");
 
-    // iter_mut(): borrows mutably -- transform in place; the same
+    // iter_mut(): borrows mutably - transform in place; the same
     // collection, no reallocation.
     let mut words = vec![String::from("shout"), String::from("here")];
     for w in words.iter_mut() {
@@ -21,7 +21,7 @@ pub fn demo() {
     }
     println!("iter_mut: {words:?}");
 
-    // into_iter(): takes ownership -- each String is moved out;
+    // into_iter(): takes ownership - each String is moved out;
     // the vector dies with the loop.
     let words = vec![String::from("gone"), String::from("soon")];
     for w in words.into_iter() {

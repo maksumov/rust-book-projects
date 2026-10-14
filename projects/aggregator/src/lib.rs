@@ -1,12 +1,12 @@
 use std::clone::Clone;
 use std::fmt::{self, Debug, Display};
 
-// A library crate consumed by the binary in src/main.rs -- the
+// A library crate consumed by the binary in src/main.rs - the
 // lib+bin pattern (ch 7.3 best practice; first in this collection).
 // Everything `pub` here is the public API the bin gets to see.
 
 // The subsection's finale: a REQUIRED method (summarize_author)
-// plus a default that CALLS it -- implementors provide the small
+// plus a default that CALLS it - implementors provide the small
 // required part and get the rest for free. Note: an override
 // cannot call the default it replaces.
 pub trait Summary {
@@ -24,7 +24,7 @@ pub struct NewsArticle {
     pub content: String,
 }
 
-// Implements only the required part -- inherits the calling default
+// Implements only the required part - inherits the calling default
 impl Summary for NewsArticle {
     // Beyond the book (it keeps only SocialPost at this step):
     // the now-required summarize_author needs an impl here too.
@@ -54,7 +54,7 @@ impl Summary for SocialPost {
 }
 
 // "Using Traits as Parameters": &impl Trait accepts any type
-// implementing the trait -- sugar for a trait bound
+// implementing the trait - sugar for a trait bound
 // (<T: Summary>), which the next fragments introduce.
 pub fn notify(item: &impl Summary) {
     println!("Breaking news! {}", item.summarize());
@@ -62,7 +62,7 @@ pub fn notify(item: &impl Summary) {
 
 // The equivalent long form: &impl Summary is sugar for this trait
 // bound. Same semantics; the full form can express what sugar
-// cannot -- see notify_two_same below.
+// cannot - see notify_two_same below.
 pub fn notify_bound<T: Summary>(item: &T) {
     println!("Bound form: {}", item.summarize());
 }
@@ -76,7 +76,7 @@ pub fn notify_two_different(item1: &impl Summary, item2: &impl Summary) {
     );
 }
 
-// A single bound forces BOTH params to be the SAME type -- the
+// A single bound forces BOTH params to be the SAME type - the
 // semantic difference the sugar form cannot express.
 pub fn notify_two_same<T: Summary>(item1: &T, item2: &T) {
     println!("Two alike: {} | {}", item1.summarize(), item2.summarize());
@@ -101,7 +101,7 @@ where
 
 // Beyond the book: Display for SocialPost lets notify_display be
 // called with a live demo type (NewsArticle deliberately stays
-// without it -- see the commented error in main).
+// without it - see the commented error in main).
 impl Display for SocialPost {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "@{}", self.username)
@@ -109,7 +109,7 @@ impl Display for SocialPost {
 }
 
 // "Returning Types That Implement Traits": the concrete type stays
-// hidden from the caller -- especially useful for iterator and
+// hidden from the caller - especially useful for iterator and
 // closure types (chapter 13). Only ONE concrete type may be
 // returned; see the commented switch variant below (trait objects,
 // chapter 18, lift that restriction).
@@ -127,7 +127,7 @@ pub fn returns_summarizable() -> impl Summary {
 //     "`if` and `else` have incompatible types"
 //     expected `NewsArticle`, found `SocialPost`
 // The compiler's help even suggests the fix: "you could change the
-// return type to be a boxed trait object" -- Box<dyn Trait>,
+// return type to be a boxed trait object" - Box<dyn Trait>,
 // covered in chapter 18. Uncomment and build to see it.
 // pub fn returns_summarizable_switch(switch: bool) -> impl Summary {
 //     if switch {
@@ -151,11 +151,11 @@ pub fn returns_summarizable() -> impl Summary {
 // }
 
 // Listing 10-15: `new` is unconditional (impl<T>), while
-// cmp_display exists only for T: Display + PartialOrd -- methods
+// cmp_display exists only for T: Display + PartialOrd - methods
 // appear per TYPE, not per value. Private fields: outside this
 // crate, Pair is built through Pair::new only.
 //
-// The subsection's other half -- blanket implementations -- is
+// The subsection's other half - blanket implementations - is
 // the same idea one level up: impl<T: Display> ToString for T;
 // that is why .to_string() exists for every Display type
 // (see the glossary: "Blanket implementations").

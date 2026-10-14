@@ -1,5 +1,5 @@
 // `#![...]` is an INNER attribute: it applies to the enclosing
-// item -- here, the whole crate (a plain `#[...]` is OUTER and
+// item - here, the whole crate (a plain `#[...]` is OUTER and
 // attaches to the next item only, e.g. a single `mod` line).
 //
 // Disabled on purpose: an active `#![allow(dead_code)]` silences
@@ -16,9 +16,9 @@
 // effect of the NotFound branch.
 
 // Chapter 9.3 guidelines: panic! (and unwrap/expect) is for
-// failures that mean a BUG -- a broken invariant, invalid state --
+// failures that mean a BUG - a broken invariant, invalid state --
 // and is fine in examples, prototypes and tests. Result is for
-// EXPECTED failures -- missing files, bad input -- where the caller
+// EXPECTED failures - missing files, bad input - where the caller
 // may recover. The panic! side of this split lives in the panic
 // project; this project demonstrates the Result side.
 
@@ -31,19 +31,19 @@ mod unwrap_expect;
 mod unwrap_or_else;
 
 fn main() {
-    // panics first when hello.txt is missing -- blocks the demos below:
+    // panics first when hello.txt is missing - blocks the demos below:
     open_match::demo();
 
     // The next two demos implement the SAME open-or-create logic:
     // a nested-match primitive vs a combinator chain. Idiomatic
-    // Rust prefers combinators -- small closure-taking methods
+    // Rust prefers combinators - small closure-taking methods
     // (unwrap_or_else & friends) that compose flat pipelines
     // instead of match pyramids; match stays for genuinely
     // multi-way logic. Closures themselves arrive in chapter 13.
     error_kind_match::demo();
     unwrap_or_else::demo();
 
-    // unwrap/expect: shorthands for the open_match pattern -- the
+    // unwrap/expect: shorthands for the open_match pattern - the
     // Ok value comes out, Err panics; expect lets the panic carry
     // your own message.
     unwrap_expect::demo();
@@ -51,7 +51,7 @@ fn main() {
     // The successful path expects hello.txt to EXIST and contain
     // some text (e.g. `echo user > hello.txt`): all four versions
     // print the same Ok. Delete the file to see all four return
-    // the same Err -- propagation at work.
+    // the same Err - propagation at work.
     error_propagation::demo();
 
     // `?` lives in any fn returning Result/Option; main itself may

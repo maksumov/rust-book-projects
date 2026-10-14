@@ -1,7 +1,7 @@
 // #[should_panic] INVERTS the rule "a panicking test fails":
 // the test passes only if the code panics. Imprecise by default
 // (ANY panic counts), so `expected = "..."` narrows it: the panic
-// message must CONTAIN the given substring -- the book refines a
+// message must CONTAIN the given substring - the book refines a
 // single-message Guess (listing 9-13) into this two-message
 // version to make the substring unique.
 pub struct Guess {
@@ -29,7 +29,7 @@ impl Guess {
 // BUG variant A (the > 100 branch removed): Guess::new(200) no
 // longer panics, and the test fails with the least informative
 // message possible. Uncomment (replacing the new above) and
-// `cargo test` -- the panel below is an example of the failure
+// `cargo test` - the panel below is an example of the failure
 // output (counts, line numbers and the thread id reflect one
 // particular run):
 //
@@ -45,8 +45,8 @@ impl Guess {
 // }
 
 // BUG variant B (panic bodies swapped): the code DOES panic, but
-// with the other message -- `expected` catches the mismatch.
-// Uncomment (replacing the new above) and `cargo test` -- the
+// with the other message - `expected` catches the mismatch.
+// Uncomment (replacing the new above) and `cargo test` - the
 // panel below is an example of the failure output:
 //
 //     ---- guess::tests::greater_than_100 stdout ----
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     // The panic message must CONTAIN this substring (not match
-    // exactly) -- enough to pin the > 100 branch specifically:
+    // exactly) - enough to pin the > 100 branch specifically:
     #[should_panic(expected = "less than or equal to 100")]
     fn greater_than_100() {
         Guess::new(200);

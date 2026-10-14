@@ -1,8 +1,8 @@
 // Listing 9-5: different actions for different failure reasons.
 // The Err arm matches on error.kind(): NotFound -> create the file
-// and return the new handle (File::create can fail too -- hence
+// and return the new handle (File::create can fail too - hence
 // the third nested match); anything else still panics. Side effect:
-// run without hello.txt and this demo CREATES it -- delete the file
+// run without hello.txt and this demo CREATES it - delete the file
 // to watch the NotFound branch again. The book follows up with a
 // closure-based unwrap_or_else alternative (chapter 13 preview).
 
@@ -22,7 +22,7 @@ pub fn demo() {
         }
         Err(error) => match error.kind() {
             ErrorKind::NotFound => {
-                println!("Err branch: NotFound -- creating the file");
+                println!("Err branch: NotFound - creating the file");
                 match File::create(filename) {
                     Ok(fc) => fc,
                     Err(e) => panic!("Problem creating the file {filename:?}: {e:?}"),

@@ -21,7 +21,7 @@ fn main() {
         content: String::from("..."),
     };
 
-    // The trait evolved (summarize_author finale) -- the article's
+    // The trait evolved (summarize_author finale) - the article's
     // output changed WITHOUT touching main: now prints
     // "(Read more from by Iceburgh...)":
     println!("New article available! {}", article.summarize());
@@ -63,7 +63,7 @@ fn main() {
 
     println!("\n--- conditional impls: methods exist only for fitting T ---");
     // new() is unconditional; i32 satisfies Display + PartialOrd,
-    // so cmp_display exists -- and prints by itself:
+    // so cmp_display exists - and prints by itself:
     aggregator::Pair::new(12, 9).cmp_display();
 
     // The conditional half: &NewsArticle satisfies NEITHER bound --

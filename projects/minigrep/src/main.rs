@@ -1,6 +1,6 @@
 // The CLI contract: two arguments expected --
-//     cargo run -- <search-string> <file-path>
-// e.g. cargo run -- thebody poem.txt
+//     cargo run - <search-string> <file-path>
+// e.g. cargo run - thebody poem.txt
 
 use minigrep::{search, search_case_insensitive};
 use std::env;
@@ -39,10 +39,10 @@ pub struct Config {
 }
 
 impl Config {
-    // Maps CLI arguments to a Config. An associated fn -- the
+    // Maps CLI arguments to a Config. An associated fn - the
     // build (not new) idiom: new is expected to never fail.
     // Iterator parsing (13.3): the first next() skips the binary
-    // path; each match pulls an owned String -- no clones needed.
+    // path; each match pulls an owned String - no clones needed.
     // Errors on missing arguments; main converts Err into a
     // friendly message + a nonzero exit code.
     fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {

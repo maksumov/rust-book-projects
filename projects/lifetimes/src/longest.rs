@@ -8,7 +8,7 @@ pub fn demo() {
     let string1 = String::from("abcd");
     let string2 = "xyz";
 
-    // Listing 10-21: the fixed signature -- one lifetime 'a ties
+    // Listing 10-21: the fixed signature - one lifetime 'a ties
     // BOTH inputs and the output: the returned reference is valid
     // as long as BOTH arguments are ('a = the SHORTER of the two).
     let result = longest(string1.as_str(), string2);
@@ -28,7 +28,7 @@ pub fn demo() {
     // }
 
     // Listing 10-22: different lifetimes, but the USE stays inside
-    // the shorter one -- the borrow checker approves:
+    // the shorter one - the borrow checker approves:
     let string1 = String::from("long string is long");
     {
         let string2 = String::from("xyz");
@@ -50,7 +50,7 @@ pub fn demo() {
     // println!("The longest string is {result}");
 }
 
-// Listing 10-21: 'a ties the references together -- annotations do
+// Listing 10-21: 'a ties the references together - annotations do
 // NOT change how long anything lives; they describe the RELATION.
 pub fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
@@ -64,14 +64,14 @@ pub fn relationships_demo() {
     println!("\n--- relationships: only connected references need 'a ---");
 
     // When the function ALWAYS returns the first parameter, y has
-    // no relationship with the output -- no annotation needed on y:
+    // no relationship with the output - no annotation needed on y:
     let string1 = String::from("abcd");
     let string2 = "efghijklmnopqrstuvwxyz";
     let result = always_first(string1.as_str(), string2);
     println!("Always first: {result}");
 
     // The opposite extreme: returning a reference to a LOCAL value.
-    // No lifetime annotation can fix this -- uncomment and build:
+    // No lifetime annotation can fix this - uncomment and build:
     //     error[E0515]: cannot return value referencing local
     //       variable `result`
     //       returns a value referencing data owned by the current
@@ -82,7 +82,7 @@ pub fn relationships_demo() {
     // }
 
     // The chapter's finale: lifetime + generic type + trait bound +
-    // where clause -- all in one signature. Lifetimes and types
+    // where clause - all in one signature. Lifetimes and types
     // live in the SAME angle-bracket list:
     let result = longest_with_an_announcement(
         string1.as_str(),

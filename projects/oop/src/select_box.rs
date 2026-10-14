@@ -28,7 +28,7 @@ impl Draw for SelectBox {
 pub fn demo_screen() {
     println!("\n*** demo of trait objects: a Screen of mixed components ***");
 
-    // Listing 18-9: values of DIFFERENT types in one vector -- SelectBox
+    // Listing 18-9: values of DIFFERENT types in one vector - SelectBox
     // from this crate, Button from the library.
     let screen = Screen {
         components: vec![
@@ -51,7 +51,7 @@ pub fn demo_screen() {
 
     screen.run();
 
-    // Listing 18-10: a String does not implement Draw -- caught at
+    // Listing 18-10: a String does not implement Draw - caught at
     // COMPILE time (the duck-typing contrast: statically checked):
     //
     // // let screen = Screen {

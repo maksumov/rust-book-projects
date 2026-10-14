@@ -1,6 +1,6 @@
 // The same logic as error_kind_match, without any `match`:
 // `unwrap_or_else` takes a CLOSURE that runs only on the Err
-// branch. Closures are chapter 13 -- bookmark this and revisit
+// branch. Closures are chapter 13 - bookmark this and revisit
 // (the book's own advice); for now, read `|error| { ... }` as
 // an inline function receiving the error.
 
@@ -18,7 +18,7 @@ pub fn demo() {
     let greeting_file = File::open(filename).unwrap_or_else(|error| {
         println!("Err branch: {error:?}");
         if error.kind() == ErrorKind::NotFound {
-            println!("NotFound -- creating the file");
+            println!("NotFound - creating the file");
             File::create(filename).unwrap_or_else(|error| {
                 panic!("Problem creating the file {filename:?}: {error:?}");
             })

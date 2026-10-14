@@ -12,7 +12,7 @@ enum IpAddr {
 
 // Variants can take any form: no data (Quit), named fields (Move,
 // struct-like), a single value (Write), or a tuple (ChangeColor).
-// The book's alternative -- four separate structs -- loses here:
+// The book's alternative - four separate structs - loses here:
 // each would be a distinct type, while the enum is a single type
 // that a function can accept as one argument.
 #[allow(dead_code)]
@@ -43,7 +43,7 @@ fn main() {
 
     // Exhaustive again: restoring the `None` arm fixes the
     // "pattern `None` not covered" error. Rust checks match
-    // exhaustiveness at compile time -- no case can be forgotten.
+    // exhaustiveness at compile time - no case can be forgotten.
     fn plus_one(x: Option<i32>) -> Option<i32> {
         match x {
             None => None,
@@ -93,7 +93,7 @@ fn main() {
         _ => reroll(),
     }
 
-    // `_ => ()`: the unit value -- do nothing for all other rolls.
+    // `_ => ()`: the unit value - do nothing for all other rolls.
     match dice_roll {
         3 => add_fancy_hat(),
         7 => remove_fancy_hat(),
@@ -115,7 +115,7 @@ fn main() {
 
     // `if let` is sugar for a match with a single arm plus `_ => ()`:
     // less typing, no exhaustiveness noise. Trade-off: losing match
-    // exhaustiveness checking -- the compiler no longer verifies
+    // exhaustiveness checking - the compiler no longer verifies
     // that other cases were considered deliberately.
     if let Some(max) = config_max {
         println!("The maximum is configured to be {max}");
@@ -125,7 +125,7 @@ fn main() {
     let coin = Coin::Nickel;
 
     // Matching by reference (`&coin`): the Quarter arm binds `state`
-    // as &UsState and `coin` is not consumed -- a must here, since
+    // as &UsState and `coin` is not consumed - a must here, since
     // the `if let` below reuses it.
     // Unlike the earlier `_ => ()` cases, the catch-all arm does
     // real work here: counting everything that is not a quarter.
@@ -135,7 +135,7 @@ fn main() {
     }
     println!("count = {count}");
 
-    // `else` plays the role of match's `_` arm -- this is the exact
+    // `else` plays the role of match's `_` arm - this is the exact
     // equivalent of the match above, with the same trade-off:
     // no exhaustiveness check, other patterns ignored deliberately.
     if let Coin::Quarter(state) = &coin {
@@ -161,7 +161,7 @@ fn main() {
 
 // `Option<T>` is an enum: Some(T) or None. Rust has no null --
 // absence of a value is explicit in the type system.
-// Note: `Some(5)` is Option<i32>, not i32 -- different types,
+// Note: `Some(5)` is Option<i32>, not i32 - different types,
 // they can't be mixed without unpacking (fixed with match below).
 fn option_demo() {
     let some_number = Some(5);
@@ -172,7 +172,7 @@ fn option_demo() {
 
     // Fixed with `match`: unpack `Option<i8>` before arithmetic.
     // Both arms are required (exhaustiveness); `None` must be
-    // handled explicitly -- that's the point of Option<T>.
+    // handled explicitly - that's the point of Option<T>.
     let x: i8 = 5;
     let y: Option<i8> = Some(5);
 
@@ -192,7 +192,7 @@ enum UsState {
 }
 
 // Methods work on enums exactly like on structs (chapter 5.3).
-// `match self` on `&self` binds by reference -- no ownership taken.
+// `match self` on `&self` binds by reference - no ownership taken.
 impl UsState {
     fn existed_in(&self, year: u16) -> bool {
         match self {
@@ -231,7 +231,7 @@ fn value_in_cents(coin: Coin) -> u8 {
 
 // First of three equivalent implementations of the same idea.
 // The nested `if let` pushes all the work into the condition's
-// body -- with more complex logic it becomes hard to follow how
+// body - with more complex logic it becomes hard to follow how
 // the top-level branches relate. The `_early_return` and
 // `_let_else` variants below address this step by step.
 fn describe_state_quarter_nested(coin: Coin) -> Option<String> {
@@ -268,7 +268,7 @@ fn describe_state_quarter_early_return(coin: Coin) -> Option<String> {
 
 // Final variant: `let...else` is dedicated syntax for exactly the
 // pattern above. On match, `state` binds in the outer scope; the
-// `else` arm MUST diverge (return/panic) -- the compiler enforces
+// `else` arm MUST diverge (return/panic) - the compiler enforces
 // it, so `state` is always initialized below. The function body
 // stays on the "happy path" with no nesting.
 fn describe_state_quarter_let_else(coin: Coin) -> Option<String> {

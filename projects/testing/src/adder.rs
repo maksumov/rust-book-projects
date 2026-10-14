@@ -1,4 +1,4 @@
-// The cargo-generated test template (listing 11-1) -- the chapter's
+// The cargo-generated test template (listing 11-1) - the chapter's
 // playground. #[cfg(test)] compiles the module only under
 // `cargo test`; #[test] marks functions for the test runner.
 
@@ -7,7 +7,7 @@ pub fn add(left: u64, right: u64) -> u64 {
 }
 
 // Listing 11-7: assert_eq! compares with == and, on failure,
-// prints BOTH values -- unlike assert!, which only says the
+// prints BOTH values - unlike assert!, which only says the
 // condition was false. Rust names the arguments left/right (order
 // doesn't matter), not expected/actual. Requires PartialEq + Debug
 // on the compared type (both derivable; u64 has them). The mirror
@@ -17,8 +17,8 @@ pub fn add_two(a: u64) -> u64 {
 }
 
 // The BUG variant from the book (+ 3 instead of + 2): it_adds_two
-// fails, and assert_eq! shows exactly WHY -- both values in the
-// panel. Uncomment and `cargo test` -- the panel below is an
+// fails, and assert_eq! shows exactly WHY - both values in the
+// panel. Uncomment and `cargo test` - the panel below is an
 // example of the failure output (counts, line numbers and the
 // thread id reflect one particular run):
 //
@@ -46,7 +46,7 @@ fn internal_adder(left: u64, right: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     // use super::* brings the outer module's items into the tests
-    // module -- regular visibility rules apply (ch 7).
+    // module - regular visibility rules apply (ch 7).
     use super::*;
 
     #[test]
@@ -60,7 +60,7 @@ mod tests {
     // Note the module-qualified name: after the refactoring into
     // modules the runner reports adder::tests::another, not
     // tests::another as in the flat lib.rs (listing 11-4).
-    // Uncomment and `cargo test` -- the panel below is an example
+    // Uncomment and `cargo test` - the panel below is an example
     // of the failure output (counts, line numbers and the thread
     // id reflect one particular run):
     //
@@ -93,7 +93,7 @@ mod tests {
 
     // A println!-in-test demo for the output-capture behavior (ch
     // 11.2): by default a PASSING test's stdout is captured (not
-    // shown); `cargo test -- --show-output` reveals it.
+    // shown); `cargo test - --show-output` reveals it.
     #[test]
     fn prints_and_passes() {
         println!("I got the value 4");
@@ -101,7 +101,7 @@ mod tests {
     }
 
     // #[ignore] (ch 11.2): excluded from the default run (listed
-    // as `ignored`); run via `cargo test -- --ignored`, or include
+    // as `ignored`); run via `cargo test - --ignored`, or include
     // with `-- --include-ignored`. The book's motivation is
     // expensive tests; in practice also flaky/broken quarantine
     // and tests needing external resources.
@@ -111,7 +111,7 @@ mod tests {
         // code that takes an hour to run
     }
 
-    // The Result form: Ok(()) passes, Err fails -- and the ?
+    // The Result form: Ok(()) passes, Err fails - and the ?
     // operator becomes usable in the body (any failing operation
     // aborts the test). The harness accepts it via the same
     // Termination trait as main() -> Result (error-handling
@@ -130,7 +130,7 @@ mod tests {
 
     // Calls the private function directly. The book notes the
     // community debate on testing private functions; Rust simply
-    // allows it -- no #[allow] gymnastics needed.
+    // allows it - no #[allow] gymnastics needed.
     #[test]
     fn internal() {
         let result = internal_adder(2, 2);

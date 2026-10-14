@@ -1,9 +1,9 @@
-// ch 15.5 (part 2): Rc<RefCell<i32>> -- multiple owners AND mutation
+// ch 15.5 (part 2): Rc<RefCell<i32>> - multiple owners AND mutation
 // (listing 15-24). Rc alone gives shared READ access; a RefCell inside
 // lets a mutation through one handle reach every owner at once.
 // Single-threaded only (the threaded sibling is Mutex, ch 16).
 
-// Listing 15-24: each head holds Rc<RefCell<i32>> -- ONE shared,
+// Listing 15-24: each head holds Rc<RefCell<i32>> - ONE shared,
 // mutable cell per value.
 #[derive(Debug)]
 enum List {
@@ -29,9 +29,9 @@ pub fn demo_refcell() {
     println!("b before = {b:?}");
     println!("c before = {c:?}");
 
-    // The key line -- three mechanics in one statement: deref the Rc
+    // The key line - three mechanics in one statement: deref the Rc
     // (automatic), borrow_mut the RefCell (returns a RefMut guard),
-    // deref THAT to reach the i32. Through ONE handle -- a, b and c
+    // deref THAT to reach the i32. Through ONE handle - a, b and c
     // all observe 15 afterwards (the before/after prints are beyond
     // the book: it prints only "after").
     *value.borrow_mut() += 10;
@@ -40,7 +40,7 @@ pub fn demo_refcell() {
     println!("b after = {b:?}");
     println!("c after = {c:?}");
 
-    // beyond the book: the sum() walk adapted -- each head now needs
+    // beyond the book: the sum() walk adapted - each head now needs
     // *value.borrow() to read through its RefCell (rc.rs's version read
     // the plain i32). One borrow at a time, so no runtime panic.
     fn sum(list: &List) -> i32 {

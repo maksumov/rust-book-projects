@@ -1,5 +1,5 @@
 // Custom failure messages: any extra arguments after the required
-// ones go to format! -- works with assert!, assert_eq! and
+// ones go to format! - works with assert!, assert_eq! and
 // assert_ne!. Useful to document what an assertion MEANS: when it
 // fails, the message carries the actual value (here: the greeting).
 
@@ -8,8 +8,8 @@ pub fn greeting(name: &str) -> String {
 }
 
 // The BUG variant from the book (name ignored): the test fails,
-// and the custom message pays off -- it prints the actual value.
-// Uncomment and `cargo test` -- the panel below is an example of
+// and the custom message pays off - it prints the actual value.
+// Uncomment and `cargo test` - the panel below is an example of
 // the failure output (counts, line numbers and the thread id
 // reflect one particular run):
 //
@@ -20,7 +20,7 @@ pub fn greeting(name: &str) -> String {
 //
 // Without the custom message the same failure would print only
 // the default line: assertion failed: result.contains("Carol")
-// -- no actual value, harder to debug.
+// - no actual value, harder to debug.
 //
 // pub fn greeting(name: &str) -> String {
 //     String::from("Hello!")

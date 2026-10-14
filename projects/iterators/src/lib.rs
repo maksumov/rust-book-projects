@@ -15,7 +15,7 @@
 // type this iterator yields. `next` is the only REQUIRED method --
 // one item at a time wrapped in Some, then None when exhausted.
 // It takes &mut self: advancing the iterator mutates its internal
-// position -- hence `mut v1_iter` below. `iter()` yields immutable
+// position - hence `mut v1_iter` below. `iter()` yields immutable
 // references (Some(&1), not Some(1)); `into_iter` yields owned
 // values, `iter_mut` mutable references.
 
@@ -118,7 +118,7 @@ pub struct Shoe {
 }
 
 // The filter closure captures `shoe_size` from its environment:
-// the section's point -- iterator adapters + closures combine.
+// the section's point - iterator adapters + closures combine.
 pub fn shoes_in_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
     shoes.into_iter().filter(|s| s.size == shoe_size).collect()
 }

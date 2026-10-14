@@ -6,7 +6,7 @@
 pub fn demo() {
     println!("\n--- dangling references: scopes and the borrow checker ---");
 
-    // Listing 10-18: the VALID version -- x ('b) outlives r ('a):
+    // Listing 10-18: the VALID version - x ('b) outlives r ('a):
     let x = 5; //            ----------+-- 'b
     let r = &x; // --+-- 'a           |
     //                |

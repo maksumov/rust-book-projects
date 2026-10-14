@@ -1,11 +1,11 @@
-// ch 15.3: Drop -- running code on cleanup (listings 15-14..15-16).
+// ch 15.3: Drop - running code on cleanup (listings 15-14..15-16).
 // The second half of the smart pointer pattern (Deref + Drop). Drop
 // releases what the auto field-drop will NOT: files, locks, sockets,
-// counters (Rc ahead) -- and memory held through RAW pointers or FFI,
+// counters (Rc ahead) - and memory held through RAW pointers or FFI,
 // which is why Box/Rc must deallocate in their Drop. Ordinary owning
 // fields (our String) clean themselves after drop() runs.
 
-// Listing 15-14: no explicit drop calls anywhere -- Rust inserts them at
+// Listing 15-14: no explicit drop calls anywhere - Rust inserts them at
 // scope end, in REVERSE creation order (d would go first; the early
 // drop(c) added by 15-16 below is what reshuffles this demo's output).
 #[derive(Debug)] // beyond the book: to show the values in the demo output
@@ -48,9 +48,9 @@ pub fn demo_drop_example() {
     //
     // Rust would STILL auto-drop c at the end of the scope, cleaning the
     // same value twice. "Destructor" is the general term for a cleanup
-    // function -- the counterpart of a constructor.
+    // function - the counterpart of a constructor.
 
-    // Listing 15-16: the legal early drop -- std::mem::drop, a prelude
+    // Listing 15-16: the legal early drop - std::mem::drop, a prelude
     // FUNCTION taking the value (ending its ownership), not a method:
     drop(c);
     println!("CustomSmartPointer dropped before the end of the demo");

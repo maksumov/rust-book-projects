@@ -5,9 +5,9 @@
 //     }
 //
 // fails with E0277: "the `?` operator can only be used in a
-// function that returns `Result` or `Option`" -- `?` performs an
+// function that returns `Result` or `Option`" - `?` performs an
 // early return Err(..), and () cannot carry it. Listing 9-12's
-// fix: main CAN return Result<(), Box<dyn Error>> -- the Termination
+// fix: main CAN return Result<(), Box<dyn Error>> - the Termination
 // trait maps Ok to exit code 0, Err to nonzero. `Box<dyn Error>`
 // is a trait object: "any kind of error" (chapter 18 preview).
 //

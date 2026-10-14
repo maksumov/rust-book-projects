@@ -1,6 +1,6 @@
-// ch 17.4: streams -- futures in sequence (listings 17-21..17-22).
+// ch 17.4: streams - futures in sequence (listings 17-21..17-22).
 // A stream is an async iterator: items arriving over time. Not yet in
-// the standard library -- the ecosystem's common definition; the full
+// the standard library - the ecosystem's common definition; the full
 // trait anatomy arrives in 17.5.
 
 use trpl::StreamExt;
@@ -19,7 +19,7 @@ pub fn demo_stream_from_iter() {
     // of them:
     //   + use crate::trpl::StreamExt;
     //
-    // The surprise: not Stream but StreamExt -- the Ext ("extension")
+    // The surprise: not Stream but StreamExt - the Ext ("extension")
     // pattern: a minimal base trait (Stream, poll_next) plus a
     // SEPARATE trait of conveniences (next, the iterator-like
     // utilities), blanket-implemented for every Stream. The import

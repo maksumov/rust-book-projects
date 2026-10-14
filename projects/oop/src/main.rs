@@ -13,7 +13,7 @@ fn main() {
     // // };                                                 // private
     //
     // The whole point of listing 18-1: only the public API can touch
-    // the data -- so `average` can never fall out of sync with `list`.
+    // the data - so `average` can never fall out of sync with `list`.
 
     select_box::demo_screen();
 

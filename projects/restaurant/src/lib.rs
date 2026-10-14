@@ -13,17 +13,17 @@ mod front_of_house;
 
 // `use` brings a path into scope once; after that, short paths suffice.
 // Idiom: import the MODULE and call through it (hosting::add_to_waitlist),
-// not the function itself -- the call site stays clear about where
+// not the function itself - the call site stays clear about where
 // the item comes from. (For structs and enums, import the item directly.)
 
 // `pub` turns this import into a RE-EXPORT: the shortcut itself
 // becomes part of the public API (external path:
 // restaurant::hosting), while the private internal structure
-// stays hidden -- refactoring `front_of_house` won't break
+// stays hidden - refactoring `front_of_house` won't break
 // consumers of the public path.
 pub use crate::front_of_house::hosting;
 
-// Importing the function itself (listing 7-13) -- legal, but less
+// Importing the function itself (listing 7-13) - legal, but less
 // idiomatic: a bare `add_to_waitlist()` call doesn't show where the
 // item comes from (locally defined? imported?). Importing the module
 // (the `hosting` use above) keeps the call site self-explanatory.
@@ -39,7 +39,7 @@ use std::collections::HashMap;
 // Compiles now (listing 7-7): the chain `pub mod hosting` +
 // `pub fn add_to_waitlist` opens the path. `front_of_house` stays
 // private and that's fine: it's accessed from its own module (the
-// crate root, where this function lives -- items in the same
+// crate root, where this function lives - items in the same
 // module see each other).
 pub fn eat_at_restaurant() {
     // Absolute path
@@ -51,7 +51,7 @@ pub fn eat_at_restaurant() {
     // Path via `use` shortcut
     hosting::add_to_waitlist();
 
-    // Via directly imported function -- works, but the origin is
+    // Via directly imported function - works, but the origin is
     // unclear at a glance (non-idiomatic, see the comment above)
     add_to_waitlist();
 
@@ -79,7 +79,7 @@ pub fn eat_at_restaurant() {
 mod customer {
     pub fn eat_at_restaurant() {
         // The next line won't compile if we uncomment it: `use` binds
-        // a name only within the module where it appears -- the
+        // a name only within the module where it appears - the
         // crate-root `use ... hosting;` is not visible inside `customer`.
 
         // hosting::add_to_waitlist();
@@ -91,7 +91,7 @@ fn deliver_order() {}
 mod back_of_house {
     // `pub` on a struct makes the TYPE public, not its fields:
     // fields stay private unless each is marked `pub` individually
-    // (`toast` public, `seasonal_fruit` private -- the chef decides).
+    // (`toast` public, `seasonal_fruit` private - the chef decides).
     // A private field means no struct literal is possible outside
     // this module, so a public associated constructor (`summer`)
     // is the only way to build an instance.
@@ -118,7 +118,7 @@ mod back_of_house {
         Salad,
     }
 
-    // `super` starts a relative path from the parent module -- like `..`
+    // `super` starts a relative path from the parent module - like `..`
     // in a filesystem path. Useful when the item is closely related to
     // its parent: if the tree is reorganized and both move together,
     // the path stays valid. Note the privacy contrast: children CAN see
@@ -149,7 +149,7 @@ fn function2() -> io::Result<()> {
 }
 
 // `as` renames an import (listing 7-16): both Result types are now
-// imported directly under distinct local names -- no qualification
+// imported directly under distinct local names - no qualification
 // needed at the call sites.
 use std::fmt::Result as FmtResult;
 use std::io::Result as IoResult;
@@ -167,7 +167,7 @@ fn function4() -> IoResult<()> {
 // External packages: paths start with the crate NAME, not `crate::`
 // (that prefix is only for the current crate). The version in
 // Cargo.toml ("0.9.5") is shorthand for ^0.9.5: any compatible
-// 0.9.x. `std` is the implicit dependency -- no Cargo.toml entry.
+// 0.9.x. `std` is the implicit dependency - no Cargo.toml entry.
 use rand::Rng;
 
 pub fn lucky_table() {
@@ -192,14 +192,14 @@ mod seat_writer {
 
 // Glob operator: `use std::collections::*;` imports ALL public items
 // of the path at once. Convenient, but the origin of each item becomes
-// unclear -- the book recommends it mostly for tests, not regular code.
+// unclear - the book recommends it mostly for tests, not regular code.
 // Scoped inside a module: the crate root already imports HashMap
 // explicitly (listing 7-14), and mixing a glob with it there would
 // only add noise.
 mod glob_demo {
     use std::collections::*;
 
-    // HashMap here comes from the glob -- no explicit import
+    // HashMap here comes from the glob - no explicit import
     pub fn table_lookup() {
         let mut tables: HashMap<u32, u32> = HashMap::new();
         tables.insert(1, 2);

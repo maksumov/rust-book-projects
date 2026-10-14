@@ -1,6 +1,6 @@
-// ch 15.5 (part 1): RefCell<T> -- interior mutability via mock objects
+// ch 15.5 (part 1): RefCell<T> - interior mutability via mock objects
 // (listings 15-20..15-23). send() takes &self, yet the mock must RECORD
-// messages -- the contradiction RefCell resolves at runtime.
+// messages - the contradiction RefCell resolves at runtime.
 
 // Listing 15-20:
 pub trait Messenger {
@@ -105,7 +105,7 @@ mod tests {
             self.sent_messages.borrow_mut().push(String::from(message));
         }
 
-        // Listing 15-23: two borrow_mut() in the same scope -- compiles,
+        // Listing 15-23: two borrow_mut() in the same scope - compiles,
         // but PANICS at runtime (borrowing rules moved to runtime):
         //
         // thread '...' panicked at src/lib.rs:60:53:

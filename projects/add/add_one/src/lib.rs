@@ -11,7 +11,7 @@ mod tests {
         assert_eq!(3, add_one(2));
     }
 
-    // beyond the book: a live use for the rand dependency -- the
+    // beyond the book: a live use for the rand dependency - the
     // invariant holds for random inputs, not just a hand-picked one
     #[test]
     fn works_for_random_inputs() {

@@ -1,5 +1,5 @@
-// ch 16.1: threads -- running code simultaneously (listings 16-1..16-5).
-// Output caveat: the interleaving varies per run -- the OS scheduler
+// ch 16.1: threads - running code simultaneously (listings 16-1..16-5).
+// Output caveat: the interleaving varies per run - the OS scheduler
 // decides; sample outputs in comments are examples, not canonical.
 
 use std::thread;
@@ -10,7 +10,7 @@ pub fn demo_spawn() {
 
     // Listing 16-1: spawn takes a closure for the new thread. Watch the
     // output: when MAIN finishes, spawned threads are killed whether or
-    // not they finished -- our 1..10 loop gets cut around 5. The sleep
+    // not they finished - our 1..10 loop gets cut around 5. The sleep
     // calls force turn-taking; without them one thread may hog the run.
     thread::spawn(|| {
         for i in 1..10 {
@@ -29,7 +29,7 @@ pub fn demo_join_after() {
     println!("\n*** demo of threads: join AFTER main's loop (interleaved, then waiting) ***");
 
     // Listing 16-2: join() AFTER main's loop: prints interleave, main
-    // waits at the end -- the spawned loop runs to completion (16-1
+    // waits at the end - the spawned loop runs to completion (16-1
     // cut it).
     let handle = thread::spawn(|| {
         for i in 1..10 {
@@ -50,7 +50,7 @@ pub fn demo_join_before() {
     println!("\n*** demo of threads: join BEFORE main's loop (fully sequential) ***");
 
     // The book's unnumbered experiment: the SAME handle.join(), hoisted
-    // ABOVE main's loop: no interleaving at all -- main blocks first,
+    // ABOVE main's loop: no interleaving at all - main blocks first,
     // the spawned thread runs alone to 9, only then main prints 1..4.
     // Where join is called decides whether the threads overlap at all.
     // Contrast demo_join_after.
@@ -70,9 +70,9 @@ pub fn demo_join_before() {
 }
 
 pub fn demo_move_closures() {
-    println!("\n*** demo of threads: move closures -- ownership crosses threads ***");
+    println!("\n*** demo of threads: move closures - ownership crosses threads ***");
 
-    // Listing 16-3: the spawned closure borrows v -- rejected. The
+    // Listing 16-3: the spawned closure borrows v - rejected. The
     // thread may outlive main, and Rust cannot know how long it runs:
     //
     // // let v = vec![1, 2, 3];
@@ -96,7 +96,7 @@ pub fn demo_move_closures() {
     // // drop(v); // oh no!
     // // handle.join().unwrap();
 
-    // The tempting "fix" -- move -- does not legitimize 16-4 either:
+    // The tempting "fix" - move - does not legitimize 16-4 either:
     // ownership crosses INTO the closure, so drop(v) in main becomes
     // use-after-move. move is not a magic wand over the ownership rules:
     //
@@ -115,7 +115,7 @@ pub fn demo_move_closures() {
     // 10 |     drop(v); // oh no!
     //    |          ^ value used here after move
 
-    // Listing 16-5: move -- ownership crosses into the thread; main
+    // Listing 16-5: move - ownership crosses into the thread; main
     // cannot touch v afterwards (exactly the guarantee the compiler
     // needed). move overrides the conservative borrow-by-default; it
     // does NOT let us violate the ownership rules.

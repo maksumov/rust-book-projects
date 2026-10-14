@@ -39,7 +39,7 @@ impl AveragedCollection {
 
     // Beyond the book: it never constructs an AveragedCollection, so no
     // constructor is shown; a demo needs one. new()/default() join
-    // add/remove/average as the public API -- the fields stay
+    // add/remove/average as the public API - the fields stay
     // unreachable from outside.
     pub fn new() -> AveragedCollection {
         AveragedCollection::default()
