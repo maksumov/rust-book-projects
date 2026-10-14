@@ -34,6 +34,9 @@ bidirectional: if X lists Y, then Y lists X.
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Destructor (ch 15.3)](#destructor-ch-153)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
+- [Duck typing (ch 18.2)](#duck-typing-ch-182)
+- [Dyn compatibility (ch 18.2)](#dyn-compatibility-ch-182)
+- [Encapsulation (ch 18.1)](#encapsulation-ch-181)
 - [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Future (ch 17.1)](#future-ch-171)
@@ -71,13 +74,16 @@ bidirectional: if X lists Y, then Y lists X.
 - [Slice (ch 4.3)](#slice-ch-43)
 - [Smart pointers (ch 15.0)](#smart-pointers-ch-150)
 - [Standard output vs standard error (ch 12.6)](#standard-output-vs-standard-error-ch-126)
+- [State pattern (ch 18.3)](#state-pattern-ch-183)
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
+- [Static vs dynamic dispatch (ch 18.2)](#static-vs-dynamic-dispatch-ch-182)
 - [Stream (ch 17.4)](#stream-ch-174)
 - [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
 - [Test double and mock objects (ch 15.5)](#test-double-and-mock-objects-ch-155)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
+- [Trait object (ch 18.2)](#trait-object-ch-182)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
 - [Workspace (ch 14.3)](#workspace-ch-143)
@@ -394,6 +400,45 @@ Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142)
 In repo: `projects/art/src/lib.rs` (/// and //! incl. Examples/Errors)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments
 
+## Duck typing (ch 18.2)
+
+"If it walks like a duck and quacks like a duck..." - caring only
+about the messages a value responds to, not its concrete type.
+Trait objects give Rust a compile-time CHECKED version: run's
+loop calls draw() without knowing the component - and a type
+missing the method is an E0277 before any code runs, not a
+runtime error.
+
+Related: [Trait bound](#trait-bound-ch-101), [Trait object](#trait-object-ch-182)
+In repo: `projects/oop/src/select_box.rs` (the 18-10 comment)
+Book: https://doc.rust-lang.org/stable/book/ch18-02-trait-objects.html
+
+## Dyn compatibility (ch 18.2)
+
+The rules a trait must satisfy to be usable as dyn Trait. The
+headline: no methods returning Self by value or taking self by
+value - the compiler cannot know the concrete type at the call
+site. self: Box<Self> works (the state pattern's transitions);
+default impls returning self do not (hence some duplication in
+blog.rs). Renamed from "object safety" - the old name still
+appears in older material.
+
+Related: [Trait object](#trait-object-ch-182), [State pattern](#state-pattern-ch-183)
+In repo: `projects/oop/src/blog.rs` (the Box<Self> signatures)
+Book: https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility
+
+## Encapsulation (ch 18.1)
+
+Implementation details unreachable from outside: private by
+default, pub as the deliberate API. The AveragedCollection
+invariant: fields stay private, so the cached average can never
+fall out of sync - and the internals (a Vec becoming a HashSet?)
+can change without touching the users.
+
+Related: [Re-export](#re-export-ch-142), [State pattern](#state-pattern-ch-183)
+In repo: `projects/oop/src/encapsulation.rs` (the E0603 probe in main)
+Book: https://doc.rust-lang.org/stable/book/ch18-01-what-is-oo.html#encapsulation-that-hides-implementation-details
+
 ## Fearless concurrency (ch 16.0)
 
 The chapter's namesake: ownership and type checking turn many
@@ -577,7 +622,7 @@ times. The opposite strategy is type erasure (TypeScript, Java):
 one copy, dynamic dispatch. The practical trade-off returns in
 chapter 18 as `impl Trait` vs `dyn Trait`.
 
-Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound](#trait-bound-ch-101), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
+Related: [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Static vs dynamic dispatch](#static-vs-dynamic-dispatch-ch-182), [Trait bound](#trait-bound-ch-101), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch10-01-syntax.html#performance-of-code-using-generics
 
@@ -738,7 +783,7 @@ from the public API. Users write use art::PrimaryColor instead of
 use art::kinds::PrimaryColor; cargo doc lists re-exports on the
 crate front page. The deep paths remain available too.
 
-Related: [Crate root](#crate-root-ch-71)
+Related: [Crate root](#crate-root-ch-71), [Encapsulation](#encapsulation-ch-181)
 In repo: `projects/art/src/lib.rs` (the collapsed pub use block)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#exporting-a-convenient-public-api
 
@@ -827,7 +872,7 @@ a Box can never alias its source. The chapter's set: Box (heap),
 Rc (shared ownership), RefCell (runtime borrow rules), Weak
 (non-owning).
 
-Related: [Deref coercion](#deref-coercion-ch-42), [Destructor](#destructor-ch-153), [Indirection](#indirection-ch-151), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156)
+Related: [Deref coercion](#deref-coercion-ch-42), [Destructor](#destructor-ch-153), [Indirection](#indirection-ch-151), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156), [Trait object](#trait-object-ch-182)
 In repo: `projects/smart-pointers` (the whole chapter)
 Book: https://doc.rust-lang.org/stable/book/ch15-00-smart-pointers.html
 
@@ -844,6 +889,18 @@ Related: —
 In repo: `projects/minigrep/src/main.rs` (both eprintln! branches in main)
 Book: https://doc.rust-lang.org/stable/book/ch12-06-writing-to-stderr-instead-of-stdout.html
 
+## State pattern (ch 18.3)
+
+Behavior depends on the state, and the transition rules live
+INSIDE the state objects - the value holding them knows nothing.
+Rust hosts three roads: OO-style dyn states (blog.rs), states as
+TYPES - invalid states do not compile (blog_typestate.rs), and
+the enum + match road (exercises/18_state_pattern).
+
+Related: [Dyn compatibility](#dyn-compatibility-ch-182), [Encapsulation](#encapsulation-ch-181), [Trait object](#trait-object-ch-182)
+In repo: `projects/oop/src/blog.rs` and `blog_typestate.rs`
+Book: https://doc.rust-lang.org/stable/book/ch18-03-oo-design-patterns.html
+
 ## Static lifetime (ch 10.3)
 
 `'static`: the reference is valid for the entire program; every
@@ -854,6 +911,19 @@ the lifetimes instead of reaching for it.
 Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131)
 In repo: `projects/lifetimes/src/excerpt.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
+
+## Static vs dynamic dispatch (ch 18.2)
+
+How a method call resolves. Static: known at compile time -
+generics monomorphize into concrete copies, zero runtime cost,
+inlining possible. Dynamic: a vtable lookup at runtime - one code
+path for many types, a small per-call cost, no inlining. The
+gui.rs 18-6 contrast: homogeneous collections -> generics;
+heterogeneous -> dyn.
+
+Related: [Monomorphization](#monomorphization-ch-101), [Trait object](#trait-object-ch-182), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
+In repo: `projects/oop/src/gui.rs` (the 18-6 comment)
+Book: https://doc.rust-lang.org/stable/book/ch18-02-trait-objects.html#performing-dynamic-dispatch
 
 ## Stream (ch 17.4)
 
@@ -911,7 +981,7 @@ only with types having that behavior. `&impl Trait` is sugar for it;
 several bounds combine with `+`; `where` moves them out of the
 signature for readability.
 
-Related: [Blanket implementations](#blanket-implementations-ch-102), [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
+Related: [Blanket implementations](#blanket-implementations-ch-102), [Duck typing](#duck-typing-ch-182), [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/aggregator/src/lib.rs` (the notify family)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#trait-bound-syntax
 
@@ -924,6 +994,18 @@ scope. Inherent methods (like `File::open`) need no import.
 Related: [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/error-handling/src/error_propagation.rs` (module header note)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
+
+## Trait object (ch 18.2)
+
+A pointer (Box<dyn Trait>, &dyn Trait) to a value plus a table of
+its trait methods, filled at runtime. Abstraction over shared
+BEHAVIOR only - no fields can be added through it. Enables
+heterogeneous collections (Vec<Box<dyn Draw>>) and open
+extension: the library never knew SelectBox.
+
+Related: [Dyn compatibility](#dyn-compatibility-ch-182), [Duck typing](#duck-typing-ch-182), [Smart pointers](#smart-pointers-ch-150), [State pattern](#state-pattern-ch-183), [Static vs dynamic dispatch](#static-vs-dynamic-dispatch-ch-182)
+In repo: `projects/oop/src/gui.rs` (with select_box.rs as the consumer)
+Book: https://doc.rust-lang.org/stable/book/ch18-02-trait-objects.html
 
 ## Unit tests (ch 11.3)
 
@@ -982,5 +1064,5 @@ book's evidence: for-loop vs iterator search on a large text --
 don't use, you don't pay for. And what you do use, you couldn't
 hand code any better."
 
-Related: [Monomorphization](#monomorphization-ch-101), [Iterator](#iterator-ch-132)
+Related: [Iterator](#iterator-ch-132), [Monomorphization](#monomorphization-ch-101), [Static vs dynamic dispatch](#static-vs-dynamic-dispatch-ch-182)
 In repo: `projects/minigrep` (13.3 rewrite as the case study)
