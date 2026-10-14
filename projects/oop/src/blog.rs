@@ -1,9 +1,10 @@
-// ch 18.3: an object-oriented design pattern ы- the state pattern, the
+// ch 18.3: an object-oriented design pattern - the state pattern, the
 // OO version (listings 18-11..18-18). Behavior depends on the state;
 // transitions live INSIDE the state objects (self: Box<Self> consumes
 // the old state); Post knows nothing about the rules. Costs: states
 // couple to each other, and some duplication - see the type-state
-// rewrite in blog_typestate.rs.
+// rewrite in blog_typestate.rs; a third road (enum + match) lives in
+// exercises/18_state_pattern.
 
 // Listing 18-11: the desired behavior (the book's asserts), plus a
 // beyond-the-book probe: approving a DRAFT does nothing.
