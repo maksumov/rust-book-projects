@@ -1,4 +1,4 @@
-use oop::encapsulation;
+use oop::{blog, encapsulation};
 
 mod select_box;
 
@@ -16,4 +16,6 @@ fn main() {
     // the data -- so `average` can never fall out of sync with `list`.
 
     select_box::demo_screen();
+
+    blog::demo_workflow();
 }
