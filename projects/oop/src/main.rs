@@ -1,4 +1,4 @@
-use oop::{blog, encapsulation};
+use oop::{blog, blog_typestate, encapsulation};
 
 mod select_box;
 
@@ -18,4 +18,6 @@ fn main() {
     select_box::demo_screen();
 
     blog::demo_workflow();
+
+    blog_typestate::demo_workflow();
 }
