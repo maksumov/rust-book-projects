@@ -24,6 +24,7 @@ Code-along projects and exercises from
 | 15 | Smart Pointers | `projects/smart-pointers` | lib+bin split; + `CHEATSHEET.md` (pointer decision table, weak links, Rustonomicon pointer); terms in `GLOSSARY.md` (ch 15 audit: 8 entries) |
 | 16 | Fearless Concurrency | `projects/concurrency` | terms in `GLOSSARY.md` (ch 16 audit: 7 entries); + `exercises/16_deadlock` |
 | 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking); terms in `GLOSSARY.md` (ch 17 audit: 7 entries); + `CHEATSHEET.md` (threads vs async) |
+| 18 | Object-Oriented Programming Features | `projects/oop` | lib+bin (the book's gui library/consumer split) |
 
 ## Other artifacts
 
