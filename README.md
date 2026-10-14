@@ -25,6 +25,7 @@ Code-along projects and exercises from
 | 16 | Fearless Concurrency | `projects/concurrency` | terms in `GLOSSARY.md` (ch 16 audit: 7 entries); + `exercises/16_deadlock` |
 | 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking); terms in `GLOSSARY.md` (ch 17 audit: 7 entries); + `CHEATSHEET.md` (threads vs async) |
 | 18 | Object-Oriented Programming Features | `projects/oop` | lib+bin (the book's gui library/consumer split); terms in `GLOSSARY.md` (ch 18 audit: 6 entries); + `exercises/18_state_pattern` |
+| 19 | Patterns and Matching | `projects/patterns` | |
 
 ## Other artifacts
 
