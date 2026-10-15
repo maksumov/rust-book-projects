@@ -13,18 +13,18 @@ Code-along projects and exercises from
 | 4 | Understanding Ownership | `projects/ownership` | incl. slices |
 | 5 | Using Structs to Structure Related Data | `projects/structs`, `projects/rectangles` | |
 | 6 | Enums and Pattern Matching | `projects/enums` | incl. `let...else` |
-| 7 | Managing Growing Projects | `projects/backyard`, `projects/restaurant` | modules; first lib crate |
+| 7 | Managing Growing Projects | `projects/backyard`, `projects/restaurant` | first lib crate |
 | 8 | Common Collections | `projects/collections` | + `exercises/08_collections` |
 | 9 | Error Handling | `projects/panic`, `projects/error-handling` | 9.3 guidelines anchored in both |
-| 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator`, `projects/lifetimes` | 10.0–10.1 skipped (prior knowledge); terms in `GLOSSARY.md` |
+| 10 | Generic Types, Traits, and Lifetimes | `projects/aggregator`, `projects/lifetimes` | 10.0–10.1 skipped (prior knowledge) |
 | 11 | Writing Automated Tests | `projects/testing` | + `CHEATSHEET.md` (cargo test flags) |
 | 12 | An I/O Project: minigrep | `projects/minigrep` | + `exercises/12_minigrep` |
 | 13 | Functional Language Features: Closures and Iterators | `projects/closures`, `projects/iterators` | 13.3 improves `projects/minigrep`; + `exercises/13_minigrep` |
 | 14 | More About Cargo and Crates.io | `projects/my_crate`, `projects/art`, `projects/add` | doctests as tests; `#![warn(missing_docs)]`, `publish = false` — beyond the book; + `CHEATSHEET.md` (cargo package commands); + `exercises/14_publishing`; workspaces (14.3): + `CHEATSHEET.md` in `projects/add`, `exercises/14_workspace` |
-| 15 | Smart Pointers | `projects/smart-pointers` | lib+bin split; + `CHEATSHEET.md` (pointer decision table, weak links, Rustonomicon pointer); terms in `GLOSSARY.md` (ch 15 audit: 8 entries) |
-| 16 | Fearless Concurrency | `projects/concurrency` | terms in `GLOSSARY.md` (ch 16 audit: 7 entries); + `exercises/16_deadlock` |
-| 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking); terms in `GLOSSARY.md` (ch 17 audit: 7 entries); + `CHEATSHEET.md` (threads vs async) |
-| 18 | Object-Oriented Programming Features | `projects/oop` | lib+bin (the book's gui library/consumer split); terms in `GLOSSARY.md` (ch 18 audit: 6 entries); + `exercises/18_state_pattern` |
+| 15 | Smart Pointers | `projects/smart-pointers` | + `CHEATSHEET.md` (pointer decision table, weak links, Rustonomicon pointer) |
+| 16 | Fearless Concurrency | `projects/concurrency` | + `exercises/16_deadlock` |
+| 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking); + `CHEATSHEET.md` (threads vs async) |
+| 18 | Object-Oriented Programming Features | `projects/oop` | + `exercises/18_state_pattern` |
 | 19 | Patterns and Matching | `projects/patterns` | |
 
 ## Other artifacts
