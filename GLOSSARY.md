@@ -11,6 +11,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Arc, atomic reference counting (ch 16.3)](#arc-atomic-reference-counting-ch-163)
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
 - [Async runtime (ch 17.1)](#async-runtime-ch-171)
+- [At bindings (ch 19.3)](#at-bindings-ch-193)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
 - [Binary target (ch 14.4)](#binary-target-ch-144)
 - [Blanket implementations (ch 10.2)](#blanket-implementations-ch-102)
@@ -33,6 +34,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Deadlock (ch 16.3)](#deadlock-ch-163)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Destructor (ch 15.3)](#destructor-ch-153)
+- [Destructuring (ch 19.3)](#destructuring-ch-193)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
 - [Duck typing (ch 18.2)](#duck-typing-ch-182)
 - [Dyn compatibility (ch 18.2)](#dyn-compatibility-ch-182)
@@ -40,6 +42,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Future (ch 17.1)](#future-ch-171)
+- [Ignoring in patterns (ch 19.3)](#ignoring-in-patterns-ch-193)
 - [Indirection (ch 15.1)](#indirection-ch-151)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
@@ -49,6 +52,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Lint levels (ch 14.2)](#lint-levels-ch-142)
+- [Match guard (ch 19.3)](#match-guard-ch-193)
 - [Memory leak (ch 15.6)](#memory-leak-ch-156)
 - [Message passing vs shared state (ch 16.0)](#message-passing-vs-shared-state-ch-160)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
@@ -66,6 +70,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Rc and reference counting (ch 15.4)](#rc-and-reference-counting-ch-154)
 - [Re-export (ch 14.2)](#re-export-ch-142)
+- [Refutable vs irrefutable (ch 19.2)](#refutable-vs-irrefutable-ch-192)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Resolver versions (ch 14.3)](#resolver-versions-ch-143)
 - [Send and Sync (ch 16.4)](#send-and-sync-ch-164)
@@ -126,6 +131,17 @@ polling core is called the executor.
 Related: [Cooperative multitasking](#cooperative-multitasking-ch-173), [Future](#future-ch-171)
 In repo: `projects/hello-async` (every demo's block_on)
 Book: https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html#executing-an-async-function-with-a-runtime
+
+## At bindings (ch 19.3)
+
+The @ operator tests and binds at once: id @ 3..=7 checks the range
+AND captures the value into id. The contrast arms: a bare range
+tests but binds nothing (the arm's code cannot name the value); a
+bare name binds but tests nothing.
+
+Related: —
+In repo: `projects/patterns/src/syntax.rs` (demo_at_bindings)
+Book: https://doc.rust-lang.org/stable/book/ch19-03-pattern-syntax.html#using--bindings
 
 ## Backtrace (ch 9.1)
 
@@ -387,6 +403,21 @@ Related: [RAII](#raii-ch-41), [Smart pointers](#smart-pointers-ch-150)
 In repo: `projects/smart-pointers/src/drop_demo.rs` (module header)
 Book: https://doc.rust-lang.org/stable/book/ch15-03-drop.html
 
+## Destructuring (ch 19.3)
+
+Breaking a value into parts by matching its shape: a pattern names
+where each piece goes - in let (let (x, y) = point;), a match arm,
+a for binding, or a function parameter (&(x, y)). Structs: explicit
+rename (Point { x: a }) or the field shorthand (Point { x, y });
+literals INSIDE a pattern test while other fields bind
+(Point { x: 0, y }). Enums: the arm mirrors the variant's shape
+(none / struct-like / tuple-like), nesting arbitrarily deep.
+Destructuring MOVES an owning value - one construction per let.
+
+Related: [Ignoring in patterns](#ignoring-in-patterns-ch-193), [Move](#move-ch-41), [Refutable vs irrefutable](#refutable-vs-irrefutable-ch-192)
+In repo: `projects/patterns/src/syntax.rs` (demo_destructuring)
+Book: https://doc.rust-lang.org/stable/book/ch19-03-pattern-syntax.html#destructuring-to-break-apart-values
+
 ## Documentation comments (ch 14.2)
 
 The /// and //! comment styles that generate HTML documentation
@@ -474,6 +505,19 @@ creation). The trait's heartbeat: poll(self: Pin<&mut Self>, cx)
 Related: [Async runtime](#async-runtime-ch-171), [Iterator](#iterator-ch-132), [Pin and Unpin](#pin-and-unpin-ch-175), [Stream](#stream-ch-174)
 In repo: `projects/hello-async/src/futures.rs` (the desugared form)
 Book: https://doc.rust-lang.org/stable/book/ch17-01-futures-and-syntax.html
+
+## Ignoring in patterns (ch 19.3)
+
+Three grades. `_`: never binds - the value is not even moved, it
+stays usable afterwards. A `_`-prefixed name (`_x`): silences the
+unused-variable warning but STILL BINDS - an owning value is moved
+out (E0382 if used again). `..`: the unmatched rest - allowed once
+per pattern; `(.., x, ..)` is ambiguous and rejected. A nested `_`
+tests the SHAPE while ignoring contents: (Some(_), Some(_)).
+
+Related: [Destructuring](#destructuring-ch-193), [Move](#move-ch-41)
+In repo: `projects/patterns/src/syntax.rs` (demo_ignoring)
+Book: https://doc.rust-lang.org/stable/book/ch19-03-pattern-syntax.html#ignoring-values-in-a-pattern
 
 ## Indirection (ch 15.1)
 
@@ -587,6 +631,20 @@ Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs out
 In repo: `projects/art/src/lib.rs` (the crate-root attribute)
 Book: https://doc.rust-lang.org/rustc/lints/levels.html
 
+## Match guard (ch 19.3)
+
+An if AFTER the pattern in a match arm - the arm fires only when
+BOTH hold. Guards are not patterns: their variables are the OUTER
+ones (the shadowing cure: Some(n) if n == y), and conditions like
+"x is even" have no pattern spelling. The guard applies to the
+WHOLE or-pattern - (1 | 3 | 5) if y - and per-alternative guards
+do not exist on stable (E0658, experimental). The cost: with
+guards involved, exhaustiveness is no longer checked.
+
+Related: [Shadowing](#shadowing-ch-31)
+In repo: `projects/patterns/src/syntax.rs` (demo_shadowing_traps)
+Book: https://doc.rust-lang.org/stable/book/ch19-03-pattern-syntax.html#adding-conditionals-with-match-guards
+
 ## Memory leak (ch 15.6)
 
 Memory that is never cleaned up. Rust does NOT guarantee
@@ -634,7 +692,7 @@ variable dies. Not a shallow copy -- precisely because of the
 invalidation; this prevents double free. Rust never deep-copies
 implicitly (explicit deep copy: clone).
 
-Related: [Borrowing](#borrowing-ch-42), [Channel, mpsc](#channel-mpsc-ch-162), [Ownership](#ownership-ch-41), [move closures](#move-closures-ch-131)
+Related: [Borrowing](#borrowing-ch-42), [Channel, mpsc](#channel-mpsc-ch-162), [Destructuring](#destructuring-ch-193), [Ignoring in patterns](#ignoring-in-patterns-ch-193), [move closures](#move-closures-ch-131), [Ownership](#ownership-ch-41)
 In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
 
@@ -787,6 +845,21 @@ Related: [Crate root](#crate-root-ch-71), [Encapsulation](#encapsulation-ch-181)
 In repo: `projects/art/src/lib.rs` (the collapsed pub use block)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#exporting-a-convenient-public-api
 
+## Refutable vs irrefutable (ch 19.2)
+
+Whether a pattern can fail. Irrefutable matches any value (x, a
+tuple of names, Point { x, y }) - demanded by let, for, and
+function parameters, where a miss has no meaningful handling.
+Refutable can fail (Some(x), 5, Ok(n)) - plain let rejects it
+(E0005, the compiler itself suggesting let...else); if let /
+while let / let...else exist to give the miss an exit. The
+reverse mismatch - an irrefutable pattern in let...else - warns
+about the unreachable else.
+
+Related: [Destructuring](#destructuring-ch-193)
+In repo: `projects/patterns/src/refutability.rs`
+Book: https://doc.rust-lang.org/stable/book/ch19-02-refutability.html
+
 ## Release profiles (ch 14.1)
 
 Predefined customizable build configurations: dev (cargo build --
@@ -837,7 +910,7 @@ overshadows the old one until it is itself shadowed or the scope
 ends. Unlike `mut`: the type may change across shadowings, and the
 variable stays immutable between them.
 
-Related: —
+Related: [Match guard](#match-guard-ch-193)
 In repo: `projects/error-handling/src/error_propagation.rs` (string1 re-bound per version)
 Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#shadowing
 
