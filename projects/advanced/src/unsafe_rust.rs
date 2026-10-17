@@ -7,6 +7,12 @@
 
 use std::slice;
 
+// Listings 20-10/20-11: used by demo_static below.
+static HELLO_WORLD: &str = "Hello, world!";
+// (The modern replacement for a numeric counter: `static COUNTER:
+// AtomicU32` - checked, and plain movs for loads/stores on x86.)
+static mut COUNTER: u32 = 0;
+
 pub fn demo_raw_pointers_deref() {
     println!("\n*** demo of unsafe: raw pointers created safely, dereferenced unsafely ***");
 
@@ -133,4 +139,46 @@ pub fn demo_ffi_safe() {
     }
 
     println!("Absolute value of -5 according to C's labs: {}", labs(-5));
+}
+
+pub fn demo_static() {
+    println!("\n*** demo of unsafe: statics, from immutable to mutable ***");
+
+    // Listing 20-10: an immutable static (declared at the top of this
+    // module). Unlike a const - inlined at every use - a static has ONE
+    // fixed address for the whole program.
+    println!("HELLO_WORLD's value is: {HELLO_WORLD}");
+
+    // Listing 20-11: a mutable static - reads and writes are unsafe, the
+    // compiler cannot prove single-threaded access. The book's inline
+    // *(&raw const COUNTER) trips clippy::deref_addrof, whose suggested
+    // `COUNTER` would in turn trip static_mut_refs (deny by default) - the
+    // lints contradict. Binding the pointer first dodges both: creation is
+    // SAFE, the deref is not (same split as demo_raw_pointers). Note:
+    // add_to_count's `COUNTER += inc` needs no raw dance - a direct place
+    // write; only REFERENCE creation (explicit, or println's invisible
+    // autoref) is denied.
+    let counter_ptr = &raw const COUNTER;
+
+    unsafe {
+        // SAFETY: This is only called from a single thread in `main`.
+        println!("COUNTER: {}", *counter_ptr);
+
+        add_to_count(3);
+        println!("COUNTER: {}", *counter_ptr);
+
+        // Uncommenting trips the deny-by-default static_mut_refs:
+        // error: creating a shared reference to mutable static
+        //  = note: `#[deny(static_mut_refs)]` (part of `#[deny(rust_2024_compatibility)]`) on by default
+        // println!("COUNTER: {}", COUNTER);
+    }
+}
+
+/// SAFETY: Calling this from more than a single thread at a time is undefined
+/// behavior, so you *must* guarantee you only call it from a single thread at
+/// a time.
+unsafe fn add_to_count(inc: u32) {
+    unsafe {
+        COUNTER += inc;
+    }
 }

@@ -5,4 +5,5 @@ fn main() {
     unsafe_rust::demo_unsafe_fn();
     unsafe_rust::demo_ffi();
     unsafe_rust::demo_ffi_safe();
+    unsafe_rust::demo_static();
 }
