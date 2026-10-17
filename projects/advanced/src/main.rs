@@ -2,4 +2,5 @@ mod unsafe_rust;
 
 fn main() {
     unsafe_rust::demo_raw_pointers_deref();
+    unsafe_rust::demo_unsafe_fn();
 }

@@ -5,6 +5,8 @@
 // the blocks small and wrap them in safe abstractions (split_at_mut
 // below). Miri (cargo +nightly miri run) checks unsafe at runtime.
 
+use std::slice;
+
 pub fn demo_raw_pointers_deref() {
     println!("\n*** demo of unsafe: raw pointers created safely, dereferenced unsafely ***");
 
@@ -33,3 +35,67 @@ pub fn demo_raw_pointers_deref() {
         println!("r2 is: {} and the raw pointer refers to: {:p}", *r2, r2);
     }
 }
+
+pub fn demo_unsafe_fn() {
+    println!("\n*** demo of unsafe: unsafe fns and the safe abstraction over them ***");
+
+    // Listing 20-4: the split_at_mut USE - a perfectly safe call. (The
+    // book's minimal unsafe fn - fn dangerous() {} - needs an unsafe
+    // block to call; an unsafe fn's BODY grants no superpowers, unsafe
+    // ops inside still require their own block.) Note that calling
+    // slice::from_raw_parts_mut and ptr.add below ARE unsafe-fn calls -
+    // that is what the block in the implementation is for.
+
+    let mut v = [1, 2, 3, 4, 5, 6];
+
+    let r = &mut v[..];
+
+    let (a, b) = split_at_mut(r, 3);
+
+    assert_eq!(a, &mut [1, 2, 3]);
+    assert_eq!(b, &mut [4, 5, 6]);
+
+    println!("a is {:?}", a);
+    println!("b is {:?}", b);
+}
+
+// Listing 20-5: safe Rust CANNOT do this - the borrow checker sees
+// two mutable borrows of the same slice and cannot prove the parts
+// do not overlap:
+//
+// // fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+// //     (&mut values[..mid], &mut values[mid..])
+// // }
+//
+// error[E0499]: cannot borrow `*values` as mutable more than once
+//   = help: use `.split_at_mut(position)` to obtain two mutable
+//   non-overlapping sub-slices
+
+// Listing 20-6: the unsafe implementation. A slice IS pointer +
+// length: as_mut_ptr hands the raw pointer out, from_raw_parts_mut
+// rebuilds a slice from (ptr, len). What makes this SOUND: the
+// asserted mid <= len keeps ptr.add(mid) inside the slice, so the
+// halves cannot overlap. The punchline: split_at_mut remains a SAFE
+// fn - the unsafe block is an implementation detail, every caller
+// stays in safe Rust.
+fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let len = values.len();
+    let ptr = values.as_mut_ptr();
+
+    assert!(mid <= len);
+
+    unsafe {
+        (
+            slice::from_raw_parts_mut(ptr, mid),
+            slice::from_raw_parts_mut(ptr.add(mid), len - mid),
+        )
+    }
+}
+
+// Listing 20-7: the same from_raw_parts_mut on an ARBITRARY address
+// is undefined behavior - we own nothing there; Miri flags it as a
+// dangling pointer:
+//
+// // let address = 0x01234usize;
+// // let r = address as *mut i32;
+// // let values: &[i32] = unsafe { slice::from_raw_parts_mut(r, 10000) };
