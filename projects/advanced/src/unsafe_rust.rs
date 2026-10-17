@@ -99,3 +99,38 @@ fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 // // let address = 0x01234usize;
 // // let r = address as *mut i32;
 // // let values: &[i32] = unsafe { slice::from_raw_parts_mut(r, 10000) };
+
+pub fn demo_ffi() {
+    println!("\n*** demo of unsafe: FFI via an unsafe block ***");
+
+    // Listing 20-8: an extern block DECLARES a foreign fn - the signature
+    // only, no body. The definition lives in the system libc (every Rust
+    // binary links it); at LINK time the unmangled C symbol `abs` resolves
+    // there. The ABI is "C" (the calling convention). If the name did not
+    // exist, the failure would be a link error, not a runtime one. (The
+    // block lives inside the function: extern blocks are items and may
+    // be declared in any score.)
+    unsafe extern "C" {
+        fn abs(input: i32) -> i32;
+    }
+
+    unsafe {
+        println!("Absolute value of -3 according to C's abs: {}", abs(-3));
+    }
+}
+
+pub fn demo_ffi_safe() {
+    println!("\n*** demo of unsafe: FFI via the safe keyword ***");
+
+    // Listing 20-9: one keyword changes the contract - a `safe fn` decl
+    // drops the unsafe block requirement: the call below is a plain
+    // expression. `safe` is a PROMISE by the author, not something the
+    // compiler can prove. A DIFFERENT symbol (labs - abs for long) is
+    // used here: C symbols are program-global, so redeclaring `abs`
+    // with another safety would be a conflicting declaration.
+    unsafe extern "C" {
+        safe fn labs(input: i64) -> i64;
+    }
+
+    println!("Absolute value of -5 according to C's labs: {}", labs(-5));
+}
