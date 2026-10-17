@@ -1,3 +1,7 @@
+// Enforce the SAFETY comment convention mechanically: every unsafe
+// block must carry a `// SAFETY:` justification.
+#![warn(clippy::undocumented_unsafe_blocks)]
+
 mod unsafe_rust;
 
 fn main() {

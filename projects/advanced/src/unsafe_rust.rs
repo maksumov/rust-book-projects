@@ -36,6 +36,8 @@ pub fn demo_raw_pointers_deref() {
     // // let address = 0x012345usize;
     // // let r = address as *const i32;
 
+    // SAFETY: both r1 and r2 were created from num, which is still
+    // alive; nothing else borrows num in this block.
     unsafe {
         println!("r1 is: {} and the raw pointer refers to: {:p}", *r1, r1);
         println!("r2 is: {} and the raw pointer refers to: {:p}", *r2, r2);
@@ -90,6 +92,8 @@ fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 
     assert!(mid <= len);
 
+    // SAFETY: mid <= len is asserted, so ptr.add(mid) stays inside the
+    // slice - the halves are disjoint and within the one allocation.
     unsafe {
         (
             slice::from_raw_parts_mut(ptr, mid),
@@ -120,6 +124,8 @@ pub fn demo_ffi() {
         fn abs(input: i32) -> i32;
     }
 
+    // SAFETY: the declaration matches libc's abs - i32 in, i32 out, no
+    // preconditions; any argument is a valid input.
     unsafe {
         println!("Absolute value of -3 according to C's abs: {}", abs(-3));
     }
@@ -178,6 +184,8 @@ pub fn demo_static() {
 /// behavior, so you *must* guarantee you only call it from a single thread at
 /// a time.
 unsafe fn add_to_count(inc: u32) {
+    // SAFETY: COUNTER is only touched on this single-threaded call path
+    // (the contract the fn's doc comment above states).
     unsafe {
         COUNTER += inc;
     }
