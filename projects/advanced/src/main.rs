@@ -14,4 +14,5 @@ fn main() {
     unsafe_rust::demo_unsafe_trait();
 
     traits::demo_associated_types();
+    traits::demo_operator_overloading();
 }

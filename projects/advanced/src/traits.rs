@@ -16,6 +16,8 @@
 // //     fn next(&mut self) -> Option<Self::Item>;
 // // }
 
+use std::ops::Add;
+
 // The section's unnumbered Counter impl - the runnable half: the
 // placeholder is pinned HERE (type Item = u32); every call below
 // discovers it. Counter is an old acquaintance from ch 13.
@@ -63,4 +65,70 @@ pub fn demo_associated_types() {
     // take/sum (all of ch 13's adapters) just work on our Counter.
     let sum: u32 = Counter::new().take(3).sum();
     println!("sum of the first three: {}", sum);
+}
+
+// Listing 20-15: overloading + by implementing std::ops::Add - new
+// operators cannot be invented, only the fixed std::ops set is
+// overloadable. Add carries ANOTHER associated type (Output) plus
+// one DEFAULT TYPE PARAMETER - the book's unnumbered definition:
+//
+// // trait Add<Rhs = Self> {
+// //     type Output;
+// //
+// //     fn add(self, rhs: Rhs) -> Self::Output;
+// // }
+//
+// Rhs defaults to Self: a plain `impl Add for Point` means
+// Point + Point.
+#[derive(Debug, Copy, Clone, PartialEq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+// Listing 20-16: overriding the default Rhs - adding Meters to
+// Millimeters, the unit conversion living inside the impl.
+// `impl Add<Meters>` pins the right-hand side to ANOTHER type: the
+// operator crosses units. Millimeters(u32) / Meters(u32) are thin
+// wrappers - the book's first naming of the NEWTYPE PATTERN (it
+// returns full-circle in 20-24 as an orphan-rule workaround).
+struct Millimeters(u32);
+struct Meters(u32);
+
+impl Add<Meters> for Millimeters {
+    type Output = Millimeters;
+
+    fn add(self, other: Meters) -> Millimeters {
+        Millimeters(self.0 + (other.0 * 1000))
+    }
+}
+
+pub fn demo_operator_overloading() {
+    println!("\n*** demo of advanced traits: operator overloading ***");
+
+    // Listing 20-15: the book's assert - the + operator now speaks
+    // Point.
+    assert_eq!(
+        Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
+        Point { x: 3, y: 3 }
+    );
+    println!(
+        "Point {{ x: 1, y: 0 }} + Point {{ x: 2, y: 3 }} = {:?}",
+        Point { x: 1, y: 0 } + Point { x: 2, y: 3 }
+    );
+
+    // Listing 20-16: Rhs pinned to Meters; 500mm + 1m = 1500mm.
+    let total = Millimeters(500) + Meters(1);
+    println!("500mm + 1m = {}mm", total.0);
 }
