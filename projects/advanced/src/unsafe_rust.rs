@@ -214,3 +214,111 @@ unsafe fn add_to_count(inc: u32) {
         COUNTER += inc;
     }
 }
+
+// Listing 20-12: the book's minimal unsafe trait - a marker of a
+// promise the compiler cannot check. Deliberately abstract: the
+// MECHANISM, not a real contract; the real incarnations follow.
+/// # Safety
+///
+/// Implementors must uphold whatever invariant `method` relies on.
+unsafe trait Foo {
+    fn method(&self);
+}
+
+// SAFETY: i32 carries no invariant beyond its bits.
+unsafe impl Foo for i32 {
+    fn method(&self) {
+        println!("Foo::method on i32: {}", self);
+    }
+}
+
+// The real unsafe trait every program meets: Send. A raw pointer is
+// !Send + !Sync by default - the compiler cannot prove who owns the
+// pointee, so a wrapper holding one refuses to cross threads:
+//
+// error[E0277]: `*const i32` cannot be sent between threads safely
+//  = note: `*const i32` cannot be sent... within this `{closure}`,
+//          required by this bound in `spawn`
+struct OwnedI32 {
+    p: *const i32,
+}
+
+// SAFETY: OwnedI32 exclusively OWNS the allocation behind p (created
+// in new, freed in Drop); moving the wrapper moves the ownership -
+// no other access path exists, so a move to another thread is sound.
+unsafe impl Send for OwnedI32 {}
+
+impl OwnedI32 {
+    fn new(v: i32) -> Self {
+        OwnedI32 {
+            p: Box::into_raw(Box::new(v)),
+        }
+    }
+
+    fn get(&self) -> i32 {
+        // SAFETY: p is a valid, exclusively owned allocation created
+        // in new(); it stays valid until Drop runs.
+        unsafe { *self.p }
+    }
+}
+
+impl Drop for OwnedI32 {
+    fn drop(&mut self) {
+        // SAFETY: reconstructing the Box retakes exactly the ownership
+        // new() handed to into_raw; drop runs exactly once.
+        unsafe { drop(Box::from_raw(self.p as *mut i32)) };
+    }
+}
+
+// Deliberately NOT implemented: `unsafe impl Sync for OwnedI32` would
+// promise concurrent &-access is fine - it is not (exercises/20_miri
+// task 7 shows Miri catching the race). The compiler cannot verify
+// either promise; that is exactly why both are unsafe.
+
+/// Every bit pattern is a valid value of the type (bytemuck's Pod in
+/// miniature - the REASON for an unsafe trait to exist).
+///
+/// # Safety
+///
+/// Implementors promise: any bits are a valid value (no niche like
+/// bool's 0/1-only rule) and size/alignment match the types
+/// `reinterpret` pairs them with.
+unsafe trait AnyBits {}
+
+// SAFETY: every u32 bit pattern is a valid u32.
+unsafe impl AnyBits for u32 {}
+// SAFETY: every f32 bit pattern is a valid f32 (a signaling NaN is
+// fine to read).
+unsafe impl AnyBits for f32 {}
+
+// A SAFE API standing on the trait's promise - the split_at_mut
+// pattern again: assert the checkable part, unsafe for the promised
+// part, the fn itself stays safe.
+fn reinterpret<A: AnyBits, B: AnyBits>(src: A) -> B {
+    assert_eq!(std::mem::size_of::<A>(), std::mem::size_of::<B>());
+    // SAFETY: AnyBits PROMISES every bit pattern is a valid value of
+    // both types and the sizes match (asserted above); the impls also
+    // match alignments. A lying impl would make this safe fn UB - the
+    // impl is where the promise lives. (ptr::read, not transmute:
+    // transmute rejects generics whose size is not compile-time fixed.)
+    unsafe { std::ptr::read(&src as *const A as *const B) }
+}
+
+pub fn demo_unsafe_trait() {
+    println!("\n*** demo of unsafe: unsafe traits - the impl is the promise ***");
+
+    // Listing 20-12: calling an unsafe trait's method is SAFE - the
+    // unsafe sits at the impl, not at the call.
+    42i32.method();
+
+    // The Send promise in action: the spawn below is E0277 without
+    // the unsafe impl (captured above), a plain move with it.
+    let owned = OwnedI32::new(42);
+    let handle = std::thread::spawn(move || owned.get());
+    println!("read in another thread: {}", handle.join().unwrap());
+
+    // The contract-bearing trait: safe code reinterpreting bits,
+    // sound only while every impl keeps its promise.
+    let f: f32 = reinterpret(0x3FC0_0000u32);
+    println!("0x3FC00000 reinterpreted: {}", f);
+}
