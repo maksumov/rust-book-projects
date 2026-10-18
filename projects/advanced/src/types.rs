@@ -38,3 +38,50 @@ pub fn demo_newtype_uses() {
     people.add_name("Grace");
     println!("names added: {}", people.len());
 }
+
+// Listing 20-25: the LONG type in every signature - perfectly
+// legal, just tiresome and error-prone to write and read:
+// a boxed closure that is Send and owns everything it touches
+// ('static). Real bodies instead of the book's --snip-- ones.
+fn takes_long_type(f: Box<dyn Fn() + Send + 'static>) {
+    f();
+}
+
+fn returns_long_type() -> Box<dyn Fn() + Send + 'static> {
+    Box::new(|| println!("hi"))
+}
+
+// Listing 20-26: the alias makes it manageable. A thunk is code
+// deferred to a later time - the right name for a stored closure
+// (ch 13 stored closures; an old word from TS as well).
+type Thunk = Box<dyn Fn() + Send + 'static>;
+
+// (unnumbered) The alias with a PARTIALLY APPLIED generic: std::io
+// declares `type Result<T> = std::result::Result<T, std::io::Error>;`
+// - the error type baked in, one parameter left. The Write trait's
+// signatures shrink from Result<usize, Error> to Result<usize>,
+// and the alias keeps the full API: ? and every Result method
+// still work - an alias is just another name for the SAME type.
+
+pub fn demo_type_aliases() {
+    println!("\n*** demo of advanced types: type aliases ***");
+
+    // (unnumbered) The counter-example to the newtype above: an
+    // alias is a SYNONYM, not a new type - Kilometers and i32 mix
+    // freely, zero compile-time protection (Millimeters would have
+    // rejected this). Items may live inside a fn - the book itself
+    // declares the alias in main (as with the extern block in 20-8).
+    type Kilometers = i32;
+
+    let x: i32 = 5;
+    let y: Kilometers = 5;
+    println!("i32 + Kilometers = {}", x + y);
+
+    // Listing 20-25: the long type spelled out.
+    takes_long_type(returns_long_type());
+
+    // Listing 20-26: the same value through the alias.
+    let f: Thunk = returns_long_type();
+    f();
+    println!("thunk ran");
+}

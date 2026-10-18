@@ -22,4 +22,5 @@ fn main() {
     traits::demo_newtype_pattern();
 
     types::demo_newtype_uses();
+    types::demo_type_aliases();
 }
