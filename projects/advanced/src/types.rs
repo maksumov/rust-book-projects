@@ -140,15 +140,33 @@ pub fn demo_never_type() {
 pub fn demo_dst() {
     println!("\n*** demo of advanced types: DSTs and fat pointers ***");
 
+    use std::fmt::Display;
     use std::mem::size_of;
 
-    // The observable: &str and &[u8] are FAT (address + length),
-    // &u8 is thin - the DST stands only behind a pointer that
-    // carries the missing size. (16/16/8 bytes on x64.)
+    // A pointer to a SIZED type is THIN (one word - the address).
+    // A pointer to a DST is FAT (two words - address + metadata),
+    // and the metadata DEPENDS ON THE DST KIND: a length for str /
+    // [T], a VTABLE pointer for dyn Trait (the method table of the
+    // concrete impl - the real reason dyn Trait lives behind a
+    // pointer, ch 18). The metadata is part of the POINTER VALUE,
+    // not of the allocation: Box<str> stays fat (16) - the heap
+    // chunk carries no length header. Note &[u8; 5]: an array is
+    // SIZED (the 5 lives in the type), so its pointer is thin -
+    // drop the length from the type and &[u8] doubles to 16. And
+    // String is not a fat pointer at all: an owning STRUCT of ptr
+    // + len + capacity (24), which is why &String is thin again.
     println!(
-        "&str: {} bytes, &[u8]: {} bytes, &u8: {} bytes",
-        size_of::<&str>(),
+        "&u8: {}, &[u8; 5]: {}, &[u8]: {}, &str: {}",
+        size_of::<&u8>(),
+        size_of::<&[u8; 5]>(),
         size_of::<&[u8]>(),
-        size_of::<&u8>()
+        size_of::<&str>()
+    );
+    println!(
+        "Box<str>: {}, String: {}, &String: {}, &dyn Display: {}",
+        size_of::<Box<str>>(),
+        size_of::<String>(),
+        size_of::<&String>(),
+        size_of::<&dyn Display>()
     );
 }
