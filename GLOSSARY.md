@@ -37,6 +37,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Destructor (ch 15.3)](#destructor-ch-153)
 - [Destructuring (ch 19.3)](#destructuring-ch-193)
 - [Documentation comments (ch 14.2)](#documentation-comments-ch-142)
+- [DST, dynamically sized type (ch 20.3)](#dst-dynamically-sized-type-ch-203)
 - [Duck typing (ch 18.2)](#duck-typing-ch-182)
 - [Dyn compatibility (ch 18.2)](#dyn-compatibility-ch-182)
 - [Encapsulation (ch 18.1)](#encapsulation-ch-181)
@@ -63,6 +64,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Move (ch 4.1)](#move-ch-41)
 - [move closures (ch 13.1)](#move-closures-ch-131)
 - [Mutex and lock (ch 16.3)](#mutex-and-lock-ch-163)
+- [Never type (ch 20.3)](#never-type-ch-203)
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
@@ -99,6 +101,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Trait object (ch 18.2)](#trait-object-ch-182)
+- [Type alias (ch 20.3)](#type-alias-ch-203)
 - [Undefined behavior (ch 20.1)](#undefined-behavior-ch-201)
 - [Union (ch 20.1)](#union-ch-201)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
@@ -459,6 +462,25 @@ Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142), [S
 In repo: `projects/art/src/lib.rs` (/// and //! incl. Examples/Errors)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments
 
+## DST, dynamically sized type (ch 20.3)
+
+A type whose size is known only at runtime: str (not &str) and
+every trait. A bare DST value is impossible (E0277) - the golden
+rule is to put DSTs behind a pointer, and the pointer gets FAT:
+two words, address + metadata. The metadata KIND depends on the
+DST - a length for str/[T] (16 bytes for &str on x64), a VTABLE
+pointer for dyn Trait (the method table of the concrete impl - the
+real reason dyn Trait lives behind a pointer). Box<str> stays fat:
+the metadata is part of the POINTER VALUE, not the allocation;
+String is not a pointer at all - an owning struct (ptr/len/cap,
+24 bytes). Generic fns get an implicit T: Sized; ?Sized relaxes it
+(the only trait allowed in the ?Trait syntax), the parameter then
+going behind a pointer.
+
+Related: [Slice](#slice-ch-43), [Trait object](#trait-object-ch-182)
+In repo: `projects/advanced/src/types.rs` (demo_dst)
+Book: https://doc.rust-lang.org/stable/book/ch20-03-advanced-types.html#dynamically-sized-types-and-the-sized-trait
+
 ## Duck typing (ch 18.2)
 
 "If it walks like a duck and quacks like a duck..." - caring only
@@ -535,7 +557,7 @@ repeatable), `Fn` (read-only). Every closure implements all it
 can; bounds choose the weakest they need (e.g. `unwrap_or_else`
 takes `FnOnce`, `sort_by_key` takes `FnMut`).
 
-Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101)
+Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101), [Type alias](#type-alias-ch-203)
 In repo: `projects/closures/src/fn_traits.rs`
 
 ## Fully qualified syntax (ch 20.2)
@@ -794,17 +816,33 @@ Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163)
 In repo: `projects/concurrency/src/shared_state.rs` (demo_mutex_api)
 Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
 
+## Never type (ch 20.3)
+
+! - the empty type, zero values; the type of expressions that
+never produce one: continue, panic!, a breakless loop, diverging
+fns (fn bar() -> !). Coerces into ANY type - why a match may mix
+`Ok(num) => num` with `Err(_) => continue` (the ch 2 guess game,
+finally explained) and Option::unwrap may pair T with a panic!
+arm. Without ! there is no coercion - mismatched arm types stay
+E0308.
+
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Refutable vs irrefutable](#refutable-vs-irrefutable-ch-192)
+In repo: `projects/advanced/src/types.rs` (demo_never_type)
+Book: https://doc.rust-lang.org/stable/book/ch20-03-advanced-types.html#the-never-type-that-never-returns
+
 ## Newtype pattern (ch 10.2)
 
 Wrap a foreign type in a local tuple struct (`struct Meters(f64)`)
 to gain the right to implement traits for it under the orphan rule
 (ch 20.2's Wrapper around Vec<String> for Display); also serves
 nominal branding (Millimeters vs Meters - even across the +
-operator), like branded types in TypeScript. Zero runtime cost -
-the wrapper elides at compile time; methods are NOT inherited
-(Deref delegation or manual forwarding, ch 15.2).
+operator), like branded types in TypeScript. Ch 20.3's opening
+adds API abstraction: the People wrapper hides its HashMap and
+its ids - callers speak only names. Zero runtime cost - the
+wrapper elides at compile time; methods are NOT inherited (Deref
+delegation or manual forwarding, ch 15.2).
 
-Related: [Coherence](#coherence-ch-102), [Operator overloading](#operator-overloading-ch-202), [Orphan rule](#orphan-rule-ch-102)
+Related: [Coherence](#coherence-ch-102), [Operator overloading](#operator-overloading-ch-202), [Orphan rule](#orphan-rule-ch-102), [Type alias](#type-alias-ch-203)
 In repo: `projects/advanced/src/traits.rs` (Millimeters, Wrapper)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
 
@@ -884,7 +922,7 @@ broken invariant -- and is fine in examples, prototypes and tests.
 Result is for expected failures (missing files, bad input) where
 the caller may recover; propagate with `?`.
 
-Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
+Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Never type](#never-type-ch-203), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
 In repo: anchors in `projects/error-handling/src/main.rs` and `projects/panic/src/main.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-03-to-panic-or-not-to-panic.html
 
@@ -964,7 +1002,7 @@ while let / let...else exist to give the miss an exit. The
 reverse mismatch - an irrefutable pattern in let...else - warns
 about the unreachable else.
 
-Related: [Destructuring](#destructuring-ch-193)
+Related: [Destructuring](#destructuring-ch-193), [Never type](#never-type-ch-203)
 In repo: `projects/patterns/src/refutability.rs`
 Book: https://doc.rust-lang.org/stable/book/ch19-02-refutability.html
 
@@ -1064,7 +1102,7 @@ for collections. A fat reference (pointer + length) with no
 ownership; taking &str (not &String) lets a function accept both
 String slices and literals -- via deref coercions.
 
-Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42), [Raw pointer](#raw-pointer-ch-201)
+Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42), [DST, dynamically sized type](#dst-dynamically-sized-type-ch-203), [Raw pointer](#raw-pointer-ch-201)
 In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
 
@@ -1238,9 +1276,23 @@ BEHAVIOR only - no fields can be added through it. Enables
 heterogeneous collections (Vec<Box<dyn Draw>>) and open
 extension: the library never knew SelectBox.
 
-Related: [Dyn compatibility](#dyn-compatibility-ch-182), [Duck typing](#duck-typing-ch-182), [Smart pointers](#smart-pointers-ch-150), [State pattern](#state-pattern-ch-183), [Static vs dynamic dispatch](#static-vs-dynamic-dispatch-ch-182)
+Related: [DST, dynamically sized type](#dst-dynamically-sized-type-ch-203), [Dyn compatibility](#dyn-compatibility-ch-182), [Duck typing](#duck-typing-ch-182), [Smart pointers](#smart-pointers-ch-150), [State pattern](#state-pattern-ch-183), [Static vs dynamic dispatch](#static-vs-dynamic-dispatch-ch-182)
 In repo: `projects/oop/src/gui.rs` (with select_box.rs as the consumer)
 Book: https://doc.rust-lang.org/stable/book/ch18-02-trait-objects.html
+
+## Type alias (ch 20.3)
+
+`type Name = Existing;` - a SYNONYM, not a new type: Kilometers
+and i32 mix freely, zero compile-time protection (the exact
+counter-example to the newtype pattern). The use case is
+repetition: Thunk for Box<dyn Fn() + Send + 'static>, and
+std::io::Result<T> - a PARTIALLY APPLIED generic
+(std::result::Result<T, std::io::Error>) that keeps the whole
+API: ? and every Result method intact.
+
+Related: [Fn traits](#fn-traits-ch-131), [Newtype pattern](#newtype-pattern-ch-102)
+In repo: `projects/advanced/src/types.rs` (demo_type_aliases)
+Book: https://doc.rust-lang.org/stable/book/ch20-03-advanced-types.html#type-synonyms-and-type-aliases
 
 ## Undefined behavior (ch 20.1)
 
