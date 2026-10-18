@@ -10,6 +10,7 @@ bidirectional: if X lists Y, then Y lists X.
 ## Table of Contents
 - [Arc, atomic reference counting (ch 16.3)](#arc-atomic-reference-counting-ch-163)
 - [Associated functions (ch 5.3)](#associated-functions-ch-53)
+- [Associated type (ch 20.2)](#associated-type-ch-202)
 - [Async runtime (ch 17.1)](#async-runtime-ch-171)
 - [At bindings (ch 19.3)](#at-bindings-ch-193)
 - [Backtrace (ch 9.1)](#backtrace-ch-91)
@@ -42,6 +43,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
 - [FFI, foreign function interface (ch 20.1)](#ffi-foreign-function-interface-ch-201)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
+- [Fully qualified syntax (ch 20.2)](#fully-qualified-syntax-ch-202)
 - [Future (ch 17.1)](#future-ch-171)
 - [Ignoring in patterns (ch 19.3)](#ignoring-in-patterns-ch-193)
 - [Indirection (ch 15.1)](#indirection-ch-151)
@@ -64,6 +66,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Newtype pattern (ch 10.2)](#newtype-pattern-ch-102)
 - [NLL, non-lexical lifetimes (ch 4.2)](#nll-non-lexical-lifetimes-ch-42)
 - [Opaque type, impl Trait (ch 10.2)](#opaque-type-impl-trait-ch-102)
+- [Operator overloading (ch 20.2)](#operator-overloading-ch-202)
 - [Orphan rule (ch 10.2)](#orphan-rule-ch-102)
 - [Ownership (ch 4.1)](#ownership-ch-41)
 - [Package (ch 7.1)](#package-ch-71)
@@ -90,6 +93,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Static vs dynamic dispatch (ch 18.2)](#static-vs-dynamic-dispatch-ch-182)
 - [Stream (ch 17.4)](#stream-ch-174)
 - [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
+- [Supertrait (ch 20.2)](#supertrait-ch-202)
 - [Test double and mock objects (ch 15.5)](#test-double-and-mock-objects-ch-155)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
@@ -129,6 +133,20 @@ constructors.
 Related: —
 In repo: `projects/rectangles/src/main.rs` (the square constructor)
 Book: https://doc.rust-lang.org/stable/book/ch05-03-method-syntax.html#associated-functions
+
+## Associated type (ch 20.2)
+
+A type placeholder declared IN a trait (`type Item;`) that the impl
+pins once (`type Item = u32`) - the impl decides, the caller
+discovers: no annotations at call sites, unlike generics. With a
+generic parameter a type could implement the trait MANY times
+(Iterator<u8> AND Iterator<String>), forcing annotations everywhere;
+an associated type allows exactly ONE impl. Iterator's Item and
+Add's Output are the canonical pair.
+
+Related: [Iterator](#iterator-ch-132), [Operator overloading](#operator-overloading-ch-202), [Trait](#trait-ch-102)
+In repo: `projects/advanced/src/traits.rs` (Counter, Point)
+Book: https://doc.rust-lang.org/stable/book/ch20-02-advanced-traits.html#defining-traits-with-associated-types
 
 ## Async runtime (ch 17.1)
 
@@ -520,6 +538,21 @@ takes `FnOnce`, `sort_by_key` takes `FnMut`).
 Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101)
 In repo: `projects/closures/src/fn_traits.rs`
 
+## Fully qualified syntax (ch 20.2)
+
+The most explicit call form: `<Type as Trait>::function(receiver,
+args...)` - "treat Dog as Animal for this call". Needed when
+associated functions without self collide: Dog::baby_name picks the
+inherent fn; Animal::baby_name is E0790 (which impl of Animal?);
+<Dog as Animal>::baby_name() says it exactly. With methods, the
+receiver already disambiguates (Pilot::fly(&person) suffices).
+Every inferable part of the form is omittable - FQS is the spot
+where nothing can be inferred away.
+
+Related: [Trait](#trait-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92)
+In repo: `projects/advanced/src/traits.rs` (demo_fully_qualified_syntax)
+Book: https://doc.rust-lang.org/stable/book/ch20-02-advanced-traits.html#disambiguating-between-identically-named-methods
+
 ## Future (ch 17.1)
 
 A value that may not be ready yet; `async fn` compiles to a plain
@@ -606,7 +639,7 @@ Some, then None). Lazy -- no work happens until a consuming method
 runs; a for loop creates and consumes one implicitly. iter() borrows
 immutably, iter_mut() mutably, into_iter() takes ownership.
 
-Related: [Closure](#closure-ch-131), [Combinators](#combinators-ch-92), [Future](#future-ch-171), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Stream](#stream-ch-174), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
+Related: [Associated type](#associated-type-ch-202), [Closure](#closure-ch-131), [Combinators](#combinators-ch-92), [Future](#future-ch-171), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [Stream](#stream-ch-174), [Zero-cost abstraction](#zero-cost-abstraction-ch-134)
 In repo: `projects/iterators/src/laziness.rs`
 
 ## Iterator adapters vs consuming adapters (ch 13.2)
@@ -764,12 +797,15 @@ Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
 ## Newtype pattern (ch 10.2)
 
 Wrap a foreign type in a local tuple struct (`struct Meters(f64)`)
-to gain the right to implement traits for it under the orphan rule.
-Also serves nominal branding (meters vs feet), like branded types
-in TypeScript. Covered in depth in chapter 19.
+to gain the right to implement traits for it under the orphan rule
+(ch 20.2's Wrapper around Vec<String> for Display); also serves
+nominal branding (Millimeters vs Meters - even across the +
+operator), like branded types in TypeScript. Zero runtime cost -
+the wrapper elides at compile time; methods are NOT inherited
+(Deref delegation or manual forwarding, ch 15.2).
 
-Related: [Coherence](#coherence-ch-102), [Orphan rule](#orphan-rule-ch-102)
-In repo: —
+Related: [Coherence](#coherence-ch-102), [Operator overloading](#operator-overloading-ch-202), [Orphan rule](#orphan-rule-ch-102)
+In repo: `projects/advanced/src/traits.rs` (Millimeters, Wrapper)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
 
 ## NLL, non-lexical lifetimes (ch 4.2)
@@ -792,6 +828,21 @@ need Box<dyn Trait> (ch 18).
 Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101)
 In repo: `projects/aggregator/src/main.rs` (the return summarizable comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#returning-types-that-implement-traits
+
+## Operator overloading (ch 20.2)
+
+Custom behavior for existing operators by implementing the traits
+in std::ops (+ is the Add trait) - inventing NEW operators is
+impossible. Add carries the associated type Output and the DEFAULT
+TYPE PARAMETER Rhs = Self: a plain `impl Add for Point` means
+Point + Point; `impl Add<Meters> for Millimeters` pins the
+right-hand side to another type, the unit conversion living inside
+the impl. Operators are traits in method-call disguise: a + b is
+Add::add(a, b).
+
+Related: [Associated type](#associated-type-ch-202), [Newtype pattern](#newtype-pattern-ch-102), [Trait](#trait-ch-102)
+In repo: `projects/advanced/src/traits.rs` (demo_operator_overloading)
+Book: https://doc.rust-lang.org/stable/book/ch20-02-advanced-traits.html#using-default-generic-parameters-and-operator-overloading
 
 ## Orphan rule (ch 10.2)
 
@@ -1122,6 +1173,19 @@ Related: [Memory leak](#memory-leak-ch-156), [Rc and reference counting](#rc-and
 In repo: `projects/smart-pointers/src/cycles.rs` (demo_weak_tree)
 Book: https://doc.rust-lang.org/stable/book/ch15-06-reference-cycles.html#preventing-reference-cycles-using-weakt
 
+## Supertrait (ch 20.2)
+
+A requirement ON a trait: `trait OutlinePrint: fmt::Display` works
+only for types that also implement Display - so the trait's default
+method may call self.to_string(). A trait bound on a trait; the
+compiler enforces it at the impl site (E0277 for Display-less
+types). The payoff: default methods may lean on capabilities they
+cannot provide themselves.
+
+Related: [Trait](#trait-ch-102), [Trait bound](#trait-bound-ch-101)
+In repo: `projects/advanced/src/traits.rs` (demo_supertrait)
+Book: https://doc.rust-lang.org/stable/book/ch20-02-advanced-traits.html#using-supertraits
+
 ## Test double and mock objects (ch 15.5)
 
 A test double stands in for a real type during tests; a mock
@@ -1141,7 +1205,7 @@ implementing type must provide via an explicit `impl Trait for Type`
 (unlike structural TS interfaces). Defaults allowed; impls governed
 by coherence and the orphan rule.
 
-Related: [Trait bound](#trait-bound-ch-101), [Coherence](#coherence-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [unsafe trait](#unsafe-trait-ch-201)
+Related: [Trait bound](#trait-bound-ch-101), [Coherence](#coherence-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [unsafe trait](#unsafe-trait-ch-201), [Associated type](#associated-type-ch-202), [Fully qualified syntax](#fully-qualified-syntax-ch-202), [Operator overloading](#operator-overloading-ch-202), [Supertrait](#supertrait-ch-202)
 In repo: `projects/aggregator/src/lib.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#defining-a-trait
 
@@ -1152,7 +1216,7 @@ only with types having that behavior. `&impl Trait` is sugar for it;
 several bounds combine with `+`; `where` moves them out of the
 signature for readability.
 
-Related: [Blanket implementations](#blanket-implementations-ch-102), [Duck typing](#duck-typing-ch-182), [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
+Related: [Blanket implementations](#blanket-implementations-ch-102), [Duck typing](#duck-typing-ch-182), [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Supertrait](#supertrait-ch-202), [Trait](#trait-ch-102)
 In repo: `projects/aggregator/src/lib.rs` (the notify family)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#trait-bound-syntax
 
@@ -1162,7 +1226,7 @@ Calling a trait method requires the trait itself to be imported:
 `read_to_string` only exists on `File` with `use std::io::Read` in
 scope. Inherent methods (like `File::open`) need no import.
 
-Related: [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
+Related: [Fully qualified syntax](#fully-qualified-syntax-ch-202), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/error-handling/src/error_propagation.rs` (module header note)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#implementing-a-trait-on-a-type
 
