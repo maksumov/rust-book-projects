@@ -322,3 +322,9 @@ pub fn demo_unsafe_trait() {
     let f: f32 = reinterpret(0x3FC0_0000u32);
     println!("0x3FC00000 reinterpreted: {}", f);
 }
+
+// Unions (the fifth superpower, no listing in the book): like a
+// struct, but exactly ONE field is valid at a time - which one is on
+// the programmer. Reading a union field is unsafe (it may be garbage
+// of the other branch); the niche is C interoperability. Details:
+// the Rustonomicon (link in the module header).
