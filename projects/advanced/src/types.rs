@@ -85,3 +85,70 @@ pub fn demo_type_aliases() {
     f();
     println!("thunk ran");
 }
+
+// Listing 20-27: the never type ! - zero values, the type of code
+// that never produces one. The guess-game match (lived in full in
+// ch 2) mixes `Ok(num) => num` (u32) with `Err(_) => continue` (!):
+// legal because ! coerces into ANY type - continue jumps, it never
+// yields a value. The same coercion runs Option::unwrap (the
+// panic! arm) and an endless `loop` (a loop without break IS a !
+// expression). A diverging fn:
+//
+// // fn bar() -> ! {
+// //     panic!();
+// // }
+//
+// And the match that must NOT mix - without ! there is no coercion,
+// plain E0308:
+//
+// // let guess = match guess.trim().parse() {
+// //     Ok(_) => 5,
+// //     Err(_) => "hello",   // error[E0308]: mismatched types
+// // };
+
+pub fn demo_never_type() {
+    println!("\n*** demo of advanced types: the never type ***");
+
+    // The 20-27 pattern, compact: the Err arm continues, so the
+    // match's type is settled by the Ok arm alone.
+    for a in ["42", "not a number", "7"] {
+        let n: u32 = match a.parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+        println!("parsed: {n}");
+    }
+}
+
+// Dynamically sized types (unnumbered): str - NOT &str - is the
+// DST: its size is known only at runtime, so a bare str value is
+// impossible. The golden rule: DSTs live behind a pointer. &str is
+// a FAT pointer - address + length - so ITS size is known at
+// compile time. Traits are DSTs too - hence dyn Trait behind
+// &/Box (the gui.rs header debt from ch 18: why Screen held
+// Box<dyn Draw>). Every generic fn gets an implicit T: Sized; the
+// ?Sized relaxation ("may or may not be Sized" - legal only for
+// this one trait) puts the parameter behind a pointer:
+//
+// // let s1: str = "Hello there!";
+// // error[E0277]: the size for values of type `str` cannot be
+// //               known at compilation time
+//
+// // fn generic<T>(t: T) {}           // implicitly T: Sized
+// // fn generic<T: ?Sized>(t: &T) {}  // relaxed, t behind a ref
+
+pub fn demo_dst() {
+    println!("\n*** demo of advanced types: DSTs and fat pointers ***");
+
+    use std::mem::size_of;
+
+    // The observable: &str and &[u8] are FAT (address + length),
+    // &u8 is thin - the DST stands only behind a pointer that
+    // carries the missing size. (16/16/8 bytes on x64.)
+    println!(
+        "&str: {} bytes, &[u8]: {} bytes, &u8: {} bytes",
+        size_of::<&str>(),
+        size_of::<&[u8]>(),
+        size_of::<&u8>()
+    );
+}

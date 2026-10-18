@@ -23,4 +23,6 @@ fn main() {
 
     types::demo_newtype_uses();
     types::demo_type_aliases();
+    types::demo_never_type();
+    types::demo_dst();
 }
