@@ -3,6 +3,7 @@
 #![warn(clippy::undocumented_unsafe_blocks)]
 
 mod traits;
+mod types;
 mod unsafe_rust;
 
 fn main() {
@@ -19,4 +20,6 @@ fn main() {
     traits::demo_fully_qualified_syntax();
     traits::demo_supertrait();
     traits::demo_newtype_pattern();
+
+    types::demo_newtype_uses();
 }
