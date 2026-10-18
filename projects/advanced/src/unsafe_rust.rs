@@ -4,6 +4,7 @@
 // NOT turn off the borrow checker - it unlocks only these five; keep
 // the blocks small and wrap them in safe abstractions (split_at_mut
 // below). Miri (cargo +nightly miri run) checks unsafe at runtime.
+// The deep dive into unsafe is the Rustonomicon - https://doc.rust-lang.org/nomicon/
 
 use std::slice;
 
