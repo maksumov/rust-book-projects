@@ -40,6 +40,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Dyn compatibility (ch 18.2)](#dyn-compatibility-ch-182)
 - [Encapsulation (ch 18.1)](#encapsulation-ch-181)
 - [Fearless concurrency (ch 16.0)](#fearless-concurrency-ch-160)
+- [FFI, foreign function interface (ch 20.1)](#ffi-foreign-function-interface-ch-201)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Future (ch 17.1)](#future-ch-171)
 - [Ignoring in patterns (ch 19.3)](#ignoring-in-patterns-ch-193)
@@ -55,6 +56,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Match guard (ch 19.3)](#match-guard-ch-193)
 - [Memory leak (ch 15.6)](#memory-leak-ch-156)
 - [Message passing vs shared state (ch 16.0)](#message-passing-vs-shared-state-ch-160)
+- [Miri (ch 20.1)](#miri-ch-201)
 - [Monomorphization (ch 10.1)](#monomorphization-ch-101)
 - [Move (ch 4.1)](#move-ch-41)
 - [move closures (ch 13.1)](#move-closures-ch-131)
@@ -68,11 +70,14 @@ bidirectional: if X lists Y, then Y lists X.
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [Pin and Unpin (ch 17.5)](#pin-and-unpin-ch-175)
 - [RAII (ch 4.1)](#raii-ch-41)
+- [Raw pointer (ch 20.1)](#raw-pointer-ch-201)
 - [Rc and reference counting (ch 15.4)](#rc-and-reference-counting-ch-154)
 - [Re-export (ch 14.2)](#re-export-ch-142)
 - [Refutable vs irrefutable (ch 19.2)](#refutable-vs-irrefutable-ch-192)
 - [Release profiles (ch 14.1)](#release-profiles-ch-141)
 - [Resolver versions (ch 14.3)](#resolver-versions-ch-143)
+- [Rustonomicon (ch 20.1)](#rustonomicon-ch-201)
+- [SAFETY comment (ch 20.1)](#safety-comment-ch-201)
 - [Send and Sync (ch 16.4)](#send-and-sync-ch-164)
 - [Shadowing (ch 3.1)](#shadowing-ch-31)
 - [SipHash and BuildHasher (ch 8.3)](#siphash-and-buildhasher-ch-83)
@@ -81,6 +86,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Standard output vs standard error (ch 12.6)](#standard-output-vs-standard-error-ch-126)
 - [State pattern (ch 18.3)](#state-pattern-ch-183)
 - [Static lifetime (ch 10.3)](#static-lifetime-ch-103)
+- [Static vs const (ch 20.1)](#static-vs-const-ch-201)
 - [Static vs dynamic dispatch (ch 18.2)](#static-vs-dynamic-dispatch-ch-182)
 - [Stream (ch 17.4)](#stream-ch-174)
 - [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
@@ -89,7 +95,11 @@ bidirectional: if X lists Y, then Y lists X.
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
 - [Trait object (ch 18.2)](#trait-object-ch-182)
+- [Undefined behavior (ch 20.1)](#undefined-behavior-ch-201)
+- [Union (ch 20.1)](#union-ch-201)
 - [Unit tests (ch 11.3)](#unit-tests-ch-113)
+- [unsafe Rust (ch 20.1)](#unsafe-rust-ch-201)
+- [unsafe trait (ch 20.1)](#unsafe-trait-ch-201)
 - [Unwinding vs abort (ch 9.1)](#unwinding-vs-abort-ch-91)
 - [Workspace (ch 14.3)](#workspace-ch-143)
 - [Yank (ch 14.2)](#yank-ch-142)
@@ -183,7 +193,7 @@ The compiler pass comparing the scopes of borrows: a reference may
 not outlive the data it points to. Rejects violations with E0597
 "does not live long enough"; made ergonomic by NLL.
 
-Related: [Borrowing](#borrowing-ch-42), [Data race](#data-race-ch-42), [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42)
+Related: [Borrowing](#borrowing-ch-42), [Data race](#data-race-ch-42), [Lifetime](#lifetime-ch-103), [NLL, non-lexical lifetimes](#nll-non-lexical-lifetimes-ch-42), [unsafe Rust](#unsafe-rust-ch-201)
 In repo: `projects/lifetimes/src/dangling.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-borrow-checker
 
@@ -288,7 +298,7 @@ Book: https://doc.rust-lang.org/stable/book/ch17-00-async-await.html#parallelism
 is required, the value must be computable at compile time; valid
 for the whole program within its scope. SCREAMING_SNAKE naming.
 
-Related: —
+Related: [Static vs const](#static-vs-const-ch-201)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch03-01-variables-and-mutability.html#declaring-constants
 
@@ -357,7 +367,7 @@ synchronization -- undefined behavior in most languages. Rust's
 borrow rules (one mutable XOR many immutable) prevent data races
 at compile time.
 
-Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42), [Fearless concurrency](#fearless-concurrency-ch-160)
+Related: [Borrow checker](#borrow-checker-ch-103), [Borrowing](#borrowing-ch-42), [Fearless concurrency](#fearless-concurrency-ch-160), [Static vs const](#static-vs-const-ch-201), [Undefined behavior](#undefined-behavior-ch-201)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.html#mutable-references
 
@@ -427,7 +437,7 @@ via rustdoc (cargo doc --open): /// documents the item AFTER it,
 -- the third test section -- keeping docs and code in sync. Common
 sections: # Examples, # Panics, # Errors, # Safety.
 
-Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142)
+Related: [Crate root](#crate-root-ch-71), [Lint levels](#lint-levels-ch-142), [SAFETY comment](#safety-comment-ch-201)
 In repo: `projects/art/src/lib.rs` (/// and //! incl. Examples/Errors)
 Book: https://doc.rust-lang.org/stable/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments
 
@@ -481,6 +491,23 @@ gated by two language-level marker traits, Send and Sync.
 Related: [Concurrency vs parallelism](#concurrency-vs-parallelism-ch-170), [Cooperative multitasking](#cooperative-multitasking-ch-173), [Data race](#data-race-ch-42), [Send and Sync](#send-and-sync-ch-164)
 In repo: `projects/concurrency` (the whole chapter)
 Book: https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
+
+## FFI, foreign function interface (ch 20.1)
+
+The boundary between Rust and other languages. An `unsafe extern "C"`
+block DECLARES a foreign fn -- signature only, no body; the
+definition lives in a linked library, resolved by the unmangled C
+symbol (a wrong name is a LINK error, not a runtime one). Calls are
+unsafe unless the decl carries the `safe` keyword -- the author's
+PROMISE that no unsafe block is needed (abs(i32) has no
+memory-safety concerns). C symbols are program-global: abs cannot
+be redeclared with another safety, so the safe-keyword demo uses
+labs. Miri cannot execute native code -- cfg(miri) stub demos keep
+a project miri-clean.
+
+Related: [Union](#union-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (demo_ffi, demo_ffi_safe)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#using-extern-functions-to-call-external-code
 
 ## Fn traits (ch 13.1)
 
@@ -627,7 +654,7 @@ demands doc comments on every public item -- including pub mod and
 enum variants, which is stricter than the book's own art example.
 A stricter sibling to try: missing_docs_in_private_items.
 
-Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92)
+Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs outer attributes](#inner-vs-outer-attributes-ch-92), [SAFETY comment](#safety-comment-ch-201)
 In repo: `projects/art/src/lib.rs` (the crate-root attribute)
 Book: https://doc.rust-lang.org/rustc/lints/levels.html
 
@@ -670,6 +697,20 @@ of borrow checking.
 Related: [Channel, mpsc](#channel-mpsc-ch-162), [Mutex and lock](#mutex-and-lock-ch-163)
 In repo: `projects/concurrency/src/channels.rs` and `shared_state.rs`
 Book: https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
+
+## Miri (ch 20.1)
+
+An interpreter for Rust's mid-level IR: runs the program without
+native codegen and catches undefined behavior as it happens --
+out-of-bounds, use-after-free, dangling pointers, data races,
+Stacked Borrows aliasing violations. Silent about sound code; on
+unsupported operations its own note says "it does not indicate a
+bug in the program". cargo +nightly miri run (the first run builds
+its own std from the rust-src component).
+
+Related: [Rustonomicon](#rustonomicon-ch-201), [Undefined behavior](#undefined-behavior-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `exercises/20_miri`
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html
 
 ## Monomorphization (ch 10.1)
 
@@ -820,6 +861,22 @@ Related: [Destructor](#destructor-ch-153), [Ownership](#ownership-ch-41)
 In repo: —
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html
 
+## Raw pointer (ch 20.1)
+
+*const T / *mut T: an address that may be null, unaligned, aliased
+or dangling -- the compiler assumes nothing, so creating one is
+SAFE (&raw const / &raw mut borrow operators; the old `&x as
+*const T` cast still roams) while dereferencing needs unsafe. No
+Deref, no Drop -- unlike a smart pointer it owns nothing;
+Box::into_raw hands heap ownership over, Box::from_raw takes it
+back (the OwnedI32 RAII cycle). A slice IS pointer + length:
+as_mut_ptr + from_raw_parts_mut reassemble one (the split_at_mut
+case, sound because mid <= len is asserted).
+
+Related: [Slice](#slice-ch-43), [Smart pointers](#smart-pointers-ch-150), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (listings 20-1..20-7)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#dereferencing-a-raw-pointer
+
 ## Rc and reference counting (ch 15.4)
 
 Rc<T>: multiple owners of one value. Rc::clone bumps strong_count
@@ -889,6 +946,31 @@ Related: [Workspace](#workspace-ch-143)
 In repo: `projects/add/Cargo.toml` (the workspace root)
 Book: https://doc.rust-lang.org/cargo/reference/resolver.html
 
+## Rustonomicon (ch 20.1)
+
+The book on unsafe Rust internals: aliasing rules (why &mut must
+stay unique; split_at_mut as the canonical sound example), manual
+Send/Sync impls, unions, transmute. The go-to after ch 20.1 --
+everything the chapter leaves out of frame lives there.
+
+Related: [Miri](#miri-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (the header link)
+Book: https://doc.rust-lang.org/nomicon/
+
+## SAFETY comment (ch 20.1)
+
+The convention accompanying unsafe: `// SAFETY:` directly above an
+unsafe block (or unsafe impl), `# Safety` doc section on an unsafe
+fn or unsafe trait -- each stating the invariant that makes the
+code sound ("mid <= len is asserted, so the halves are disjoint").
+Mechanically enforceable: clippy::undocumented_unsafe_blocks warns
+on every uncommented block/impl (on in projects/advanced),
+missing_safety_doc demands the doc sections.
+
+Related: [Documentation comments](#documentation-comments-ch-142), [Lint levels](#lint-levels-ch-142), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/main.rs` (the enforcing lint)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#accessing-or-modifying-a-mutable-static-variable
+
 ## Send and Sync (ch 16.4)
 
 The two language-level marker traits (no methods) behind fearless
@@ -899,7 +981,7 @@ are not Sync, Mutex is. Compositions inherit automatically; manual
 impls are unsafe (ch 20). The E0277 of the Rc counter attempt is
 these traits talking.
 
-Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160), [Pin and Unpin](#pin-and-unpin-ch-175)
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160), [Pin and Unpin](#pin-and-unpin-ch-175), [unsafe trait](#unsafe-trait-ch-201)
 In repo: `projects/concurrency/src/shared_state.rs` (the 16-14 comment)
 Book: https://doc.rust-lang.org/stable/book/ch16-04-extensible-concurrency-sync-and-send.html
 
@@ -931,7 +1013,7 @@ for collections. A fat reference (pointer + length) with no
 ownership; taking &str (not &String) lets a function accept both
 String slices and literals -- via deref coercions.
 
-Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42)
+Related: [Borrowing](#borrowing-ch-42), [Deref coercion](#deref-coercion-ch-42), [Raw pointer](#raw-pointer-ch-201)
 In repo: `projects/collections/src/demos/strings.rs` (the slicing demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-03-slices.html
 
@@ -945,7 +1027,7 @@ a Box can never alias its source. The chapter's set: Box (heap),
 Rc (shared ownership), RefCell (runtime borrow rules), Weak
 (non-owning).
 
-Related: [Deref coercion](#deref-coercion-ch-42), [Destructor](#destructor-ch-153), [Indirection](#indirection-ch-151), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156), [Trait object](#trait-object-ch-182)
+Related: [Deref coercion](#deref-coercion-ch-42), [Destructor](#destructor-ch-153), [Indirection](#indirection-ch-151), [Raw pointer](#raw-pointer-ch-201), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Strong vs weak references](#strong-vs-weak-references-ch-156), [Trait object](#trait-object-ch-182)
 In repo: `projects/smart-pointers` (the whole chapter)
 Book: https://doc.rust-lang.org/stable/book/ch15-00-smart-pointers.html
 
@@ -981,9 +1063,25 @@ string literal is 'static (stored in the binary). An error message
 suggesting 'static is usually a dangling-reference smell -- fix
 the lifetimes instead of reaching for it.
 
-Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131)
+Related: [Lifetime](#lifetime-ch-103), [move closures](#move-closures-ch-131), [Static vs const](#static-vs-const-ch-201)
 In repo: `projects/lifetimes/src/excerpt.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-03-lifetime-syntax.html#the-static-lifetime
+
+## Static vs const (ch 20.1)
+
+A static has ONE fixed address for the whole program (a const is
+inlined at every use) and may be computed at runtime. A mutable
+static puts reads/writes behind unsafe -- the compiler cannot prove
+single-threaded access -- and the deny-by-default static_mut_refs
+forbids taking references, including println's invisible autoref:
+read through *(&raw const COUNTER), binding the pointer first
+(clippy's deref_addrof suggestion would trip static_mut_refs -- the
+lints contradict). The checked replacement for counters: AtomicU32
+(plain movs on x86).
+
+Related: [Constants](#constants-ch-31), [Data race](#data-race-ch-42), [Static lifetime](#static-lifetime-ch-103), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (demo_static)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#static-variables
 
 ## Static vs dynamic dispatch (ch 18.2)
 
@@ -1043,7 +1141,7 @@ implementing type must provide via an explicit `impl Trait for Type`
 (unlike structural TS interfaces). Defaults allowed; impls governed
 by coherence and the orphan rule.
 
-Related: [Trait bound](#trait-bound-ch-101), [Coherence](#coherence-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102)
+Related: [Trait bound](#trait-bound-ch-101), [Coherence](#coherence-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [unsafe trait](#unsafe-trait-ch-201)
 In repo: `projects/aggregator/src/lib.rs`
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#defining-a-trait
 
@@ -1080,6 +1178,31 @@ Related: [Dyn compatibility](#dyn-compatibility-ch-182), [Duck typing](#duck-typ
 In repo: `projects/oop/src/gui.rs` (with select_box.rs as the consumer)
 Book: https://doc.rust-lang.org/stable/book/ch18-02-trait-objects.html
 
+## Undefined behavior (ch 20.1)
+
+Code the compiler owes nothing to: memory corruption, security
+holes, anything at all. NOT the same as a panic -- a panic is a
+safe, controlled unwinding; UB is the absence of guarantees. unsafe
+does not cause UB; unsound unsafe does (an invariant not actually
+upheld). Converting potential UB into a panic (assert! before the
+unsafe block in split_at_mut) is a strict safety upgrade.
+
+Related: [Data race](#data-race-ch-42), [Miri](#miri-ch-201), [unsafe Rust](#unsafe-rust-ch-201), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
+In repo: `exercises/20_miri`
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#unsafe-superpowers
+
+## Union (ch 20.1)
+
+Like a struct, but exactly ONE field is valid at a time -- which
+one is on the programmer. Reading a union field is unsafe (the
+memory may hold garbage of another branch); writing is safe. A C
+interoperability niche (overlapping C unions); no listing in the
+book.
+
+Related: [FFI, foreign function interface](#ffi-foreign-function-interface-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (the closing comment)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html
+
 ## Unit tests (ch 11.3)
 
 Small, focused tests in src/ beside the code they test (the
@@ -1091,13 +1214,41 @@ Related: [Integration tests](#integration-tests-ch-113), [Test double and mock o
 In repo: `projects/testing/src/*` (the tests module in each)
 Book: https://doc.rust-lang.org/stable/book/ch11-03-test-organization.html#unit-tests
 
+## unsafe Rust (ch 20.1)
+
+The unsafe keyword unlocks exactly five superpowers: dereference a
+raw pointer, call an unsafe fn, access a mutable static, implement
+an unsafe trait, access union fields. It does NOT turn off the
+borrow checker. An unsafe fn shifts the proof to the caller; a safe
+fn may keep unsafe as an implementation detail (split_at_mut stays
+a safe API). The litmus test for a signature: can a caller writing
+only safe code cause UB with valid arguments? yes -> unsafe fn.
+
+Related: [Borrow checker](#borrow-checker-ch-103), [FFI, foreign function interface](#ffi-foreign-function-interface-ch-201), [Miri](#miri-ch-201), [Raw pointer](#raw-pointer-ch-201), [Rustonomicon](#rustonomicon-ch-201), [SAFETY comment](#safety-comment-ch-201), [Static vs const](#static-vs-const-ch-201), [Undefined behavior](#undefined-behavior-ch-201), [Union](#union-ch-201), [unsafe trait](#unsafe-trait-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (the whole module)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#unsafe-superpowers
+
+## unsafe trait (ch 20.1)
+
+A trait whose invariants the compiler cannot check; every impl must
+sign with `unsafe impl` -- the promise lives at the impl, while
+CALLING the trait's methods stays safe. The everyday case: manual
+Send for a raw-pointer wrapper (E0277 without the impl). The
+contract-bearing case: AnyBits ("every bit pattern is a valid
+value") -- a safe reinterpret standing on it turns UB-producing if
+an impl lies (bool's 0/1 niche). Doc # Safety sections required.
+
+Related: [Send and Sync](#send-and-sync-ch-164), [Trait](#trait-ch-102), [unsafe Rust](#unsafe-rust-ch-201)
+In repo: `projects/advanced/src/unsafe_rust.rs` (demo_unsafe_trait)
+Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#implementing-an-unsafe-trait
+
 ## Unwinding vs abort (ch 9.1)
 
 Default panic behavior: unwind -- walk back up the stack, running
 destructors. panic = 'abort' in a [profile] skips cleanup: smaller
 binaries, but cleanup and thread isolation (catch_unwind) are gone.
 
-Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Release profiles](#release-profiles-ch-141)
+Related: [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Release profiles](#release-profiles-ch-141), [Undefined behavior](#undefined-behavior-ch-201)
 In repo: `projects/panic/Cargo.toml` (the release-profile comment)
 Book: https://doc.rust-lang.org/stable/book/ch09-01-unrecoverable-errors-with-panic.html#unwinding-the-stack-or-aborting-in-response-to-a-panic
 
