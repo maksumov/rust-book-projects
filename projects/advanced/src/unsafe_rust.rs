@@ -102,6 +102,19 @@ fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
     }
 }
 
+// Miri is an interpreter: it cannot execute native libc code - the
+// abs call aborts with "unsupported operation" (Miri's own note: "it
+// does not indicate a bug in the program"). Under the miri cfg the
+// FFI demos shrink to a stub, keeping the miri run complete; the
+// real bodies compile only without it.
+#[cfg(miri)]
+#[allow(rust_analyzer::inactive_code)]
+pub fn demo_ffi() {
+    println!(
+        "\n*** demo of unsafe: FFI - skipped under miri, an interpreter cannot run native code ***"
+    );
+}
+
 // Listing 20-7: the same from_raw_parts_mut on an ARBITRARY address
 // is undefined behavior - we own nothing there; Miri flags it as a
 // dangling pointer:
@@ -110,6 +123,7 @@ fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 // // let r = address as *mut i32;
 // // let values: &[i32] = unsafe { slice::from_raw_parts_mut(r, 10000) };
 
+#[cfg(not(miri))]
 pub fn demo_ffi() {
     println!("\n*** demo of unsafe: FFI via an unsafe block ***");
 
@@ -119,7 +133,7 @@ pub fn demo_ffi() {
     // there. The ABI is "C" (the calling convention). If the name did not
     // exist, the failure would be a link error, not a runtime one. (The
     // block lives inside the function: extern blocks are items and may
-    // be declared in any score.)
+    // be declared in any scope.)
     unsafe extern "C" {
         fn abs(input: i32) -> i32;
     }
@@ -131,6 +145,15 @@ pub fn demo_ffi() {
     }
 }
 
+#[cfg(miri)]
+#[allow(rust_analyzer::inactive_code)]
+pub fn demo_ffi_safe() {
+    println!(
+        "\n*** demo of unsafe: FFI - skipped under miri, an interpreter cannot run native code ***"
+    );
+}
+
+#[cfg(not(miri))]
 pub fn demo_ffi_safe() {
     println!("\n*** demo of unsafe: FFI via the safe keyword ***");
 
