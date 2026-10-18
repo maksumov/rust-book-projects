@@ -2,6 +2,7 @@
 // block must carry a `// SAFETY:` justification.
 #![warn(clippy::undocumented_unsafe_blocks)]
 
+mod traits;
 mod unsafe_rust;
 
 fn main() {
@@ -11,4 +12,6 @@ fn main() {
     unsafe_rust::demo_ffi_safe();
     unsafe_rust::demo_static();
     unsafe_rust::demo_unsafe_trait();
+
+    traits::demo_associated_types();
 }
