@@ -132,3 +132,98 @@ pub fn demo_operator_overloading() {
     let total = Millimeters(500) + Meters(1);
     println!("500mm + 1m = {}mm", total.0);
 }
+
+// Listing 20-17: two traits declaring the same method name, plus an
+// inherent method with that name too - all legal; the calls in the
+// demo below decide which one runs.
+trait Pilot {
+    fn fly(&self);
+}
+
+trait Wizard {
+    fn fly(&self);
+}
+
+struct Human;
+
+impl Pilot for Human {
+    fn fly(&self) {
+        println!("This is your captain speaking.");
+    }
+}
+
+impl Wizard for Human {
+    fn fly(&self) {
+        println!("Up!");
+    }
+}
+
+impl Human {
+    fn fly(&self) {
+        println!("*waving arms furiously*");
+    }
+}
+
+pub fn demo_name_collisions() {
+    println!("\n*** demo of advanced traits: method name collisions ***");
+
+    let person = Human;
+
+    // Listing 20-18: no ambiguity for the compiler - the INHERENT
+    // method wins silently; the trait impls are not even reachable
+    // through plain method syntax.
+    person.fly();
+
+    // Listing 20-19: reaching a trait impl: the trait names the fn,
+    // the receiver pins the type. No fully qualified syntax needed
+    // yet - with a self receiver, that much disambiguation suffices.
+    Pilot::fly(&person);
+    Wizard::fly(&person);
+}
+
+// Listing 20-20: the collision moves to associated functions - no
+// self receiver to lean on. Dog's own baby_name and Animal's; the
+// plain call below picks the inherent one again - Spot, though the
+// puppy was the goal.
+trait Animal {
+    fn baby_name() -> String;
+}
+
+struct Dog;
+
+impl Dog {
+    fn baby_name() -> String {
+        String::from("Spot")
+    }
+}
+
+impl Animal for Dog {
+    fn baby_name() -> String {
+        String::from("puppy")
+    }
+}
+
+pub fn demo_fully_qualified_syntax() {
+    println!("\n*** demo of advanced traits: fully qualified syntax ***");
+
+    // Listing 20-20: the inherent associated fn wins - "Spot".
+    println!("A baby dog is called a {}", Dog::baby_name());
+
+    // Listing 20-21: naming the trait does NOT help without a
+    // receiver - WHICH impl of Animal? The compiler refuses:
+    //
+    // error[E0790]: cannot call associated function on trait without
+    // specifying the corresponding `impl` type
+    //  = help: use the fully-qualified path to the only available
+    //          implementation
+    //          <Dog as Animal>::baby_name()
+    //
+    // println!("A baby dog is called a {}", Animal::baby_name());
+
+    // Listing 20-22: fully qualified syntax - "treat Dog as Animal
+    // for this call". The general form:
+    // <Type as Trait>::function(receiver_if_method, args...);
+    // every part Rust can infer is omittable - this is the one
+    // spot where nothing can be inferred away.
+    println!("A baby dog is called a {}", <Dog as Animal>::baby_name());
+}
