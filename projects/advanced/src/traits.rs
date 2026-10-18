@@ -16,7 +16,7 @@
 // //     fn next(&mut self) -> Option<Self::Item>;
 // // }
 
-use std::ops::Add;
+use std::{fmt, ops::Add};
 
 // The section's unnumbered Counter impl - the runnable half: the
 // placeholder is pinned HERE (type Item = u32); every call below
@@ -226,4 +226,68 @@ pub fn demo_fully_qualified_syntax() {
     // every part Rust can infer is omittable - this is the one
     // spot where nothing can be inferred away.
     println!("A baby dog is called a {}", <Dog as Animal>::baby_name());
+}
+
+// Listing 20-23: a SUPERTRAIT bound - OutlinePrint works only on
+// types that already implement Display (`trait OutlinePrint:
+// fmt::Display`), because its default method calls self.to_string()
+// - a method that exists only via Display. An impl for a Display-
+// less type is refused with E0277 - twice, at the impl and at the
+// call site:
+//
+// // error[E0277]: `Point` doesn't implement `std::fmt::Display`
+// //   = help: the trait `std::fmt::Display` is not implemented
+// //           for `Point`
+// //   note: required by a bound in `OutlinePrint`
+trait OutlinePrint: fmt::Display {
+    fn outline_print(&self) {
+        let output = self.to_string();
+        let len = output.len();
+        println!("{}", "*".repeat(len + 4));
+        println!("*{}*", " ".repeat(len + 2));
+        println!("* {output} *");
+        println!("*{}*", " ".repeat(len + 2));
+        println!("{}", "*".repeat(len + 4));
+    }
+}
+
+// The section's fix, live: Display for the SAME Point from 20-15 -
+// and the OutlinePrint impl itself is EMPTY: all the work lives in
+// the trait's default method.
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
+    }
+}
+
+impl OutlinePrint for Point {}
+
+pub fn demo_supertrait() {
+    println!("\n*** demo of advanced traits: supertraits ***");
+
+    let p = Point { x: 1, y: 3 };
+    p.outline_print();
+}
+
+// Listing 20-24: the newtype pattern around the ORPHAN RULE: neither
+// Display nor Vec is ours, so impl Display for Vec<String> is
+// forbidden - but Wrapper, a local tuple struct around it, IS ours,
+// and the impl lands on the wrapper. Zero runtime cost: the wrapper
+// is elided at compile time. The downside: Wrapper has none of
+// Vec's methods - delegate them manually, or implement Deref to get
+// them all (ch 15.2), or keep the surface restricted on purpose.
+// Full circle: the name first appeared on Millimeters in 20-16.
+struct Wrapper(Vec<String>);
+
+impl fmt::Display for Wrapper {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{}]", self.0.join(", "))
+    }
+}
+
+pub fn demo_newtype_pattern() {
+    println!("\n*** demo of advanced traits: the newtype pattern ***");
+
+    let w = Wrapper(vec![String::from("hello"), String::from("world")]);
+    println!("w = {w}");
 }

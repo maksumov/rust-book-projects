@@ -17,4 +17,6 @@ fn main() {
     traits::demo_operator_overloading();
     traits::demo_name_collisions();
     traits::demo_fully_qualified_syntax();
+    traits::demo_supertrait();
+    traits::demo_newtype_pattern();
 }
