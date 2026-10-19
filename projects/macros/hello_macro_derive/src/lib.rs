@@ -50,3 +50,16 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
     };
     generated.into()
 }
+
+// Beyond the book: an attribute macro, live (the first of the two
+// signature-only kinds from the header above). TWO token streams
+// arrive: the attribute's own tokens and the annotated item. A proc
+// macro runs at COMPILE time - the println! below lands in the
+// build log of the CONSUMER crate. An attribute macro MUST return
+// the item or it vanishes: emitted here unchanged.
+#[proc_macro_attribute]
+pub fn logged(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let note = attr.to_string();
+    println!("[logged] attr = `{note}`; item emitted unchanged");
+    item
+}

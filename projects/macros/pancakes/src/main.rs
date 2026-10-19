@@ -14,10 +14,12 @@
 // macro from hello_macro_derive.
 use hello_macro::HelloMacro;
 use hello_macro_derive::HelloMacro;
+use hello_macro_derive::logged;
 
 #[derive(HelloMacro)]
 struct Pancakes;
 
+#[logged(pancakes main)]
 fn main() {
     Pancakes::hello_macro();
 }
