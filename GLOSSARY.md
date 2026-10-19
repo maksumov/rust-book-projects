@@ -33,6 +33,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Custom Cargo subcommands (ch 14.5)](#custom-cargo-subcommands-ch-145)
 - [Data race (ch 4.2)](#data-race-ch-42)
 - [Deadlock (ch 16.3)](#deadlock-ch-163)
+- [Declarative macro (ch 20.5)](#declarative-macro-ch-205)
 - [Deref coercion (ch 4.2)](#deref-coercion-ch-42)
 - [Destructor (ch 15.3)](#destructor-ch-153)
 - [Destructuring (ch 19.3)](#destructuring-ch-193)
@@ -58,6 +59,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Lifetime (ch 10.3)](#lifetime-ch-103)
 - [Lifetime elision rules (ch 10.3)](#lifetime-elision-rules-ch-103)
 - [Lint levels (ch 14.2)](#lint-levels-ch-142)
+- [Macro (ch 20.5)](#macro-ch-205)
 - [Match guard (ch 19.3)](#match-guard-ch-193)
 - [Memory leak (ch 15.6)](#memory-leak-ch-156)
 - [Message passing vs shared state (ch 16.0)](#message-passing-vs-shared-state-ch-160)
@@ -76,6 +78,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [Pin and Unpin (ch 17.5)](#pin-and-unpin-ch-175)
+- [Procedural macro (ch 20.5)](#procedural-macro-ch-205)
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Raw pointer (ch 20.1)](#raw-pointer-ch-201)
 - [Rc and reference counting (ch 15.4)](#rc-and-reference-counting-ch-154)
@@ -405,6 +408,20 @@ lock ordering, or a channel redesign (single ownership, no locks).
 Related: [Memory leak](#memory-leak-ch-156), [Mutex and lock](#mutex-and-lock-ch-163)
 In repo: `exercises/16_deadlock` (the book's dare, as an exercise)
 Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
+
+## Declarative macro (ch 20.5)
+
+macro_rules!: a match on the TOKENS of the call - arms of patterns
+and replacement code, compared before the compiler reads the
+meaning. $( $x:expr ),* binds each matched expression to $x (zero
+or more, comma-separated); $( ... )* in the body repeats in
+lockstep. #[macro_export] ships it from the crate root. The vec!
+sketch (listing 20-35) in seven lines; ours adds the empty arm
+the book's version lacks (unused_mut on vec![]).
+
+Related: [Macro](#macro-ch-205), [Procedural macro](#procedural-macro-ch-205)
+In repo: `projects/advanced/src/macros.rs` (my_vec!)
+Book: https://doc.rust-lang.org/stable/book/ch20-05-macros.html#declarative-macros-for-general-metaprogramming
 
 ## Deref coercion (ch 4.2)
 
@@ -742,6 +759,20 @@ Related: [Documentation comments](#documentation-comments-ch-142), [Inner vs out
 In repo: `projects/art/src/lib.rs` (the crate-root attribute)
 Book: https://doc.rust-lang.org/rustc/lints/levels.html
 
+## Macro (ch 20.5)
+
+A family, not one feature: code that writes code, expanded BEFORE
+compilation - before types exist, hence powers no fn has (variable
+arity: vec![1] or vec![1, 2, 3]; implementing traits - runtime is
+too late). The price: definitions are more complex than fns and
+must be defined (or brought into scope) BEFORE use in the file.
+Four kinds: one declarative (macro_rules!) and three procedural
+(derive, attribute-like, function-like).
+
+Related: [Declarative macro](#declarative-macro-ch-205), [Procedural macro](#procedural-macro-ch-205)
+In repo: `projects/advanced/src/macros.rs`, `projects/macros`
+Book: https://doc.rust-lang.org/stable/book/ch20-05-macros.html#the-difference-between-macros-and-functions
+
 ## Match guard (ch 19.3)
 
 An if AFTER the pattern in a match arm - the arm fires only when
@@ -972,6 +1003,23 @@ collecting futures (join_all) demands an explicit pin!.
 Related: [Future](#future-ch-171), [Send and Sync](#send-and-sync-ch-164)
 In repo: `projects/hello-async/src/pinning.rs`
 Book: https://doc.rust-lang.org/stable/book/ch17-05-traits-for-async.html
+
+## Procedural macro (ch 20.5)
+
+A fn over token streams - TokenStream in, TokenStream out - in its
+OWN crate (proc-macro = true); the attribute picks the kind:
+#[proc_macro_derive] (impl generation - the HelloMacro case: syn
+parses to a syntax tree, quote! templates the impl back,
+stringify! freezing the name into a compile-time literal),
+#[proc_macro_attribute] (two streams - the attribute's tokens and
+the item; MUST return the item or it vanishes), #[proc_macro]
+(function-like). Runs at COMPILE time of the consumer: println!
+inside lands in the build log; the expansion cache re-runs it only
+when the consumer's code changes.
+
+Related: [Declarative macro](#declarative-macro-ch-205), [Macro](#macro-ch-205)
+In repo: `projects/macros/hello_macro_derive` (HelloMacro, logged)
+Book: https://doc.rust-lang.org/stable/book/ch20-05-macros.html#procedural-macros-for-generating-code-from-attributes
 
 ## RAII (ch 4.1)
 
