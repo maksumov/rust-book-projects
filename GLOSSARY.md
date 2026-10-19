@@ -45,9 +45,11 @@ bidirectional: if X lists Y, then Y lists X.
 - [FFI, foreign function interface (ch 20.1)](#ffi-foreign-function-interface-ch-201)
 - [Fn traits (ch 13.1)](#fn-traits-ch-131)
 - [Fully qualified syntax (ch 20.2)](#fully-qualified-syntax-ch-202)
+- [Function pointer (ch 20.4)](#function-pointer-ch-204)
 - [Future (ch 17.1)](#future-ch-171)
 - [Ignoring in patterns (ch 19.3)](#ignoring-in-patterns-ch-193)
 - [Indirection (ch 15.1)](#indirection-ch-151)
+- [Initializer function (ch 20.4)](#initializer-function-ch-204)
 - [Inner vs outer attributes (ch 9.2)](#inner-vs-outer-attributes-ch-92)
 - [Integration tests (ch 11.3)](#integration-tests-ch-113)
 - [Interior mutability (ch 15.5)](#interior-mutability-ch-155)
@@ -445,7 +447,7 @@ literals INSIDE a pattern test while other fields bind
 (none / struct-like / tuple-like), nesting arbitrarily deep.
 Destructuring MOVES an owning value - one construction per let.
 
-Related: [Ignoring in patterns](#ignoring-in-patterns-ch-193), [Move](#move-ch-41), [Refutable vs irrefutable](#refutable-vs-irrefutable-ch-192)
+Related: [Ignoring in patterns](#ignoring-in-patterns-ch-193), [Initializer function](#initializer-function-ch-204), [Move](#move-ch-41), [Refutable vs irrefutable](#refutable-vs-irrefutable-ch-192)
 In repo: `projects/patterns/src/syntax.rs` (demo_destructuring)
 Book: https://doc.rust-lang.org/stable/book/ch19-03-pattern-syntax.html#destructuring-to-break-apart-values
 
@@ -545,7 +547,7 @@ be redeclared with another safety, so the safe-keyword demo uses
 labs. Miri cannot execute native code -- cfg(miri) stub demos keep
 a project miri-clean.
 
-Related: [Union](#union-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
+Related: [Function pointer](#function-pointer-ch-204), [Union](#union-ch-201), [unsafe Rust](#unsafe-rust-ch-201)
 In repo: `projects/advanced/src/unsafe_rust.rs` (demo_ffi, demo_ffi_safe)
 Book: https://doc.rust-lang.org/stable/book/ch20-01-unsafe-rust.html#using-extern-functions-to-call-external-code
 
@@ -557,7 +559,7 @@ repeatable), `Fn` (read-only). Every closure implements all it
 can; bounds choose the weakest they need (e.g. `unwrap_or_else`
 takes `FnOnce`, `sort_by_key` takes `FnMut`).
 
-Related: [Closure](#closure-ch-131), [Trait bound](#trait-bound-ch-101), [Type alias](#type-alias-ch-203)
+Related: [Closure](#closure-ch-131), [Function pointer](#function-pointer-ch-204), [Initializer function](#initializer-function-ch-204), [Opaque type, impl Trait](#opaque-type-impl-trait-ch-102), [Trait bound](#trait-bound-ch-101), [Type alias](#type-alias-ch-203)
 In repo: `projects/closures/src/fn_traits.rs`
 
 ## Fully qualified syntax (ch 20.2)
@@ -574,6 +576,19 @@ where nothing can be inferred away.
 Related: [Trait](#trait-ch-102), [Trait must be in scope](#trait-must-be-in-scope-ch-92)
 In repo: `projects/advanced/src/traits.rs` (demo_fully_qualified_syntax)
 Book: https://doc.rust-lang.org/stable/book/ch20-02-advanced-traits.html#disambiguating-between-identically-named-methods
+
+## Function pointer (ch 20.4)
+
+fn (lowercase f) - a TYPE, not to be confused with the Fn closure
+trait: a concrete type written directly in a parameter (do_twice(f:
+fn(i32) -> i32)), no generic bound needed. Function names ARE
+pointers; fn implements all three closure traits, so a generic +
+Fn API accepts both closures and fns - write APIs that way;
+fn-only parameters are the C-FFI niche (C has no closures).
+
+Related: [FFI, foreign function interface](#ffi-foreign-function-interface-ch-201), [Fn traits](#fn-traits-ch-131)
+In repo: `projects/advanced/src/functions.rs` (demo_fn_pointers)
+Book: https://doc.rust-lang.org/stable/book/ch20-04-advanced-functions-and-closures.html#function-pointers
 
 ## Future (ch 17.1)
 
@@ -625,6 +640,20 @@ The `!` here means "inner", not a macro invocation.
 Related: [Lint levels](#lint-levels-ch-142)
 In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
 Book: https://doc.rust-lang.org/reference/attributes.html
+
+## Initializer function (ch 20.4)
+
+Every enum variant name IS a function: Status::Value has the type
+fn(u32) -> Status; tuple-struct names are initializers too. Being
+fn items they implement the closure traits, so they stand wherever
+a closure is expected: (0..20).map(Status::Value). The ch 6 fact
+(variant names as constructors) - now with a type. The pattern-side
+mirror is destructuring: what an initializer builds, a pattern
+takes apart.
+
+Related: [Destructuring](#destructuring-ch-193), [Fn traits](#fn-traits-ch-131)
+In repo: `projects/advanced/src/functions.rs` (demo_fn_pointers)
+Book: https://doc.rust-lang.org/stable/book/ch20-04-advanced-functions-and-closures.html#function-pointers
 
 ## Integration tests (ch 11.3)
 
@@ -861,9 +890,13 @@ Book: https://doc.rust-lang.org/stable/book/ch04-02-references-and-borrowing.htm
 `-> impl Trait` hides the concrete return type; the caller sees only
 the trait's methods (no Debug/Display through it) and cannot name
 the type. A single concrete type only -- different types per branch
-need Box<dyn Trait> (ch 18).
+need Box<dyn Trait> (ch 18). Ch 20.4 sharpened it: every USE of
+impl Trait is a DISTINCT opaque type - two impl-Fn returns cannot
+share a Vec (E0308, "distinct uses of impl Trait result in
+different opaque types"; the async-block parallel from ch 17); the
+trait object - Box<dyn Fn> - is the one-type fix.
 
-Related: [Trait](#trait-ch-102), [Monomorphization](#monomorphization-ch-101)
+Related: [Fn traits](#fn-traits-ch-131), [Monomorphization](#monomorphization-ch-101), [Trait](#trait-ch-102)
 In repo: `projects/aggregator/src/main.rs` (the return summarizable comment)
 Book: https://doc.rust-lang.org/stable/book/ch10-02-traits.html#returning-types-that-implement-traits
 
