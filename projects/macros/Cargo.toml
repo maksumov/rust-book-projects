@@ -1,4 +1,4 @@
 [workspace]
 resolver = "3"
-members = ["hello_macro", "pancakes"]
+members = ["hello_macro", "hello_macro_derive", "pancakes"]
 
