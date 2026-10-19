@@ -26,7 +26,7 @@ Code-along projects and exercises from
 | 17 | Fundamentals of Asynchronous Programming | `projects/hello-async` | first external dependency in the repo (`trpl`); bin-only by design (keeps dead-code tracking); + `CHEATSHEET.md` (threads vs async) |
 | 18 | Object-Oriented Programming Features | `projects/oop` | + `exercises/18_state_pattern` |
 | 19 | Patterns and Matching | `projects/patterns` | |
-| 20 | Advanced Features | `projects/advanced`, `projects/macros` | + `exercises/20_miri` |
+| 20 | Advanced Features | `projects/advanced`, `projects/macros` | + `exercises/20_miri`, `exercises/20_ast` |
 
 ## Other artifacts
 
