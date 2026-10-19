@@ -43,23 +43,43 @@ fn main() {
 // size; format! assembles status line + header + CRLF CRLF + body.
 // The request is still ignored - ANY path gets this page (fixed in
 // 21-6). The 21-3 tiny empty-page response grew into this one.
+//
+// Listings 21-6..21-8: routing - the request line alone decides:
+// only a well-formed GET / gets the page, anything else answers
+// 404 NOT FOUND with 404.html. The iterator is bound ONCE (a
+// deviation from the book's lines().next() one-liner): the first
+// line routes, the remaining lines until the empty one collect as
+// headers - alive only for the print switch below.
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
-    let _http_request: Vec<_> = buf_reader
-        .lines()
+    let mut lines = buf_reader.lines();
+
+    let request_line = lines.next().unwrap().unwrap();
+    let _headers: Vec<_> = lines
         .map(|result| result.unwrap())
         .take_while(|line| !line.is_empty())
         .collect();
 
-    // Listing 21-2's print, kept as a switch: uncomment to watch
-    // the request lines arrive in the server console.
-    // println!("Request: {_http_request:#?}");
+    // Uncomment to watch the request line and the headers arrive
+    // in the server console (listing 21-2's observable, kept
+    // switchable at the 21-6+ stage):
+    // println!("Request line: {request_line}\nHeaders: {_headers:#?}");
 
-    let status_line = "HTTP/1.1 200 OK";
-    let contents = fs::read_to_string("hello.html").unwrap();
-    let length = contents.len();
+    if request_line == "GET / HTTP/1.1" {
+        let status_line = "HTTP/1.1 200 OK";
+        let contents = fs::read_to_string("hello.html").unwrap();
+        let length = contents.len();
 
-    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
 
-    stream.write_all(response.as_bytes()).unwrap();
+        stream.write_all(response.as_bytes()).unwrap();
+    } else {
+        let status_line = "HTTP/1.1 404 NOT FOUND";
+        let contents = fs::read_to_string("404.html").unwrap();
+        let length = contents.len();
+
+        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+        stream.write_all(response.as_bytes()).unwrap();
+    }
 }
