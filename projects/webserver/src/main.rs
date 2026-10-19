@@ -50,6 +50,11 @@ fn main() {
 // deviation from the book's lines().next() one-liner): the first
 // line routes, the remaining lines until the empty one collect as
 // headers - alive only for the print switch below.
+//
+// Listing 21-9: the refactor - the branches differed only in the
+// status line and the filename; the tuple + destructuring let (a
+// ch 19 pattern) hoists that difference, and the read/format/
+// write path becomes single-copy.
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
     let mut lines = buf_reader.lines();
@@ -65,21 +70,16 @@ fn handle_connection(mut stream: TcpStream) {
     // switchable at the 21-6+ stage):
     // println!("Request line: {request_line}\nHeaders: {_headers:#?}");
 
-    if request_line == "GET / HTTP/1.1" {
-        let status_line = "HTTP/1.1 200 OK";
-        let contents = fs::read_to_string("hello.html").unwrap();
-        let length = contents.len();
-
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-
-        stream.write_all(response.as_bytes()).unwrap();
+    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
+        ("HTTP/1.1 200 OK", "hello.html")
     } else {
-        let status_line = "HTTP/1.1 404 NOT FOUND";
-        let contents = fs::read_to_string("404.html").unwrap();
-        let length = contents.len();
+        ("HTTP/1.1 404 NOT FOUND", "404.html")
+    };
 
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+    let contents = fs::read_to_string(filename).unwrap();
+    let length = contents.len();
 
-        stream.write_all(response.as_bytes()).unwrap();
-    }
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    stream.write_all(response.as_bytes()).unwrap();
 }
