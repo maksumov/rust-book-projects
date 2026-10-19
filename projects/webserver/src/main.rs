@@ -51,6 +51,10 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
 
+    // Listing 21-2's print, kept as a switch: uncomment to watch
+    // the request lines arrive in the server console.
+    // println!("Request: {_http_request:#?}");
+
     let status_line = "HTTP/1.1 200 OK";
     let contents = fs::read_to_string("hello.html").unwrap();
     let length = contents.len();
