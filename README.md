@@ -27,6 +27,7 @@ Code-along projects and exercises from
 | 18 | Object-Oriented Programming Features | `projects/oop` | + `exercises/18_state_pattern` |
 | 19 | Patterns and Matching | `projects/patterns` | |
 | 20 | Advanced Features | `projects/advanced`, `projects/macros` | + `exercises/20_miri`, `exercises/20_ast`, `CHEATSHEET.md` |
+| 21 | Final Project: A Multithreaded Web Server | `projects/webserver` | |
 
 ## Other artifacts
 
