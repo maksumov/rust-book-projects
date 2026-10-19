@@ -3,6 +3,7 @@
 #![warn(clippy::undocumented_unsafe_blocks)]
 
 mod functions;
+mod macros;
 mod traits;
 mod types;
 mod unsafe_rust;
@@ -29,4 +30,6 @@ fn main() {
 
     functions::demo_fn_pointers();
     functions::demo_returning_closures();
+
+    macros::demo_declarative_macros();
 }
