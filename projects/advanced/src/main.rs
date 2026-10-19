@@ -2,6 +2,7 @@
 // block must carry a `// SAFETY:` justification.
 #![warn(clippy::undocumented_unsafe_blocks)]
 
+mod functions;
 mod traits;
 mod types;
 mod unsafe_rust;
@@ -25,4 +26,7 @@ fn main() {
     types::demo_type_aliases();
     types::demo_never_type();
     types::demo_dst();
+
+    functions::demo_fn_pointers();
+    functions::demo_returning_closures();
 }
