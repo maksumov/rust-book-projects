@@ -630,17 +630,6 @@ Related: [Smart pointers](#smart-pointers-ch-150)
 In repo: `projects/smart-pointers/src/box_demo.rs` (commented E0072 + size math)
 Book: https://doc.rust-lang.org/stable/book/ch15-01-box.html#enabling-recursive-types-with-boxes
 
-## Inner vs outer attributes (ch 9.2)
-
-`#[...]` is an OUTER attribute: it attaches to the next item (e.g.
-a single `mod` line). `#![...]` is an INNER attribute: it applies
-to the enclosing item -- in the crate root, to the whole crate.
-The `!` here means "inner", not a macro invocation.
-
-Related: [Lint levels](#lint-levels-ch-142)
-In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
-Book: https://doc.rust-lang.org/reference/attributes.html
-
 ## Initializer function (ch 20.4)
 
 Every enum variant name IS a function: Status::Value has the type
@@ -654,6 +643,17 @@ takes apart.
 Related: [Destructuring](#destructuring-ch-193), [Fn traits](#fn-traits-ch-131)
 In repo: `projects/advanced/src/functions.rs` (demo_fn_pointers)
 Book: https://doc.rust-lang.org/stable/book/ch20-04-advanced-functions-and-closures.html#function-pointers
+
+## Inner vs outer attributes (ch 9.2)
+
+`#[...]` is an OUTER attribute: it attaches to the next item (e.g.
+a single `mod` line). `#![...]` is an INNER attribute: it applies
+to the enclosing item -- in the crate root, to the whole crate.
+The `!` here means "inner", not a macro invocation.
+
+Related: [Lint levels](#lint-levels-ch-142)
+In repo: `projects/error-handling/src/main.rs` (commented-out `#![allow(dead_code)]`)
+Book: https://doc.rust-lang.org/reference/attributes.html
 
 ## Integration tests (ch 11.3)
 
