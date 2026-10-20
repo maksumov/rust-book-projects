@@ -21,18 +21,22 @@ use std::{
     time::Duration,
 };
 
+use webserver::ThreadPool;
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        // Listing 21-11: a thread per connection - handle_connection moves
-        // into thread::spawn, and the blocking pain from 21-10 is GONE
-        // (verified: GET / answers instantly while /sleep runs). The
-        // price: threads are unbounded - a flood of requests spawns a
-        // flood of threads; the pool (21-12+) caps them.
-        thread::spawn(|| {
+        // Listing 21-12: the ideal interface FIRST - ThreadPool::new(4)
+        // + pool.execute, deliberately shaped like thread::spawn (a
+        // drop-in swap). Compiler-driven development: this state does
+        // NOT compile - E0433 (cannot find type `ThreadPool`) is the
+        // first instruction: give the crate a lib (21-11's spawn was
+        // replaced by execute; its story lives in the git history).
+        pool.execute(|| {
             handle_connection(stream);
         });
     }
