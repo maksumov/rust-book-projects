@@ -17,6 +17,8 @@ use std::{
     fs,
     io::{BufReader, prelude::*},
     net::{TcpListener, TcpStream},
+    thread,
+    time::Duration,
 };
 
 fn main() {
@@ -55,6 +57,14 @@ fn main() {
 // status line and the filename; the tuple + destructuring let (a
 // ch 19 pattern) hoists that difference, and the read/format/
 // write path becomes single-copy.
+//
+// Listing 21-10: the slow-request simulation - GET /sleep sleeps
+// 5s before answering. The if became a MATCH: three arms now, and
+// match needs the slice (&request_line[..]) - it does not
+// auto-reference like ==. The observable this stage exists FOR:
+// while /sleep holds the ONLY thread, a concurrent GET / waits out
+// the whole sleep (verified: ~4s) - the pain the thread pool
+// (21-11+) is about to fix.
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
     let mut lines = buf_reader.lines();
@@ -70,10 +80,13 @@ fn handle_connection(mut stream: TcpStream) {
     // switchable at the 21-6+ stage):
     // println!("Request line: {request_line}\nHeaders: {_headers:#?}");
 
-    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
-        ("HTTP/1.1 200 OK", "hello.html")
-    } else {
-        ("HTTP/1.1 404 NOT FOUND", "404.html")
+    let (status_line, filename) = match &request_line[..] {
+        "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
+        "GET /sleep HTTP/1.1" => {
+            thread::sleep(Duration::from_secs(5));
+            ("HTTP/1.1 200 OK", "hello.html")
+        }
+        _ => ("HTTP/1.1 404 NOT FOUND", "404.html"),
     };
 
     let contents = fs::read_to_string(filename).unwrap();
