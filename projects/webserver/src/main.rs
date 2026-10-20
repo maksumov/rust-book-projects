@@ -27,7 +27,14 @@ fn main() {
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        handle_connection(stream);
+        // Listing 21-11: a thread per connection - handle_connection moves
+        // into thread::spawn, and the blocking pain from 21-10 is GONE
+        // (verified: GET / answers instantly while /sleep runs). The
+        // price: threads are unbounded - a flood of requests spawns a
+        // flood of threads; the pool (21-12+) caps them.
+        thread::spawn(|| {
+            handle_connection(stream);
+        });
     }
 }
 
