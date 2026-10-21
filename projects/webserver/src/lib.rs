@@ -17,7 +17,7 @@ use std::{
 // channel - the entrance of the job queue.
 pub struct ThreadPool {
     workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>,
+    sender: Option<mpsc::Sender<Job>>,
 }
 
 // Listing 21-19: Job becomes a TYPE ALIAS (ch 20.3 paying off) -
@@ -74,7 +74,10 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        ThreadPool { workers, sender }
+        ThreadPool {
+            workers,
+            sender: Some(sender),
+        }
     }
 
     pub fn execute<F>(&self, f: F)
@@ -83,7 +86,7 @@ impl ThreadPool {
     {
         let job = Box::new(f);
 
-        self.sender.send(job).unwrap();
+        self.sender.as_ref().unwrap().send(job).unwrap();
     }
 }
 
@@ -106,6 +109,16 @@ impl ThreadPool {
 // workers loop forever; the sender must die first (21-23).
 impl Drop for ThreadPool {
     fn drop(&mut self) {
+        // Listing 21-23: the sender must die BEFORE the joins -
+        // dropping it closes the channel, and every worker's recv
+        // returns Err. The struct's sender becomes Option so drop
+        // can take() it out (here - unlike the worker's thread -
+        // Option IS the right tool: the sender lives in the pool
+        // itself, no Vec to drain). execute adapts with as_ref()
+        // .unwrap() - a None sender means "shutting down" and is
+        // unreachable while execute is callable.
+        drop(self.sender.take());
+
         for worker in self.workers.drain(..) {
             println!("Shutting down worker {}", worker.id);
 
@@ -143,8 +156,9 @@ struct Worker {
 // Listing 21-20: the worker loop - the pool WORKS. Three unwraps,
 // three contracts: lock().unwrap() - a poisoned mutex (someone
 // panicked holding it) re-panics here, the correct action; recv()
-// .unwrap() - the sender is gone (cannot happen while the pool
-// lives); recv() BLOCKS - the worker stands by until a job arrives.
+// .unwrap() - the sender is gone (impossible while the pool lived;
+// this unwrap retired in 21-24, Err became the shutdown signal);
+// recv() BLOCKS - the worker stands by until a job arrives.
 // The `let` is load-bearing: the MutexGuard temporary dies at the
 // statement's end, RELEASING the lock before job() runs - one
 // worker receives while ALL of them execute. (21-21 will show the
@@ -167,11 +181,25 @@ impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
         let thread = thread::spawn(move || {
             loop {
-                let job = receiver.lock().unwrap().recv().unwrap();
+                // Listing 21-24: the loop learns to EXIT - recv's Err
+                // (all senders dropped - 21-23's shutdown signal)
+                // becomes a break instead of a panic; the join in Drop
+                // finally returns. The let keeps its load-bearing role:
+                // the guard still dies at the statement end, the match
+                // below owns only the RESULT.
+                let message = receiver.lock().unwrap().recv();
 
-                println!("Worker {id} got a job; executing.");
+                match message {
+                    Ok(job) => {
+                        println!("Worker {id} got a job; executing.");
 
-                job();
+                        job();
+                    }
+                    Err(_) => {
+                        println!("Worker {id} disconnected; shutting down.");
+                        break;
+                    }
+                }
             }
         });
 

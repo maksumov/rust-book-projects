@@ -27,7 +27,12 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
-    for stream in listener.incoming() {
+    // Listing 21-25: two requests served, then a graceful shutdown -
+    // take(2) ends the iterator, main's scope ends, the pool's Drop
+    // runs: the sender dies (21-23), the workers break their loops
+    // (21-24), join collects them (21-22). The third request gets a
+    // refusal. A demo-only device - a real server never exits.
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
 
         // Listing 21-12: the ideal interface FIRST - ThreadPool::new(4)
@@ -40,6 +45,8 @@ fn main() {
             handle_connection(stream);
         });
     }
+
+    println!("Shutting down.");
 }
 
 // Listing 21-2: separating the concerns - accepting the connection
