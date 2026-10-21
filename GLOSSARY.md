@@ -24,6 +24,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Closure (ch 13.1)](#closure-ch-131)
 - [Coherence (ch 10.2)](#coherence-ch-102)
 - [Combinators (ch 9.2)](#combinators-ch-92)
+- [Compiler-driven development (ch 21.2)](#compiler-driven-development-ch-212)
 - [Concurrency vs parallelism (ch 17.0)](#concurrency-vs-parallelism-ch-170)
 - [Constants (ch 3.1)](#constants-ch-31)
 - [Cooperative multitasking (ch 17.3)](#cooperative-multitasking-ch-173)
@@ -78,6 +79,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Package (ch 7.1)](#package-ch-71)
 - [panic vs Result guidelines (ch 9.3)](#panic-vs-result-guidelines-ch-93)
 - [Pin and Unpin (ch 17.5)](#pin-and-unpin-ch-175)
+- [Poisoning (ch 21.2)](#poisoning-ch-212)
 - [Procedural macro (ch 20.5)](#procedural-macro-ch-205)
 - [RAII (ch 4.1)](#raii-ch-41)
 - [Raw pointer (ch 20.1)](#raw-pointer-ch-201)
@@ -102,6 +104,7 @@ bidirectional: if X lists Y, then Y lists X.
 - [Strong vs weak references (ch 15.6)](#strong-vs-weak-references-ch-156)
 - [Supertrait (ch 20.2)](#supertrait-ch-202)
 - [Test double and mock objects (ch 15.5)](#test-double-and-mock-objects-ch-155)
+- [Thread pool (ch 21.2)](#thread-pool-ch-212)
 - [Trait (ch 10.2)](#trait-ch-102)
 - [Trait bound (ch 10.1)](#trait-bound-ch-101)
 - [Trait must be in scope (ch 9.2)](#trait-must-be-in-scope-ch-92)
@@ -127,7 +130,7 @@ multiple owners AND mutation across threads. Not the default
 anywhere: thread safety is a performance penalty paid only when
 needed.
 
-Related: [Mutex and lock](#mutex-and-lock-ch-163), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Send and Sync](#send-and-sync-ch-164)
+Related: [Mutex and lock](#mutex-and-lock-ch-163), [Rc and reference counting](#rc-and-reference-counting-ch-154), [Send and Sync](#send-and-sync-ch-164), [Thread pool](#thread-pool-ch-212)
 In repo: `projects/concurrency/src/shared_state.rs` (demo_shared_counter)
 Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html#atomic-reference-counting-with-arct
 
@@ -266,7 +269,7 @@ blocks until a value or the close; rx doubles as an iterator ending
 at close. tx.clone() is a true capability clone, unlike Rc::clone's
 refcount bump.
 
-Related: [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Move](#move-ch-41)
+Related: [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Move](#move-ch-41), [Thread pool](#thread-pool-ch-212)
 In repo: `projects/concurrency/src/channels.rs`
 Book: https://doc.rust-lang.org/stable/book/ch16-02-message-passing.html
 
@@ -304,6 +307,20 @@ error path. Match stays preferable for genuinely multi-way logic.
 Related: [Closure](#closure-ch-131), [Iterator](#iterator-ch-132), [Iterator adapters vs consuming adapters](#iterator-adapters-vs-consuming-adapters-ch-132), [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93)
 In repo: `projects/error-handling/src/main.rs` (note above the demo pair)
 Book: https://doc.rust-lang.org/stable/book/ch09-02-recoverable-errors-with-result.html#alternatives-to-using-match-with-resultt-e
+
+## Compiler-driven development (ch 21.2)
+
+Write the desired API first, then let compiler errors drive the
+implementation - the book's TDD analog (ch 12) for library design.
+Our breadcrumbs: E0433 (no type ThreadPool) demanded the lib;
+E0599 demanded `new` and `execute`; E0382 (moved receiver - single
+consumer) demanded Arc<Mutex>; E0507 (move out of &mut) demanded
+drain. The trap: "if it compiles, it works" - the empty pool
+compiled and did absolutely nothing.
+
+Related: [Move](#move-ch-41), [Thread pool](#thread-pool-ch-212)
+In repo: `projects/webserver` (the whole 21-12..21-21 walk, in the markers)
+Book: https://doc.rust-lang.org/stable/book/ch21-02-multithreaded.html#building-threadpool-using-compiler-driven-development
 
 ## Concurrency vs parallelism (ch 17.0)
 
@@ -848,7 +865,7 @@ variable dies. Not a shallow copy -- precisely because of the
 invalidation; this prevents double free. Rust never deep-copies
 implicitly (explicit deep copy: clone).
 
-Related: [Borrowing](#borrowing-ch-42), [Channel, mpsc](#channel-mpsc-ch-162), [Destructuring](#destructuring-ch-193), [Ignoring in patterns](#ignoring-in-patterns-ch-193), [move closures](#move-closures-ch-131), [Ownership](#ownership-ch-41)
+Related: [Borrowing](#borrowing-ch-42), [Channel, mpsc](#channel-mpsc-ch-162), [Compiler-driven development](#compiler-driven-development-ch-212), [Destructuring](#destructuring-ch-193), [Ignoring in patterns](#ignoring-in-patterns-ch-193), [move closures](#move-closures-ch-131), [Ownership](#ownership-ch-41)
 In repo: `projects/collections/src/demos/hashmaps.rs` (managing ownership demo)
 Book: https://doc.rust-lang.org/stable/book/ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
 
@@ -872,7 +889,7 @@ type; forgetting to unlock is impossible. lock() returns Result: a
 panicking holder poisons the mutex. Mutex provides interior
 mutability, like RefCell -- with deadlocks as its uncatchable bug.
 
-Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Interior mutability](#interior-mutability-ch-155), [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Deadlock](#deadlock-ch-163)
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Interior mutability](#interior-mutability-ch-155), [Message passing vs shared state](#message-passing-vs-shared-state-ch-160), [Deadlock](#deadlock-ch-163), [Poisoning](#poisoning-ch-212), [Thread pool](#thread-pool-ch-212)
 In repo: `projects/concurrency/src/shared_state.rs` (demo_mutex_api)
 Book: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
 
@@ -986,7 +1003,7 @@ broken invariant -- and is fine in examples, prototypes and tests.
 Result is for expected failures (missing files, bad input) where
 the caller may recover; propagate with `?`.
 
-Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Never type](#never-type-ch-203), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
+Related: [Backtrace](#backtrace-ch-91), [Combinators](#combinators-ch-92), [Never type](#never-type-ch-203), [Poisoning](#poisoning-ch-212), [Unwinding vs abort](#unwinding-vs-abort-ch-91)
 In repo: anchors in `projects/error-handling/src/main.rs` and `projects/panic/src/main.rs`
 Book: https://doc.rust-lang.org/stable/book/ch09-03-to-panic-or-not-to-panic.html
 
@@ -1003,6 +1020,19 @@ collecting futures (join_all) demands an explicit pin!.
 Related: [Future](#future-ch-171), [Send and Sync](#send-and-sync-ch-164)
 In repo: `projects/hello-async/src/pinning.rs`
 Book: https://doc.rust-lang.org/stable/book/ch17-05-traits-for-async.html
+
+## Poisoning (ch 21.2)
+
+A mutex is poisoned when a thread PANICS while holding it: every
+later lock() returns Err(PoisonError) - the guarded data may be
+mid-update, so access is refused. The 21-20 lock().unwrap()
+re-panics deliberately: a poisoned pool is a bug worth crashing
+on (production code would expect! with a meaningful message).
+First met as the 16_deadlock exercise's task 4, now in real code.
+
+Related: [Mutex and lock](#mutex-and-lock-ch-163), [panic vs Result guidelines](#panic-vs-result-guidelines-ch-93), [Thread pool](#thread-pool-ch-212)
+In repo: `projects/webserver/src/lib.rs` (the worker loop unwrap)
+Book: https://doc.rust-lang.org/stable/book/ch21-02-multithreaded.html
 
 ## Procedural macro (ch 20.5)
 
@@ -1151,7 +1181,7 @@ are not Sync, Mutex is. Compositions inherit automatically; manual
 impls are unsafe (ch 20). The E0277 of the Rc counter attempt is
 these traits talking.
 
-Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160), [Pin and Unpin](#pin-and-unpin-ch-175), [unsafe trait](#unsafe-trait-ch-201)
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Fearless concurrency](#fearless-concurrency-ch-160), [Pin and Unpin](#pin-and-unpin-ch-175), [Thread pool](#thread-pool-ch-212), [unsafe trait](#unsafe-trait-ch-201)
 In repo: `projects/concurrency/src/shared_state.rs` (the 16-14 comment)
 Book: https://doc.rust-lang.org/stable/book/ch16-04-extensible-concurrency-sync-and-send.html
 
@@ -1316,6 +1346,21 @@ without changing the production trait for testing's sake.
 Related: [Interior mutability](#interior-mutability-ch-155), [Unit tests](#unit-tests-ch-113)
 In repo: `projects/smart-pointers/src/messenger.rs`
 Book: https://doc.rust-lang.org/stable/book/ch15-05-interior-mutability.html#testing-with-mock-objects
+
+## Thread pool (ch 21.2)
+
+A fixed set of threads waiting for jobs: capped N protects from
+unbounded spawning (spawn-per-request would flood under a request
+storm). execute sends a Job - a boxed closure - down an mpsc
+channel; every Worker (the pooling term: a waiting thread with an
+id) owns the receiver via Arc<Mutex<>> (mpsc is single-consumer,
+and recv mutates). Shutdown choreography: the sender drops first,
+every recv errs, the worker loops break, Drop joins. Up to N long
+jobs run concurrently; the rest queue.
+
+Related: [Arc, atomic reference counting](#arc-atomic-reference-counting-ch-163), [Channel, mpsc](#channel-mpsc-ch-162), [Compiler-driven development](#compiler-driven-development-ch-212), [Mutex and lock](#mutex-and-lock-ch-163), [Poisoning](#poisoning-ch-212), [Send and Sync](#send-and-sync-ch-164)
+In repo: `projects/webserver/src/lib.rs`
+Book: https://doc.rust-lang.org/stable/book/ch21-02-multithreaded.html#improving-throughput-with-a-thread-pool
 
 ## Trait (ch 10.2)
 
