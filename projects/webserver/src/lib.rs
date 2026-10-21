@@ -120,9 +120,9 @@ impl Drop for ThreadPool {
 // not raw JoinHandles; Worker stays PRIVATE - an implementation
 // detail the server (main.rs) never sees. The spawn closure began
 // empty - a thread that ran nothing, waiting for the channel
-// (The book's note: thread::spawn PANICS if the OS refuses a
-// thread - production pools use thread::Builder::spawn, the
-// Result-returning variant.)
+// (21-16..21-18). (The book's note: thread::spawn PANICS
+// if the OS refuses a thread - production pools use
+// thread::Builder::spawn, the Result-returning variant.)
 struct Worker {
     id: usize,
     thread: thread::JoinHandle<()>,
