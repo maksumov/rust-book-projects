@@ -87,6 +87,33 @@ impl ThreadPool {
     }
 }
 
+// Listing 21-22: Drop for the pool - join every worker, letting
+// in-flight requests finish. The book's first attempt looped with
+// &mut and died on ownership:
+//
+// // error[E0507]: cannot move out of `worker.thread` which is
+// // behind a mutable reference
+// //   note: `JoinHandle::<T>::join` takes ownership of the
+// //   receiver `self`, which moves `worker.thread`
+//
+// Two fixes were weighed: Worker.thread as Option (take() moves
+// the value out, the 18-15 trick) - or Vec::drain(..), moving the
+// workers out of the vector; drain is the cleaner one, applied
+// here. (The book's FINAL reference code switches back to Option -
+// a quirk not followed.) The unwrap in drop can double-panic if
+// called while already panicking - acceptable in a demo. And a
+// warning that IS the next listing: joining alone DEADLOCKS - the
+// workers loop forever; the sender must die first (21-23).
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        for worker in self.workers.drain(..) {
+            println!("Shutting down worker {}", worker.id);
+
+            worker.thread.join().unwrap();
+        }
+    }
+}
+
 // Listing 21-15: the Worker - a thread WITH an identity, the
 // pooling term for a thread that waits for jobs (kitchen staff:
 // they stand by until an order arrives). The pool stores Workers,
